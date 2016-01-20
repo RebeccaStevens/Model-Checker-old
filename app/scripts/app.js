@@ -197,9 +197,10 @@
      * Save to code the user has written to their computer (as a download).
      */
     app.downloadFile = function() {
-      var filename = app.$['filename'].inputElement.bindValue;
+      var filename = app.$.filename.value;
+
       // if filename has not been defined set to untitled
-      if(filename === ''){
+      if (filename === '') {
         filename = 'untitled';
       }
 
