@@ -16,6 +16,7 @@
   :root {
     --dark-primary-color: #303F9F;
     --default-primary-color: #3F51B5;
+    --default-secondary-color: #6273d9;
     --light-primary-color: #C5CAE9;
     --text-primary-color: #ffffff; /*text/icons*/
     --accent-color: #FF4081;
@@ -40,7 +41,7 @@
   /* General styles */
   .frame {
     position: absolute;
-    top: 64px;
+    top: 112px; /* height of the toolbars */
     bottom: 0;
     left: 0;
     right: 0;
@@ -55,6 +56,10 @@
 
   .centerer {
     text-align: center;
+  }
+
+  #editor {
+    z-index: 0;
   }
 
   #console {
@@ -75,13 +80,19 @@
     overflow: hidden;
   }
 
-  #main-toolbar span.spacer{
-    margin-right: 16px;
+  paper-toolbar span.spacer{
+    margin-right: 8px;
     width: 0;
   }
 
   #main-toolbar paper-icon-button {
     min-width: 40px;
+  }
+
+  #secondary-toolbar {
+    --paper-toolbar-background: var(--default-secondary-color);
+    --paper-toolbar-height: 48px;
+    --paper-toolbar-sm-height: 0;
   }
 
   #btn-compile {
@@ -105,6 +116,7 @@
   #chbx-live-building,
   #chbx-fair-abstraction {
     margin: 0 12px;
+    --paper-checkbox-checked-color: var(--default-secondary-color);
     --paper-checkbox-unchecked-color: #ffffff;
     --paper-checkbox-label-color: #ffffff;
   }
@@ -146,7 +158,6 @@
 
     #editor{
       min-height: 200px;
-      /*height: calc(95vh - 64px - 100px);*/
     }
 
     #chbx-live-compiling,

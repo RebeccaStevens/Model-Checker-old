@@ -45,51 +45,61 @@
 
     <automata-parser id="parser"></automata-parser>
 
-    <!-- start toolbar -->
-    <paper-toolbar id="main-toolbar">
-      <paper-button id="btn-compile" title="Compile and Build" raised on-tap="compileAndBuild"><iron-icon icon="av:play-arrow"></iron-icon></paper-button>
-      <paper-checkbox id="chbx-live-compiling" checked="{{liveCompiling}}" title="Automatically compile the automata as you define them.">
-        <span hidden$="[[smallScreen]]">Live Compiling</span>
-        <span hidden$="[[!smallScreen]]" title="Live Compiling">LC</span>
-      </paper-checkbox>
-      <span class="spacer"></span>
-      <paper-checkbox id="chbx-live-building" checked="{{liveBuilding}}" title="Automatically build the automata as you define them.">
-        <span hidden$="[[smallScreen]]">Live Building</span>
-        <span hidden$="[[!smallScreen]]" title="Live Building">LB</span>
-      </paper-checkbox>
-      <span class="spacer"></span>
-      <paper-icon-button icon="icons:folder-open" title="Open" on-tap="openFile"></paper-icon-button>
-      <input id="open-file" type="file" accept="text/plain" style="display: none;"></input>
-      <span class="spacer"></span>
-      <paper-input  id="filename" label="Insert Filename Here" type="text" placeholder="untitled" title="The name given to the file when it is downloaded."></paper-input>
-      <paper-icon-button icon="icons:file-download" title="Download" on-tap="downloadFile"></paper-icon-button>
+    <paper-drawer-panel force-narrow responsive-width="960px">
+      <!-- start drawer content area (for mobile devices) -->
+      <section drawer>
+        <paper-checkbox checked="{{liveCompiling}}" on-iron-change="liveCompilingChanged" title="Automatically compile the automata as you define them.">Live Compiling</paper-checkbox>
+        <paper-checkbox checked="{{liveBuilding}}" on-iron-change="liveBuildingChanged" title="Automatically build the automata as you define them.">Live Building</paper-checkbox>
+        <paper-checkbox checked="{{fairAbstraction}}" on-iron-change="fairAbstractionChanged" title="Visualise abstracted automata fairly.">Fair Abstraction</paper-checkbox>
+      </section>
+      <!-- end drawer content area -->
 
-      <span class="flex"></span>
+      <!-- start main content area -->
+      <section main>
+        <!-- start main toolbar -->
+        <paper-toolbar id="main-toolbar">
+          <paper-icon-button icon="menu" paper-drawer-toggle hidden$="[[!smallScreen]]"></paper-icon-button>
+          <paper-button id="btn-compile" title="Compile and Build" raised on-tap="compileAndBuild"><iron-icon icon="av:play-arrow"></iron-icon></paper-button>
+          <span class="spacer"></span>
+          <paper-icon-button icon="icons:folder-open" title="Open" on-tap="openFile"></paper-icon-button>
+          <input id="open-file" type="file" accept="text/plain" style="display: none;"></input>
+          <span class="spacer"></span>
+          <paper-icon-button icon="icons:file-download" title="Download" on-tap="downloadFile"></paper-icon-button>
+          <span class="spacer"></span>
+          <paper-input  id="filename" label="Insert Filename Here" type="text" placeholder="untitled" title="The name given to the file when it is downloaded."></paper-input>
+          <span class="flex"></span>
+          <paper-icon-button icon="icons:help" title="Help" on-tap="showHelp"></paper-icon-button>
+        </paper-toolbar>
+        <!-- end main toolbar -->
 
-      <paper-checkbox id="chbx-fair-abstraction" checked="{{fairAbstraction}}" title="Visualise abstracted automata fairly.">
-        <span hidden$="[[smallScreen]]">Fair Abstraction</span>
-        <span hidden$="[[!smallScreen]]" title="Fair Abstraction">FA</span>
-      </paper-checkbox>
-      <span class="flex"></span>
-      <paper-icon-button icon="icons:help" title="Help" on-tap="showHelp"></paper-icon-button>
-    </paper-toolbar>
-    <!-- end toolbar -->
+        <!-- start secondary toolbar -->
+        <paper-toolbar id="secondary-toolbar" hidden$="[[smallScreen]]">
+          <paper-checkbox checked="{{liveCompiling}}" on-iron-change="liveCompilingChanged" title="Automatically compile the automata as you define them.">Live Compiling</paper-checkbox>
+          <span class="spacer"></span>
+          <paper-checkbox checked="{{liveBuilding}}" on-iron-change="liveBuildingChanged" title="Automatically build the automata as you define them.">Live Building</paper-checkbox>
+          <span class="spacer"></span>
+          <paper-checkbox checked="{{fairAbstraction}}" on-iron-change="fairAbstractionChanged" title="Visualise abstracted automata fairly.">Fair Abstraction</paper-checkbox>
+        </paper-toolbar>
+        <!-- end secondary toolbar -->
 
-    <!-- start main content -->
-    <div class="frame">
-      <div class="left">
-        <text-editor autofocus id="editor" class="flex"></text-editor>
-        <console-logger id="console"></console-logger>
-      </div>
-      <div class="right">
-        <automata-walker automata="[[automata]]"></automata-walker>
-        <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
-        <template is="dom-repeat" items="[[automata]]" as="automaton">
-          <automata-visualisation name="[[automaton.name]]" nodes="[[automaton.graph.nodes]]" edges="[[automaton.graph.edges]]"></automata-visualisation>
-        </template>
-      </div>
-    </div>
-    <!-- end main content -->
+        <!-- start main content -->
+        <div class="frame">
+          <div class="left">
+            <text-editor autofocus id="editor" class="flex"></text-editor>
+            <console-logger id="console"></console-logger>
+          </div>
+          <div class="right">
+            <automata-walker automata="[[automata]]"></automata-walker>
+            <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
+            <template is="dom-repeat" items="[[automata]]" as="automaton">
+              <automata-visualisation name="[[automaton.name]]" nodes="[[automaton.graph.nodes]]" edges="[[automaton.graph.edges]]"></automata-visualisation>
+            </template>
+          </div>
+        </div>
+        <!-- end main content -->
+      </section>
+      <!-- end main content area -->
+    </paper-drawer-panel>
 
     <!-- start help-dialog -->
     <paper-dialog id="help-dialog" with-backdrop>
