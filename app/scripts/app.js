@@ -8,7 +8,7 @@
     /**
      * The data to use.
      */
-    app.automata = {values: []};
+    app.automata = [];
     app.liveCompiling = true;
     app.liveBuilding = true;
     app.fairAbstraction = true;
@@ -32,7 +32,7 @@
           // if there is nothing to parse then do not continue
           if (code.length === 0){
             app.$.console.clear();
-            app.automata = {};
+            app.automata = [];
             app.previousCode = '';
             return;
           }
@@ -83,19 +83,16 @@
 
           var renderStartTime = (new Date()).getTime();
           var renderTime;
-
-          // Can't simply assign app.automata.values to the new array as data bindings will not update.
-          // Creating a new automata object then setting the its values slightly later will work (for some reason).
-          app.automata = {};
+          
           setTimeout(function() {
-            app.set('automata.values', automata);
+            app.set('automata', automata);
 
             // listen for each rendered event.
             // once all automata have been rendered, log the results and stop listening.
             var automataRendered = 0;
             var renderComplete = function() {
               automataRendered++;
-              if (automataRendered === app.automata.values.length) {
+              if (automataRendered === app.automata.length) {
                 renderTime = Math.max(1, ((new Date()).getTime() - renderStartTime)) / 1000;
                 app.$.console.clear(1);
                 app.$.console.log('Rendered successfully after ' + renderTime.toFixed(3) + ' seconds.');

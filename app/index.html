@@ -221,8 +221,8 @@
       <div class="layout vertical flex">
         <automata-walker automata="{{automata.values}}"></automata-walker>
         <div class="automata-display">
-        <template is="dom-repeat" items="[[automata.values]]">
-          <automata-visualisation name="[[item.name]]" nodes="[[item.graph.nodes]]" edges="[[item.graph.edges]]"></automata-visualisation>
+        <template is="dom-repeat" items="[[automata]]" as="automaton">
+          <automata-visualisation name="[[automaton.name]]" nodes="[[automaton.graph.nodes]]" edges="[[automaton.graph.edges]]"></automata-visualisation>
         </template>
         </div>
       </div>
