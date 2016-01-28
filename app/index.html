@@ -41,36 +41,19 @@
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
-    <iron-media-query query="(max-width: 960px)" query-matches="{{smallScreen}}"></iron-media-query>
-
     <automata-parser id="parser"></automata-parser>
 
     <!-- start toolbar -->
     <paper-toolbar id="main-toolbar">
       <paper-button id="btn-compile" title="Compile and Build" raised on-tap="compileAndBuild"><iron-icon icon="av:play-arrow"></iron-icon></paper-button>
-      <paper-checkbox id="chbx-live-compiling" checked="{{liveCompiling}}" title="Automatically compile the automata as you define them.">
-        <span hidden$="[[smallScreen]]">Live Compiling</span>
-        <span hidden$="[[!smallScreen]]" title="Live Compiling">LC</span>
-      </paper-checkbox>
-      <span class="spacer"></span>
-      <paper-checkbox id="chbx-live-building" checked="{{liveBuilding}}" title="Automatically build the automata as you define them.">
-        <span hidden$="[[smallScreen]]">Live Building</span>
-        <span hidden$="[[!smallScreen]]" title="Live Building">LB</span>
-      </paper-checkbox>
       <span class="spacer"></span>
       <paper-icon-button icon="icons:folder-open" title="Open" on-tap="openFile"></paper-icon-button>
       <input id="open-file" type="file" accept="text/plain" style="display: none;"></input>
       <span class="spacer"></span>
       <paper-input  id="filename" label="Insert Filename Here" type="text" placeholder="untitled" title="The name given to the file when it is downloaded."></paper-input>
       <paper-icon-button icon="icons:file-download" title="Download" on-tap="downloadFile"></paper-icon-button>
-
       <span class="flex"></span>
-
-      <paper-checkbox id="chbx-fair-abstraction" checked="{{fairAbstraction}}" title="Visualise abstracted automata fairly.">
-        <span hidden$="[[smallScreen]]">Fair Abstraction</span>
-        <span hidden$="[[!smallScreen]]" title="Fair Abstraction">FA</span>
-      </paper-checkbox>
-      <span class="flex"></span>
+      <paper-icon-button icon="icons:settings" title="Settings" on-tap="showSettings"></paper-icon-button>
       <paper-icon-button icon="icons:help" title="Help" on-tap="showHelp"></paper-icon-button>
     </paper-toolbar>
     <!-- end toolbar -->
@@ -91,11 +74,33 @@
     </div>
     <!-- end main content -->
 
+    <!-- start settings dialog -->
+    <paper-dialog id="settings-dialog" with-backdrop on-iron-overlay-closed="onSettingsClosed">
+      <h2>Settings</h2>
+      <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+      <p class="vertical layout">
+        <paper-checkbox id="settings-live-compiling" title="Automatically compile the automata as you define them.">
+          <span>Live Compiling</span>
+        </paper-checkbox>
+        <paper-checkbox id="settings-live-building" title="Automatically build the automata as you define them.">
+          <span>Live Building</span>
+        </paper-checkbox>
+        <paper-checkbox id="settings-fair-abstraction" title="Visualise abstracted automata fairly.">
+          <span>Fair Abstraction</span>
+        </paper-checkbox>
+      </p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus>OK</paper-button>
+      </div>
+    </paper-dialog>
+    <!-- end settings dialog -->
+
     <!-- start help-dialog -->
     <paper-dialog id="help-dialog" with-backdrop>
       <div class="title-bar">
         <h2>Help</h2>
-        <paper-icon-button class="btn-close" icon="icons:cancel" title="Exit" dialog-dismiss></paper-icon-button>
+        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
         <paper-tabs selected="{{helpDialogSelectedTab}}">
           <paper-tab>Creating Automata</paper-tab>
           <paper-tab>UI Overview</paper-tab>

@@ -19,7 +19,7 @@
     --light-primary-color: #C5CAE9;
     --text-primary-color: #ffffff; /*text/icons*/
     --accent-color: #FF4081;
-    --primary-background-color: #c5cae9;
+    --primary-background-color: #ecf0f1;
     --primary-text-color: #212121;
     --secondary-text-color: #727272;
     --disabled-text-color: #bdbdbd;
@@ -101,20 +101,34 @@
     bottom: 0;
   }
 
-  #chbx-live-compiling,
-  #chbx-live-building,
-  #chbx-fair-abstraction {
-    margin: 0 12px;
-    --paper-checkbox-unchecked-color: #ffffff;
-    --paper-checkbox-label-color: #ffffff;
-  }
-
   #filename {
     --paper-input-container-color: #ffffff;
     --paper-input-container-focus-color: #ffffff;
     --paper-input-container-input-color: #ffffff;
     position: relative;
     top: -2px;
+  }
+
+  paper-dialog {
+    width: 480px;
+  }
+
+  paper-dialog paper-checkbox {
+    margin: 0 12px;
+    padding: 8px;
+    --paper-checkbox-checked-ink-color: var(--primary-background-color);
+    --paper-checkbox-unchecked-ink-color: var(--default-primary-color);
+  }
+
+  paper-dialog .btn-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 48px;
+    height: 48px;
+    margin: 0;
+    padding: 8px;
+    color: #000000;
   }
 
   /* Breakpoints */
