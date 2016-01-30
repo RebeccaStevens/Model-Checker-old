@@ -53,10 +53,6 @@
     @apply(--layout-vertical);
   }
 
-  .frame > .right {
-    overflow-y: auto;
-  }
-
   .centerer {
     text-align: center;
   }
@@ -148,6 +144,10 @@
     .frame > .left,
     .frame > .right {
       @apply(--layout-flex);
+    }
+
+    .frame > .right {
+      overflow-y: auto;
     }
 
   }
