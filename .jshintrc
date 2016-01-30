@@ -16,7 +16,6 @@
   "globals": {
     "wrap": true,
     "unwrap": true,
-    // polymer and its libraries' globals
     "Polymer": true,
     "Platform": true,
     "fixture": true,
@@ -25,12 +24,13 @@
     "expect": true,
     "assert": true,
     "test": true,
-    // our globals
     "app": true,
     "PEG": true,
     "saveAs": true,
     "ace": true,
     "Automaton": true,
-    "Graph": true
+    "Graph": true,
+    "d3": true,
+    "dagreD3": true
   }
 }
