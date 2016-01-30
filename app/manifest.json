@@ -1,6 +1,6 @@
 {
-  "name": "Model Checker",
-  "short_name": "Model Checker",
+  "name": "Automata Concocter",
+  "short_name": "Automata Concocter",
   "icons": [{
         "src": "images/touch/icon-128x128.png",
         "sizes": "128x128",
