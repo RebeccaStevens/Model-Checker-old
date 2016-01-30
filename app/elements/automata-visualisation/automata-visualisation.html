@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/sm3-resizable/sm3-resizable.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/dagre-d3.html">
 <link rel="import" href="../imports/element-resizer.html">
@@ -9,9 +10,19 @@
   <style include="shared-styles"></style>
   <style>
     :host {
-      display: block;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
       color: #6C7A89;
+    }
+    sm3-resizable {
+      width: 100% !important;
+      height: var(--automata-visualisation-height);
+      min-height: var(--automata-visualisation-min-height);
+      --sm3-resizable-handle-s: {
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 16px;
+      };
     }
     paper-material {
       @apply(--layout-fit);
@@ -104,12 +115,14 @@
     }*/
   </style>
   <template>
-    <paper-material>
-      <div id="svg-parent">
-        <svg id="svg"></svg>
-      </div>
-      <div id="name">[[name]]</div>
-    </paper-material>
+    <sm3-resizable handle-s>
+      <paper-material>
+        <div id="svg-parent">
+          <svg id="svg"></svg>
+        </div>
+        <div id="name">[[name]]</div>
+      </paper-material>
+    </sm3-resizable>
   </template>
 </dom-module>
 
