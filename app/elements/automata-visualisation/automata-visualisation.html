@@ -5,16 +5,67 @@
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/dagre-d3.html">
 
+<!--
+An element for rendering out an automaton.
+
+Example:<br>
+
+    <automata-visualisation name="My Automaton" graph="[[graph]]"></automata-visualisation>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--automata-visualisation-height` | The initial height of the element | `100%`
+`--automata-visualisation-min-height` | The min-height of the element |
+`--automata-visualisation-name-color` | The color of the name of the automaton | `black`
+`--automata-visualisation-name-font-size` | The font size of the name of the automaton | `12pt`
+`--automata-visualisation-node-label-color` | The color of all node labels | `black`
+`--automata-visualisation-node-fill` | The fill color of all nodes | `lightgrey`
+`--automata-visualisation-node-stroke` | The stroke color of all nodes | `black`
+`--automata-visualisation-node-stroke-width` | The stroke width of all nodes | `3px`
+`--automata-visualisation-node-inner-stroke-width` | The inner stroke width of terminal nodes | `2px`
+`--automata-visualisation-edge-label-color` | The color of the edge labels | `black`
+`--automata-visualisation-edge-fill` | The fill color of the edges | `black`
+`--automata-visualisation-edge-stroke` | The stroke color of the edges | `black`
+`--automata-visualisation-edge-stroke-width` | The stroke width of the edges | `2px`
+`--automata-visualisation-stop-node-stroke` | The stroke color of stop nodes | `green`
+`--automata-visualisation-stop-node-inner-stroke` | The inner stroke color of stop nodes | `green`
+`--automata-visualisation-error-node-stroke` | The stroke color of error nodes | `red`
+`--automata-visualisation-error-node-inner-stroke` | The inner stroke color of error nodes | `red`
+`--automata-visualisation-name` | A mixin applied to the automaton's name | {}
+`--automata-visualisation-node` | A mixin applied to all nodes | {}
+`--automata-visualisation-node-label` | A mixin applied to all node labels | {}
+`--automata-visualisation-edge` | A mixin applied to all edges | {}
+`--automata-visualisation-edge-label` | A mixin applied to all edge labels | {}
+`--automata-visualisation-terminal-node` | A mixin applied to all terminal nodes | {}
+`--automata-visualisation-terminal-node-inner` | A mixin applied to the inner of terminal nodes | {}
+`--automata-visualisation-terminal-node-label` | A mixin applied to the terminal node labels | {}
+`--automata-visualisation-stop-node` | A mixin applied to all stop nodes | {}
+`--automata-visualisation-stop-node-inner` | A mixin applied to the inner of stop nodes | {}
+`--automata-visualisation-stop-node-label` | A mixin applied to the stop node labels | {}
+`--automata-visualisation-error-node` | A mixin applied to all error nodes | {}
+`--automata-visualisation-error-node-inner` | A mixin applied to the inner of error nodes | {}
+`--automata-visualisation-error-node-label` | A mixin applied to the error node labels | {}
+`--automata-visualisation-reference-node` | A mixin applied to all reference nodes | {}
+`--automata-visualisation-reference-node-label` | A mixin applied to the reference node labels | {}
+`--automata-visualisation-highlighted-node` | A mixin applied to all highlighted nodes | {}
+`--automata-visualisation-highlighted-node-label` | A mixin applied to the highlighted node labels | {}
+
+@element automata-visualisation
+@demo demo/index.html
+-->
 <dom-module id="automata-visualisation">
   <style include="shared-styles"></style>
   <style>
     :host {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
       color: #6C7A89;
     }
     sm3-resizable {
       width: 100% !important;
-      height: var(--automata-visualisation-height);
+      height: var(--automata-visualisation-height, 100%);
       min-height: var(--automata-visualisation-min-height);
       --sm3-resizable-handle-s: {
         bottom: 0;
@@ -26,95 +77,100 @@
     paper-material {
       @apply(--layout-fit);
     }
-    #svg-parent{
+    #svg-parent {
       @apply(--layout-fit);
       margin: 4px 4px 4px 4px;
     }
-    #svg{
+    #svg {
       width: 100%;
       height: 100%;
     }
-    #name{
+    #name {
       position: absolute;
       top: 8px;
       left: 8px;
-      color: red;
-      font-size: 12pt;
-      @apply(--automata-visualisation-name-style);
+      color: var(--automata-visualisation-name-color, black);
+      font-size: var(--automata-visualisation-name-font-size, 12pt);
+      @apply(--automata-visualisation-name);
     }
-    .node circle.outer{
-      fill: var(--node-fill, #DADEDF);
-      stroke: var(--node-stroke, #000000);
-      stroke-width: var(--node-stroke-width, 2px);
+    .node circle.outer {
+      fill: var(--automata-visualisation-node-fill, lightgrey);
+      stroke: var(--automata-visualisation-node-stroke, black);
+      stroke-width: var(--automata-visualisation-node-stroke-width, 3px);
+      @apply(--automata-visualisation-node);
     }
-    .node circle.inner{
+    .node circle.inner {
       fill: transparent;
       stroke: transparent;
+      stroke-width: var(--automata-visualisation-node-inner-stroke-width, 2px);
     }
     .node .label {
-      color: var(--node-label-color, #000000);
+      font-size: 22px;
+      fill: var(--automata-visualisation-node-label-color, black);
+      @apply(--automata-visualisation-node-label);
     }
-    .node.start{
+    .node.start {
       transform: scale(0);
       display: none;
     }
-    .node.start .label {
-      color: var(--start-node-label-color, #000000);
+    .node.terminal circle.outer {
+      @apply(--automata-visualisation-terminal-node);
     }
-    .node.terminal circle.inner{
-      stroke: var(--node-stroke, #000000);
-      stroke-width: var(--terminal-node-outer-stroke-width, 2px);
-      stroke-width: var(--terminal-node-inner-stroke-width, 1.5px);
+    .node.terminal circle.inner {
+      @apply(--automata-visualisation-terminal-node-inner);
     }
     .node.terminal .label {
-
+      @apply(--automata-visualisation-terminal-node-label);
     }
-    .node.stop circle.outer{
-      fill: var(--stop-node-fill);
-      stroke: var(--stop-node-stroke, #00FF00);
-      stroke-width: var(--stop-node-stroke-width);
+    .node.stop circle.outer {
+      stroke: var(--automata-visualisation-stop-node-stroke, green);
+      @apply(--automata-visualisation-stop-node);
     }
-    .node.stop circle.inner{
-      stroke: var(--stop-node-stroke, #00BB00);
-      stroke-width: var(--stop-node-stroke-width);
+    .node.stop circle.inner {
+      stroke: var(--automata-visualisation-stop-node-inner-stroke, green);
+      @apply(--automata-visualisation-stop-node-inner);
     }
     .node.stop .label {
-      color: var(--stop-node-label-color, #000000);
+      @apply(--automata-visualisation-stop-node-label);
     }
-    .node.error circle.outer{
-      fill: var(--error-node-fill);
-      stroke: var(--error-node-stroke, #FF0000);
-      stroke-width: var(--error-node-stroke-width);
+    .node.error circle.outer {
+      stroke: var(--automata-visualisation-error-node-stroke, red);
+      @apply(--automata-visualisation-error-node);
     }
-    .node.error circle.inner{
-      stroke: var(--error-node-stroke, #FF0000);
-      stroke-width: var(--error-node-stroke-width);
+    .node.error circle.inner {
+      stroke: var(--automata-visualisation-error-node-inner-stroke, red);
+      @apply(--automata-visualisation-error-node-inner);
     }
     .node.error .label {
-      color: var(--error-node-label-color, #000000);
+      @apply(--automata-visualisation-error-node-label);
     }
-    .node.reference circle.outer{
-      fill: var(--reference-node-fill, #FFFF66);
-      stroke: var(--reference-node-stroke);
-      stroke-width: var(--reference-node-stroke-width);
+    .node.reference circle.outer {
+      @apply(--automata-visualisation-reference-node);
     }
-    .node.highlighted circle.outer{
-      fill: var(--node-highlighted-fill, #4488FF);
+    .node.reference .label {
+      @apply(--automata-visualisation-reference-node-label);
+    }
+    .node.highlighted circle.outer {
+      @apply(--automata-visualisation-highlighted-node);
+    }
+    .node.highlighted .label {
+      @apply(--automata-visualisation-highlighted-node-label);
     }
     .edgePath path {
-      fill: var(--edge-fill, #000000);
-      stroke: var(--edge-stroke, #000000);
-      stroke-width: var(--edge-stroke-width, 1.5px);
+      fill: var(--automata-visualisation-edge-fill, black);
+      stroke: var(--automata-visualisation-edge-stroke, black);
+      stroke-width: var(--automata-visualisation-edge-stroke-width, 2px);
+      @apply(--automata-visualisation-edge);
     }
     .edgeLabel {
-      fill: var(--edge-label-color, #000000);
+      font-size: 20px;
+      fill: var(--automata-visualisation-edge-label-color, black);
+      @apply(--automata-visualisation-edge-label);
     }
-    /*.edgePath defs marker path{
-      fill: #8F939E;
-    }*/
   </style>
+
   <template>
-    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="onResize">
+    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="_onResize">
       <paper-material>
         <div id="svg-parent">
           <svg id="svg"></svg>
@@ -142,28 +198,29 @@
         },
 
         /**
-        * The array of nodes to draw.
-        * A node is a Object with a unquie 'id' field and a 'label' field
+        * The graph to draw.
         */
-        nodes: {
-          type: Array,
-          value: []
+        graph: {
+          type: Object,
+          value: function() {
+            return { nodes: [], edges: [] };
+          }
         },
 
         /**
-        * The array of edges to draw.
-        * An edge is a Object that has a 'from' and a 'to' field specifying the nodes it connects.
-        * It may also have a 'label' field (if no label is given, epsilon (ε) will be used)
-        */
-        edges: {
-          type: Array,
-          value: []
-        },
-
-        /**
-         * The graph that is rendered.
+         * The arrowhead style.
+         *
+         * either `normal`, `vee`, or `undirected`.
          */
-        automaton: Object,
+        arrowhead: {
+          type: String,
+          value: 'normal'
+        },
+
+        /**
+         * The dagreD3 graph that is rendered.
+         */
+        _automaton: Object,
 
         /**
          * The id of the highlighted node.
@@ -182,25 +239,16 @@
       },
 
       /**
-       * Called when `#resizer` is resized
+       * Highlight the specified node.
+       *
+       * @param {!string} id - The id of the node to highlight
        */
-      onResize: function() {
-        this.debounce('automata-visualisation-resize', function() {
-          var svg = d3.select(this.$.svg);
-          var svgGroup = svg.select('g');
-          this._center(svg, svgGroup);
-        }, 300);
-      },
-
-      /**
-       * Highlight the specified node in the specified automaton.
-       */
-      setHighlightNodeId: function(id) {
+      setHighlightNode: function(id) {
         this._highlightedNodeId = id;
         Polymer.dom(this.$.svg).querySelectorAll('.highlighted').forEach(function(n) {
           n.classList.remove('highlighted');
         });
-        Polymer.dom(this.$.svg).querySelector('.n'+id).classList.add('highlighted');
+        Polymer.dom(this.$.svg).querySelector('#n'+id).classList.add('highlighted');
       },
 
       /**
@@ -213,32 +261,32 @@
         }
 
         // create a new directed graph
-        this.automaton = new dagreD3.graphlib.Graph({ multigraph: true });
-        this.automaton.setGraph({
+        this._automaton = new dagreD3.graphlib.Graph({ multigraph: true });
+        this._automaton.setGraph({
           rankdir: 'LR',
+          ranksep: 75,
           marginx: 0,
           marginy: 0
+          // nodesep: 0
+          // edgesep: 0
         });
 
-        /*
-         * Note:
-         * dagreD3 sorts the nodes given to it alphabetically then the root node is
-         * concider to be first node after this sorting.
-         *
-         * In order to specifie the actual start node, create a node that will be
-         * first after sorting then create a edge from it to the "visual" start node
-         */
+        // Note:
+        // dagreD3 sorts the nodes given to it alphabetically then the root node is
+        // concider to be first node after this sorting.
+        // In order to specifie the actual start node, create a node that will be
+        // first after sorting then create a edge from it to the "visual" start node
 
-        // this is the node in `this.nodes` that is marked as the start node
+        // this is the node in `this.graph.nodes` that is marked as the start node
         var visualStartNode;
 
         // create the actual start node
-        this.automaton.setNode('0', { label: '', shape: 'circle', class: 'start' });
+        this._automaton.setNode('0', { label: '', shape: 'circle', class: 'start' });
 
         // add the nodes to the graph
-        this.nodes.forEach(function(node) {
+        this.graph.nodes.forEach(function(node) {
           // the classes for this node
-          var styleClasses = 'n' + node.id;
+          var styleClasses = '';
 
           if (node.getMetaData('startNode')) {
             visualStartNode = node;
@@ -255,61 +303,65 @@
           }
 
           // add the node to the graph
-          this.automaton.setNode('n' + node.id, { label: node.label, shape: 'automatonnode', class: styleClasses.trim() });
+          this._automaton.setNode('n' + node.id, { label: node.label, shape: 'automatonnode', class: styleClasses.trim(), id: 'n' + node.id });
         }.bind(this));
 
         // Default to assigning a new object as a label for each new edge.
-        this.automaton.setDefaultEdgeLabel(function() {
+        this._automaton.setDefaultEdgeLabel(function() {
           return {};
         });
 
         // create an edge from the actual start node to the visual start node
-        this.automaton.setEdge('0', 'n'+visualStartNode.id, { label: '', lineInterpolate: 'basis' }, 'startEdge');
+        this._automaton.setEdge('0', 'n'+visualStartNode.id, { label: '', lineInterpolate: 'basis', arrowhead: this.arrowhead }, 'startEdge');
 
         // add the edges to the graph
         //  - the from node's label
         //  - the to node's label
         //  - the edge's extra data (could be label, width, height, etc.)
-        this.edges.forEach(function(edge) {
-          var label = edge.label || 'ε';
+        this.graph.edges.forEach(function(edge) {
+          var label = edge.label || '\u03B5';
           if (edge.isHidden) {
-            label = '𝜏';
+            label = '\u03C4';
           }
           if (edge.isDeadlock) {
-            label = '𝛿';
+            label = '\u03B4';
           }
           // add the edge to the graph
-          this.automaton.setEdge('n'+edge.from.id, 'n'+edge.to.id, { label: label, lineInterpolate: 'basis' }, edge.id);
+          this._automaton.setEdge('n'+edge.from.id, 'n'+edge.to.id, { label: label, lineInterpolate: 'basis', arrowhead: this.arrowhead }, edge.id);
         }.bind(this));
 
         var svg = d3.select(this.$.svg);
         var svgGroup = svg.append('g');       // add a new group node to the svg element for the new graph
-        var render = this._createRender();    // create the render
+        var render = this._createRenderer();    // create the renderer
 
         // run the renderer, which will draw the graph and insert it into the svgGroup.
         // Note: trying call render method with a node (first arg) that is not yet in the Dom will cause an error
-        render(svgGroup, this.automaton);
+        render(svgGroup, this._automaton);
 
-        // remove the svg element and then put it back in properly
-        // (otherwise thing like shady dom css cannot be applied)
-        // var svgParent = Polymer.dom(this.$.svg).parentNode;
-        // Polymer.dom(svgParent).appendChild(Polymer.dom(svgParent).removeChild(this.$.svg));
-
-        // Do zoom - center
         this._center(svg, svgGroup);
-
         this.fire('automata-visualisation-rendered');
       },
 
       /**
-       * Create a dagreD3 render.
+       * Called when `#resizer` is resized
        */
-      _createRender: function() {
+      _onResize: function() {
+        this.debounce('automata-visualisation-resize', function() {
+          var svg = d3.select(this.$.svg);
+          var svgGroup = svg.select('g');
+          this._center(svg, svgGroup);
+        }, 300);
+      },
+
+      /**
+       * Create a dagreD3 renderer.
+       */
+      _createRenderer: function() {
         var render = new dagreD3.render();    // create the renderer
 
         // define the 'automatonnode' shape
         render.shapes().automatonnode = function(parent, bbox, node) {
-          var r = 22.5;
+          var r = 34;
 
           parent.insert('circle', ':first-child')
             .attr('r', r * 0.80)
@@ -322,7 +374,7 @@
             .attr('transform', 'translate(0,0)');
 
           node.intersect = function(point) {
-            return dagreD3.intersect.circle(node, r, point);
+            return dagreD3.intersect.circle(node, r+4, point);  // make the intersect slightly larger for visual effect
           };
 
           return shapeSvg;
@@ -331,25 +383,24 @@
         return render;
       },
 
+      /**
+       * Center the contents of an svg.
+       *
+       * @param {!Object} svg - the d3 svg to center the contents
+       * @param {!Object} svgGroup - the d3 svg group being centered
+       */
       _center: function(svg, svgGroup) {
 
         // Get the SVG's attrs as well as the automaton's attrs
-        var svgStyle = window.getComputedStyle(svg[0][0]),
-            svgWidth = parseFloat(svgStyle.getPropertyValue('width')),
-            svgHeight = parseFloat(svgStyle.getPropertyValue('height')),
-            automatonWidth = this.automaton.graph().width,
-            automatonHeight = this.automaton.graph().height;
-
-        //  By default, set the scale to this value
-        var defaultInitialScale = 1.5;
+        var svgStyle = window.getComputedStyle(svg[0][0]);
+        var svgWidth = Number.parseFloat(svgStyle.getPropertyValue('width'));
+        var svgHeight = Number.parseFloat(svgStyle.getPropertyValue('height'));
+        var automatonData = this._automaton.graph();
 
         // Compute the scale where the automaton will fit
-        var computedInitialScaleForWitdth = svgWidth / (automatonWidth * 1.1),
-            computedInitialScaleForHeight = svgHeight / (automatonHeight * 1.1),
-            computedInitialScale = Math.min(computedInitialScaleForHeight, computedInitialScaleForWitdth);
-
-        // Choose the scale which is smaller, such that we ensure the entire automaton is viewable
-        var initialScale = Math.min(defaultInitialScale, computedInitialScale);
+        var computedInitialScaleForWitdth = svgWidth / (automatonData.width * 1.1);
+        var computedInitialScaleForHeight = svgHeight / (automatonData.height * 1.1);
+        var initialScale = Math.min(1, computedInitialScaleForHeight, computedInitialScaleForWitdth);
 
         // limit the zoom and pan behaviour
         var zoom = d3.behavior.zoom().scaleExtent([0.5, 5]).on('zoom', function() {
@@ -359,46 +410,46 @@
           var s = initialScale + d3.event.scale - 1;
 
           // the maximum left value
-          var txl = Math.max(0, Math.min(svgWidth - this.automaton.graph().width * s, t[0]));
+          var txl = Math.max(0, Math.min(svgWidth - this._automaton.graph().width * s, t[0]));
           // the maximum right value
-          var txr = Math.min(svgWidth - this.automaton.graph().width * s , Math.max(0, t[0]));
+          var txr = Math.min(svgWidth - this._automaton.graph().width * s , Math.max(0, t[0]));
           // the ultimate x value, souch that it is bounded to txl and txr
           var tx = Math.min(txl, Math.max(txr, t[0]));
 
           // the maximum top value
-          var tyl = Math.max(0, Math.min(svgHeight - this.automaton.graph().height * s, t[1]));
+          var tyl = Math.max(0, Math.min(svgHeight - this._automaton.graph().height * s, t[1]));
           // the maximum bottom value
-          var tyr = Math.min(svgHeight - this.automaton.graph().height * s , Math.max(0, t[1]));
+          var tyr = Math.min(svgHeight - this._automaton.graph().height * s , Math.max(0, t[1]));
           // the ultimate y value, souch that it is bounded to txl and txr
           var ty = Math.min(tyl, Math.max(tyr, t[1]));
 
           // the ultimate translation array, bounded
           var boundedTranslate = [tx, ty];
 
-          //scale and translate
+          // scale and translate
           svgGroup.attr('transform',
             'translate(' + boundedTranslate[0] + ',' + boundedTranslate[1] + ')' +
             'scale(' + s + ')');
         }.bind(this));
+
         // Update the svg such that it's events call our bounding function
         svg.call(zoom);
 
         // Calculate the offsets required to be in center
-        var xCenterOffset = (svgWidth - this.automaton.graph().width * initialScale) / 2;
-        var yCenterOffset = (svgHeight - this.automaton.graph().height * initialScale) / 2;
+        var xCenterOffset = (svgWidth - automatonData.width * initialScale) / 2;
+        var yCenterOffset = (svgHeight - automatonData.height * initialScale) / 2;
 
         // Center the graph
-        zoom.translate([ xCenterOffset, yCenterOffset]).event(svg);
+        zoom.translate([xCenterOffset, yCenterOffset]).event(svg);
 
         // Center the labels in the nodes
         var nodeLabels = svg[0][0].querySelectorAll('g.node g.label g text tspan');
-        for(var j=0; j<nodeLabels.length; j++){
-          nodeLabels[j].setAttribute('x', '0');
-          nodeLabels[j].setAttribute('dy', '0.9em');
+        for (var i = 0; i < nodeLabels.length; i++) {
+          nodeLabels[i].setAttribute('x', '0');
+          nodeLabels[i].setAttribute('dx', '-1px');
+          nodeLabels[i].setAttribute('dy', '0.8em');
         }
-
       }
-
     });
   })();
 </script>
