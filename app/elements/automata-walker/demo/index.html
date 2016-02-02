@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>automata-walker</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../../bower_components/iron-component-page/iron-component-page.html">
+  <link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../imports/automaton.html">
+  <link rel="import" href="../../imports/graph.html">
+  <link rel="import" href="../automata-walker.html">
+  <link rel="import" href="../../automata-visualisation/automata-visualisation.html">
+
+</head>
+<body class="fullbleed layout vertical">
+
+  <template is="dom-bind" id="demo">
+
+    <automata-walker id="walker"
+      automaton="[[automaton]]"
+      on-automata-walker-walk="onWalk"
+      on-automata-walker-reset="onReset"
+      on-automata-walker-edge-selected="onEdgeSelect"></automata-walker>
+
+    <automata-visualisation id="vis" class="flex"
+      name="[[automaton.name]]"
+      graph="[[automaton.graph]]"
+      on-automata-visualisation-rendered="onRender"></automata-visualisation>
+
+  </template>
+
+  <script>
+  (function(document) {
+    'use strict';
+
+    var demo = document.querySelector('#demo');
+
+    var graph = new Graph();
+
+    var n0 = graph.addNode(0, '0', { startNode: true });
+    var n1 = graph.addNode(1, '1');
+    var n2 = graph.addNode(2, '2');
+    var n3 = graph.addNode(3, '3', { isTerminal: 'stop' });
+    var n4 = graph.addNode(4, '4');
+
+    graph.addEdge(0, n0, n1, 'a');
+    graph.addEdge(1, n1, n2, 'b');
+    graph.addEdge(2, n2, n3, 'c');
+    graph.addEdge(3, n1, n3, 'd');
+    graph.addEdge(4, n3, n0, 'e');
+    graph.addEdge(5, n0, n4, 'f');
+    graph.addEdge(6, n4, n1, 'g');
+
+    demo.automaton = new Automaton('Automaton', graph);
+
+    demo.onWalk = function(e) {
+      this.$.vis.setHighlightedNode(e.detail.edge.to.id);
+      this.$.vis.unsetHighlightedEdge();
+    };
+
+    demo.onReset = function(e) {
+      this.$.vis.setHighlightedNode(e.detail.root.id);
+      this.$.vis.unsetHighlightedEdge();
+    };
+
+    demo.onEdgeSelect = function(e) {
+      this.$.vis.setHighlightedEdge(e.detail.edge.id);
+    };
+
+    demo.onRender = function() {
+      this.$.vis.setHighlightedNode(this.$.vis.graph.root.id);
+    };
+
+  })(document);
+  </script>
+</body>
+</html>

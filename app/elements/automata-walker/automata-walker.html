@@ -6,6 +6,25 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../styles/shared-styles.html">
 
+<!--
+An element for walking along an automaton.
+
+Example:<br>
+
+    <automata-walker automaton="[[automaton]]"></automata-walker>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--automata-walker-dropdown-menu-width` | The width of the dropdown menus | `160px`
+`--automata-walker-menu-item-hover-background` | The background applied to menu items when hovered over | `--light-primary-color`
+
+@element automata-walker
+@demo demo/index.html
+-->
 <dom-module id="automata-walker">
   <style include="shared-styles"></style>
   <style>
@@ -14,39 +33,34 @@
     }
     paper-dropdown-menu {
       --paper-dropdown-menu: {
-        width: var(--dropdown-menu-width, 200px);
+        width: var(--automata-walker-dropdown-menu-width, 160px);
       };
     }
     paper-dropdown-menu .dropdown-content {
       --paper-menu: {
-        width: var(--dropdown-menu-width, 200px);
+        width: var(--automata-walker-dropdown-menu-width, 160px);
       };
     }
-    paper-item.automaton:hover {
-      background: var(--primary-background-color);
+    paper-item:hover {
+      background: var(--automata-walker-menu-item-hover-background, --light-primary-color);
     }
   </style>
   <template>
     <paper-material>
-      <paper-dropdown-menu id="automata-selector" label="Automaton" on-iron-select="_onAutomatonSelection" disabled$="{{!_hasAutomata}}">
-        <paper-menu class="dropdown-content">
-          <template is="dom-repeat" items="{{automata}}">
-            <paper-item data-automaton-name="{{item.name}}">{{item.name}}</paper-item>
+
+      <paper-dropdown-menu id="edge-selector" label="Edge to Walk" on-iron-select="_onEdgeSelection">
+        <paper-menu class="dropdown-content" id="edge-selector-menu">
+          <template is="dom-repeat" items="[[_walkableEdges]]" as="edge">
+            <paper-item data-edge-id="[[edge.id]]">[[edge.label]]</paper-item>
           </template>
-          <paper-item disabled hidden$="{{_hasAutomata}}">No Automaton Defined</paper-item>
+          <paper-item disabled hidden$="[[_hasWalkableEdges]]">No Edges to Walk</paper-item>
         </paper-menu>
       </paper-dropdown-menu>
 
-      <paper-dropdown-menu id="edge-selector" label="Edge to Walk" on-iron-select="_onEdgeSelection" disabled$="{{!_hasAvailableEdges}}">
-        <paper-menu class="dropdown-content" id="edge-selector-menu" selectedItem="{{_selectedEdgeItem}}">
-          <template is="dom-repeat" items="{{_availableEdges}}">
-            <paper-item data-edge-name="{{item.label}}">{{item.label}}</paper-item>
-          </template>
-          <paper-item disabled hidden$="{{_hasAvailableEdges}}">No Edges to Walk</paper-item>
-        </paper-menu>
-      </paper-dropdown-menu>
+      <paper-button raised on-tap="walkSelectedEdge">Walk</paper-button>
+      <paper-button raised on-tap="stepBack">Step Back</paper-button>
+      <paper-button raised on-tap="reset">Reset</paper-button>
 
-      <paper-button raised on-tap="_step">Walk</paper-button>
     </paper-material>
   </template>
 
@@ -59,54 +73,53 @@
       properties: {
 
         /**
-         * The automata availabe to walk.
+         * The automaton to walk.
          */
-        automata: {
-          tpye: Array
+        automaton: {
+          tpye: Object,
+          observer: '_onAutomatonChanged'
+        },
+
+        /**
+         * The selected node in the automaton.
+         */
+        selectedNode: {
+          type: Object,
+          readOnly: true,
+          notify: true
+        },
+
+        /**
+         * The selected edge in the automaton.
+         */
+        selectedEdge: {
+          type: Object,
+          readOnly: true,
+          notify: true
         },
 
         /**
          * The edges that can be walked.
          */
-        _availableEdges: {
+        _walkableEdges: {
           type: Array,
-          value: [],
-          readOnly: true
+          value: []
         },
 
         /**
-         * The graph we are walking through.
+         * Whether or not there are any walkable edges.
          */
-        _currentGraph: Object,
-
-        /**
-         * The node we are up to.
-         */
-        _currentNode: Object,
-
-        /**
-         * The edge we are up to.
-         */
-        _currentEdge: Object,
-
-        /**
-         * Whether or not there are any automata.
-         */
-        _hasAutomata: {
+        _hasWalkableEdges: {
           type: Boolean,
-          computed: '_greaterThan(automata.length, 0)'
-        },
-
-        /**
-         * Whether or not there are any availabe edges.
-         */
-        _hasAvailableEdges: {
-          type: Boolean,
-          computed: '_greaterThan(_availableEdges.length, 0)'
+          computed: '_greaterThan(_walkableEdges.length, 0)'
         }
       },
 
       /**
+       * returns a > b
+       *
+       * @param {number} a
+       * @param {number} b
        * @returns {!boolean} a > b
        */
       _greaterThan: function(a, b){
@@ -114,78 +127,97 @@
       },
 
       /**
-       * Step along the the graph.
+       * Walk along the given edge.
+       *
+       * @param {Object} edge - the edge to walk
        */
-      _step: function(){
-        if(this._currentEdge === undefined || this._currentGraph === undefined){
-          console.error('nothing selected to walk');
-        }else{
-          this._currentNode = this._currentEdge.to;
-          this._populatePathList();
-          this.fire('automata-walker-walk', {edge: this._currentEdge});
+      walk: function(edge) {
+        if (edge) {
+          this.setSelectedNode(edge.to);
+          this._populateWalkableEdgeList();
+          this.fire('automata-walker-walk', {edge: edge});
         }
       },
 
       /**
-       * Called when an automaton is selected.
+       * Walk along the selected edge.
        */
-      _onAutomatonSelection: function(e, detail){
-        this._initPathList(detail.item.dataAutomatonName);
-        this.fire('automata-walker-start', {node: this._currentGraph.root});
+      walkSelectedEdge: function() {
+        this.walk(this.selectedEdge);
+      },
+
+      /**
+       * Step back along the graph.
+       */
+      stepBack: function() {
+        alert('no implemented yet');  // TODO
+      },
+
+      /**
+       * Reset the walker.
+       */
+      reset: function() {
+        this.setSelectedNode(this.automaton.graph.root);
+        this._populateWalkableEdgeList();
+        this.$['edge-selector-menu'].select(-1);
+        this.fire('automata-walker-reset', {root: this.automaton.graph.root});
+      },
+
+      /**
+       * Called when the automaton is changed.
+       */
+      _onAutomatonChanged: function() {
+        this.reset();
       },
 
       /**
        * Called when an edge is selected.
        */
-      _onEdgeSelection: function(e, detail){
-        var label = detail.item.dataEdgeName;
-        for(var i in this._availableEdges){
-          if (this._availableEdges[i].label === label) {
-            this._currentEdge = this._availableEdges[i];
-            break;
-          }
-        }
-      },
-
-      /**
-       * Initialise the availabe edges for an automaton.
-       */
-      _initPathList: function(item){
-        this._currentEdge = undefined;
-
-        for (var i in this.automata) {
-          if (this.automata[i].name === item) {
-            this._currentGraph = this.automata[i].graph;
-            this._currentNode = this._currentGraph.root;
-            break;
-          }
-        }
-
-        this._populatePathList();
+      _onEdgeSelection: function(e) {
+        var id = e.detail.item.dataEdgeId;
+        this.setSelectedEdge(this.automaton.graph.getEdge(id));
+        this.fire('automata-walker-edge-selected', {edge: this.selectedEdge});
       },
 
       /**
        * Populate the availabe edges from the current node.
        */
-      _populatePathList: function() {
-        var newAE = [];
-        var edges = this._currentNode.edgesFromMe;
+      _populateWalkableEdgeList: function() {
+        this.set('_walkableEdges', []);
+
+        var edges = this.selectedNode.edgesFromMe;
         for (var e in edges) {
-          newAE.push(edges[e]);
+          this.push('_walkableEdges', edges[e]);
         }
-        this._setAvailableEdges(newAE);
-        this.$['edge-selector-menu'].select(0);
+        this.$['edge-selector-menu'].select(-1);
       },
 
       /**
-       * Set the availabe edges.
+       * Set the selected node.
+       *
+       * @param {Object} node - the node to select
+       * @returns {Object} the selected node
        */
-      _setAvailableEdges: function(values){
-        var oldLen = this._availableEdges.length;
-        for(var i=0; i<values.length; i++){
-          this.push('_availableEdges', values[i]);
+      setSelectedNode: function(node) {
+        // make sure the given node is in the graph
+        if (this.automaton && this.automaton.graph.getNode(node.id) === node) {
+          return this._setSelectedNode(node);
         }
-        this.splice('_availableEdges', 0, oldLen);
+        return this.selectedNode;
+      },
+
+      /**
+       * Set the selected edge.
+       *
+       * @param {Object} edge - the edge to select
+       * @returns {Object} the selected edge
+       */
+      setSelectedEdge: function(edge) {
+        // make sure the given edge is in the graph
+        if (this.automaton && this.automaton.graph.getEdge(edge.id) === edge) {
+          return this._setSelectedEdge(edge);
+        }
+        return this.selectedEdge;
       }
     });
   })();

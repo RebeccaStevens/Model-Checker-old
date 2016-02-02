@@ -28,13 +28,17 @@ Custom property | Description | Default
 `--automata-visualisation-node-stroke-width` | The stroke width of all nodes | `3px`
 `--automata-visualisation-node-inner-stroke-width` | The inner stroke width of terminal nodes | `2px`
 `--automata-visualisation-edge-label-color` | The color of the edge labels | `black`
-`--automata-visualisation-edge-fill` | The fill color of the edges | `black`
+`--automata-visualisation-edge-fill` | The fill color of the edges | `blue`
 `--automata-visualisation-edge-stroke` | The stroke color of the edges | `black`
 `--automata-visualisation-edge-stroke-width` | The stroke width of the edges | `2px`
 `--automata-visualisation-stop-node-stroke` | The stroke color of stop nodes | `green`
 `--automata-visualisation-stop-node-inner-stroke` | The inner stroke color of stop nodes | `green`
 `--automata-visualisation-error-node-stroke` | The stroke color of error nodes | `red`
 `--automata-visualisation-error-node-inner-stroke` | The inner stroke color of error nodes | `red`
+`--automata-visualisation-highlighted-node-fill` | The fill color of the highlighted node | `yellow`
+`--automata-visualisation-highlighted-edge-fill` | The fill color of the highlighted edge | `blue`
+`--automata-visualisation-highlighted-edge-stroke` | The stroke color of the highlighted edge | `blue`
+`--automata-visualisation-highlighted-edge-stroke-width` | The stroke width of the highlighted edge | `2px`
 `--automata-visualisation-name` | A mixin applied to the automaton's name | {}
 `--automata-visualisation-node` | A mixin applied to all nodes | {}
 `--automata-visualisation-node-label` | A mixin applied to all node labels | {}
@@ -51,8 +55,9 @@ Custom property | Description | Default
 `--automata-visualisation-error-node-label` | A mixin applied to the error node labels | {}
 `--automata-visualisation-reference-node` | A mixin applied to all reference nodes | {}
 `--automata-visualisation-reference-node-label` | A mixin applied to the reference node labels | {}
-`--automata-visualisation-highlighted-node` | A mixin applied to all highlighted nodes | {}
-`--automata-visualisation-highlighted-node-label` | A mixin applied to the highlighted node labels | {}
+`--automata-visualisation-highlighted-node` | A mixin applied to the highlighted node | {}
+`--automata-visualisation-highlighted-node-label` | A mixin applied to the highlighted node's label | {}
+`--automata-visualisation-highlighted-edge` | A mixin applied to the highlighted edge | {}
 
 @element automata-visualisation
 @demo demo/index.html
@@ -62,6 +67,7 @@ Custom property | Description | Default
   <style>
     :host {
       color: #6C7A89;
+      position: relative;
     }
     sm3-resizable {
       width: 100% !important;
@@ -73,6 +79,7 @@ Custom property | Description | Default
         right: 8px;
         height: 16px;
       };
+      @apply(--layout-fit);
     }
     paper-material {
       @apply(--layout-fit);
@@ -151,6 +158,7 @@ Custom property | Description | Default
       @apply(--automata-visualisation-reference-node-label);
     }
     .node.highlighted circle.outer {
+      fill: var(--automata-visualisation-highlighted-node-fill, yellow);
       @apply(--automata-visualisation-highlighted-node);
     }
     .node.highlighted .label {
@@ -166,6 +174,12 @@ Custom property | Description | Default
       font-size: 20px;
       fill: var(--automata-visualisation-edge-label-color, black);
       @apply(--automata-visualisation-edge-label);
+    }
+    .edgePath.highlighted path {
+      fill: var(--automata-visualisation-highlighted-fill, blue);
+      stroke: var(--automata-visualisation-highlighted-edge-stroke, blue);
+      stroke-width: var(--automata-visualisation-highlighted-edge-stroke-width, 2px);
+      @apply(--automata-visualisation-highlighted-edge);
     }
   </style>
 
@@ -220,12 +234,7 @@ Custom property | Description | Default
         /**
          * The dagreD3 graph that is rendered.
          */
-        _automaton: Object,
-
-        /**
-         * The id of the highlighted node.
-         */
-        _highlightedNodeId: Number
+        _automaton: Object
       },
 
       ready: function() {
@@ -242,12 +251,43 @@ Custom property | Description | Default
        *
        * @param {!string} id - The id of the node to highlight
        */
-      setHighlightNode: function(id) {
-        this._highlightedNodeId = id;
-        Polymer.dom(this.$.svg).querySelectorAll('.highlighted').forEach(function(n) {
+      setHighlightedNode: function(id) {
+        this.unsetHighlightedNode();
+        var node = Polymer.dom(this.$.svg).querySelector('#n'+id);
+        if (node) {
+          node.classList.add('highlighted');
+        }
+      },
+
+      /**
+       * Highlight the specified edge.
+       *
+       * @param {!string} id - The id of the edge to highlight
+       */
+      setHighlightedEdge: function(id) {
+        this.unsetHighlightedEdge();
+        var edge = Polymer.dom(this.$.svg).querySelector('#e'+id);
+        if (edge) {
+          edge.classList.add('highlighted');
+        }
+      },
+
+      /**
+       * De-highlight all nodes.
+       */
+      unsetHighlightedNode: function() {
+        Polymer.dom(this.$.svg).querySelectorAll('.node.highlighted').forEach(function(n) {
           n.classList.remove('highlighted');
         });
-        Polymer.dom(this.$.svg).querySelector('#n'+id).classList.add('highlighted');
+      },
+
+      /**
+       * De-highlight all edges.
+       */
+      unsetHighlightedEdge: function() {
+        Polymer.dom(this.$.svg).querySelectorAll('.edgePath.highlighted').forEach(function(n) {
+          n.classList.remove('highlighted');
+        });
       },
 
       /**
@@ -280,7 +320,13 @@ Custom property | Description | Default
         var visualStartNode;
 
         // create the actual start node
-        this._automaton.setNode('0', { label: '', shape: 'circle', class: 'start' });
+        this._automaton.setNode(
+          '0',
+          {
+            label: '',
+            shape: 'circle',
+            class: 'start'
+          });
 
         // add the nodes to the graph
         this.graph.nodes.forEach(function(node) {
@@ -302,7 +348,15 @@ Custom property | Description | Default
           }
 
           // add the node to the graph
-          this._automaton.setNode('n' + node.id, { label: node.label, shape: 'automatonnode', class: styleClasses.trim(), id: 'n' + node.id });
+          this._automaton.setNode(
+            'n' + node.id,
+            {
+              label: node.label,
+              shape: 'automatonnode',
+              class: styleClasses.trim(),
+              id: 'n' + node.id
+            });
+
         }.bind(this));
 
         // Default to assigning a new object as a label for each new edge.
@@ -311,7 +365,16 @@ Custom property | Description | Default
         });
 
         // create an edge from the actual start node to the visual start node
-        this._automaton.setEdge('0', 'n'+visualStartNode.id, { label: '', lineInterpolate: 'basis', arrowhead: this.arrowhead }, 'startEdge');
+        this._automaton.setEdge(
+          '0',
+          'n' + visualStartNode.id,
+          {
+             label: '',
+             lineInterpolate: 'basis',
+             arrowhead: this.arrowhead,
+             id: 'startEdge'
+          },
+          'startEdge');
 
         // add the edges to the graph
         //  - the from node's label
@@ -319,14 +382,26 @@ Custom property | Description | Default
         //  - the edge's extra data (could be label, width, height, etc.)
         this.graph.edges.forEach(function(edge) {
           var label = edge.label || '\u03B5';
+
           if (edge.isHidden) {
             label = '\u03C4';
           }
-          if (edge.isDeadlock) {
+          else if (edge.isDeadlock) {
             label = '\u03B4';
           }
+
           // add the edge to the graph
-          this._automaton.setEdge('n'+edge.from.id, 'n'+edge.to.id, { label: label, lineInterpolate: 'basis', arrowhead: this.arrowhead }, edge.id);
+          this._automaton.setEdge(
+            'n'+edge.from.id,
+            'n'+edge.to.id,
+            {
+              label: label,
+              lineInterpolate: 'basis',
+              arrowhead: this.arrowhead,
+              id: 'e' + edge.id
+            },
+            edge.id);
+
         }.bind(this));
 
         var svg = d3.select(this.$.svg);
