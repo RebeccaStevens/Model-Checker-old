@@ -198,7 +198,7 @@ Custom property | Description | Default
         },
 
         /**
-        * The graph to draw.
+        * The graph to render.
         */
         graph: {
           type: Object,
@@ -231,12 +231,11 @@ Custom property | Description | Default
       ready: function() {
         // mark the svg element as a scoped subtree so that dom modification by dagreD3 are styled correctly
         this.scopeSubtree(this.$.svg, true);
-
-        // draw the automaton - but wait until everything else is setup first
-        this.async(function() {
-          this.redraw();
-        });
       },
+
+      observers: [
+        '_onGraphUpdated(graph.nodes, graph.edges)'
+      ],
 
       /**
        * Highlight the specified node.
@@ -252,9 +251,9 @@ Custom property | Description | Default
       },
 
       /**
-       * Redraw the automaton.
+       * Render the automaton.
        */
-      redraw: function() {
+      render: function() {
         // remove the child nodes (the old graph) from the svg element
         for(var i=0; i<this.$.svg.children.length; i++){
           Polymer.dom(this.$.svg).removeChild(this.$.svg.children[i]);
@@ -334,7 +333,7 @@ Custom property | Description | Default
         var svgGroup = svg.append('g');       // add a new group node to the svg element for the new graph
         var render = this._createRenderer();    // create the renderer
 
-        // run the renderer, which will draw the graph and insert it into the svgGroup.
+        // run the renderer, which will render the graph and insert it into the svgGroup.
         // Note: trying call render method with a node (first arg) that is not yet in the Dom will cause an error
         render(svgGroup, this._automaton);
 
@@ -351,6 +350,15 @@ Custom property | Description | Default
           var svgGroup = svg.select('g');
           this._center(svg, svgGroup);
         }, 300);
+      },
+
+      /**
+       * Called when `graph` is updated (the nodes or edges change)
+       */
+      _onGraphUpdated: function() {
+        this.debounce('automata-visualisation-render', function() {
+          this.render();  // re-render the automaton (this will also do the first render)
+        });
       },
 
       /**
