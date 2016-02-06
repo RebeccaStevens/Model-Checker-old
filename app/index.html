@@ -67,8 +67,15 @@
       <div class="right">
         <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
         <template is="dom-repeat" items="[[automata]]" as="automaton">
-          <automata-walker automaton="[[automaton]]"></automata-walker>
-          <automata-visualisation name="[[automaton.name]]" graph="[[automaton.graph]]" arrowhead="vee"></automata-visualisation>
+          <automata-walker
+            automaton="[[automaton]]"
+            on-automata-walker-walk="onWalkerWalk"
+            on-automata-walker-reset="onWalkerReset"
+            on-automata-walker-edge-selected="onWalkerEdgeSelect"></automata-walker>
+          <automata-visualisation
+            name="[[automaton.name]]"
+            graph="[[automaton.graph]]"
+            arrowhead="vee"></automata-visualisation>
         </template>
       </div>
     </div>

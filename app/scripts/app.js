@@ -252,6 +252,45 @@
     };
 
     /**
+     * Called when a walker walks.
+     *
+     * @param {!Object} e - the event
+     */
+    app.onWalkerWalk = function(e) {
+      var walker = e.srcElement;
+      var vis = Polymer.dom(walker).nextElementSibling;
+
+      vis.setHighlightedNode(e.detail.edge.to.id);
+      vis.unsetHighlightedEdge();
+    };
+
+    /**
+     * Called when a walker is reset.
+     *
+     * @param {!Object} e - the event
+     */
+    app.onWalkerReset = function(e) {
+      var walker = e.srcElement;
+      var vis = Polymer.dom(walker).nextElementSibling;
+
+      vis.setHighlightedNode(e.detail.root.id);
+      vis.unsetHighlightedEdge();
+    };
+
+    /**
+     * Called when a walker selects an edge.
+     *
+     * @param {!Object} e - the event
+     */
+    app.onWalkerEdgeSelect = function(e) {
+      var walker = e.srcElement;
+      var vis = Polymer.dom(walker).nextElementSibling;
+
+      vis.setHighlightedEdge(e.detail.edge.id);
+      vis.setHighlightedNode(e.detail.edge.from.id);
+    };
+
+    /**
      * Called when any of the settings are changed.
      *
      * Note: settings must be changed using `app.set(path, value)`
@@ -268,30 +307,6 @@
         case 'settings.fairAbstraction':
           app.compile(false);
           break;
-      }
-    });
-
-    /**
-     * This is the event which triggers when the user selects an automata from the
-     * list to walk down. It sets the root node of this automata, and all automata
-     * with this automata as a sub-graph, blue.
-     */
-    document.addEventListener('automata-walker-start', function(e) {
-      var visualisations = Polymer.dom(this).querySelectorAll('automata-visualisation');
-      for (var i in visualisations) {
-        visualisations[i].setHighlightedNode(e.detail.node.id);
-      }
-    });
-    /**
-     * This is the event which triggers when the user presses the walk
-     * button on the walker element. The walker has already checked for the valid
-     * edge and thrown any errors. The edge to walk is given in the event argument
-     * 'e.detail.edge'.
-     */
-    document.addEventListener('automata-walker-walk', function(e) {
-      var visualisations = Polymer.dom(this).querySelectorAll('automata-visualisation');
-      for (var i in visualisations) {
-        visualisations[i].setHighlightedNode(e.detail.edge.to.id);
       }
     });
 
