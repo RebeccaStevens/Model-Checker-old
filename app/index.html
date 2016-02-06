@@ -65,9 +65,9 @@
         <console-logger id="console"></console-logger>
       </div>
       <div class="right">
-        <automata-walker automata="[[automata]]"></automata-walker>
         <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
         <template is="dom-repeat" items="[[automata]]" as="automaton">
+          <automata-walker automaton="[[automaton]]"></automata-walker>
           <automata-visualisation name="[[automaton.name]]" graph="[[automaton.graph]]" arrowhead="vee"></automata-visualisation>
         </template>
       </div>
