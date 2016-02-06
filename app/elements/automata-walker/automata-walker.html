@@ -68,6 +68,35 @@ Custom property | Description | Default
 <script>
   (function() {
     Polymer({
+
+      /**
+       * Fired after the walk operation has completed.
+       *
+       * @event automata-walker-walk
+       * @param {{edge: Object}} the edge that was walked
+       */
+
+      /**
+       * Fired after the step back operation has completed.
+       *
+       * @event automata-walker-step-back
+       * @param {{edge: Object}} the edge that was stepped back along
+       */
+
+       /**
+        * Fired after the reset operation has completed.
+        *
+        * @event automata-walker-reset
+        * @param {{root: Object}} the root node of the graph
+        */
+
+       /**
+        * Fired after an edge has been selected.
+        *
+        * @event automata-walker-edge-selected
+        * @param {{edge: Object}} the edge that was selected
+        */
+
       is: 'automata-walker',
 
       properties: {
@@ -112,6 +141,17 @@ Custom property | Description | Default
         _hasWalkableEdges: {
           type: Boolean,
           computed: '_greaterThan(_walkableEdges.length, 0)'
+        },
+
+        /**
+         * The path walked.
+         * Needed for stepping bcak.
+         */
+        _walkHistory: {
+          type: Array,
+          value: function() {
+            return [];
+          }
         }
       },
 
@@ -135,6 +175,7 @@ Custom property | Description | Default
         if (edge) {
           this.setSelectedNode(edge.to);
           this._populateWalkableEdgeList();
+          this.push('_walkHistory', edge);
           this.fire('automata-walker-walk', {edge: edge});
         }
       },
@@ -150,7 +191,12 @@ Custom property | Description | Default
        * Step back along the graph.
        */
       stepBack: function() {
-        alert('no implemented yet');  // TODO
+        if (this._walkHistory.length > 0) {
+          var edge = this.pop('_walkHistory');
+          this.setSelectedNode(edge.from);
+          this._populateWalkableEdgeList();
+          this.fire('automata-walker-step-back', {edge: edge});
+        }
       },
 
       /**

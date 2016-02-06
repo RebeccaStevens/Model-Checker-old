@@ -265,6 +265,19 @@
     };
 
     /**
+     * Called when a walker steps back.
+     *
+     * @param {!Object} e - the event
+     */
+    app.onWalkerStepBack = function(e) {
+      var walker = e.srcElement;
+      var vis = Polymer.dom(walker).nextElementSibling;
+
+      vis.setHighlightedNode(e.detail.edge.from.id);
+      vis.unsetHighlightedEdge();
+    };
+
+    /**
      * Called when a walker is reset.
      *
      * @param {!Object} e - the event

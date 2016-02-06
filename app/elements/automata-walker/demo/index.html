@@ -23,6 +23,7 @@
     <automata-walker id="walker"
       automaton="[[automaton]]"
       on-automata-walker-walk="onWalk"
+      on-automata-walker-step-back="onStepBack"
       on-automata-walker-reset="onReset"
       on-automata-walker-edge-selected="onEdgeSelect"></automata-walker>
 
@@ -60,6 +61,11 @@
 
     demo.onWalk = function(e) {
       this.$.vis.setHighlightedNode(e.detail.edge.to.id);
+      this.$.vis.unsetHighlightedEdge();
+    };
+
+    demo.onStepBack = function(e) {
+      this.$.vis.setHighlightedNode(e.detail.edge.from.id);
       this.$.vis.unsetHighlightedEdge();
     };
 
