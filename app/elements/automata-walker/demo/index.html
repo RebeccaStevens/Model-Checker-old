@@ -8,6 +8,7 @@
 
   <script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="../../../bower_components/iron-component-page/iron-component-page.html">
+  <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../imports/automaton.html">
   <link rel="import" href="../../imports/graph.html">
@@ -26,6 +27,7 @@
       on-automata-walker-edge-selected="onEdgeSelect"></automata-walker>
 
     <automata-visualisation id="vis" class="flex"
+      disable-resizer
       name="[[automaton.name]]"
       graph="[[automaton.graph]]"
       on-automata-visualisation-rendered="onRender"></automata-visualisation>
