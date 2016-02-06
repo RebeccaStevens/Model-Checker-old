@@ -3,6 +3,29 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../styles/shared-styles.html">
 
+<!--
+An element for displaying console text messages.
+
+Example:<br>
+
+    <console-logger></console-logger>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--console-logger-log-text-color` | The color of logged text | `blue`
+`--console-logger-warn-text-color` | The color of warning text | `orange`
+`--console-logger-error-text-color` | The color of error text | `error`
+`--console-logger-log-text` | A mixin applied to logged text | `{}`
+`--console-logger-warn-text` | A mixin applied to warning text | `{}`
+`--console-logger-error-text` | A mixin applied to error text | `{}`
+
+@element console-logger
+@demo demo/index.html
+-->
 <dom-module id="console-logger">
   <style include="shared-styles"></style>
   <style>
@@ -15,17 +38,20 @@
       overflow: auto;
       @apply(--layout-fit);
     }
-    #console{
+    #console {
       box-sizing: border-box;
     }
-    .log{
-      color: var(--log-text-color, blue);
+    .log {
+      color: var(--console-logger-log-text-color, blue);
+      @apply(--console-logger-log-text);
     }
-    .warn{
-      color: var(--log-text-color, orange);
+    .warn {
+      color: var(--console-logger-warn-text-color, orange);
+      @apply(--console-logger-warn-text);
     }
-    .error{
-      color: var(--error-text-color, red);
+    .error {
+      color: var(--console-logger-error-text-color, red);
+      @apply(--console-logger-error-text);
     }
   </style>
   <template>
