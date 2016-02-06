@@ -4,6 +4,16 @@
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/ace.html">
 
+<!--
+An element for accepting text content from the user.
+
+Example:<br>
+
+    <text-editor></text-editor>
+
+@element text-editor
+@demo demo/index.html
+-->
 <dom-module id="text-editor">
   <style include="shared-styles"></style>
   <style>
@@ -15,7 +25,7 @@
       padding: 0;
       @apply(--layout-fit);
     }
-    #editor{
+    #editor {
       box-sizing: border-box;
       position: absolute;
       top: 0;
@@ -35,6 +45,13 @@
   (function() {
     Polymer({
       is: 'text-editor',
+
+      /**
+       * Fired when the text in the editor is changed.
+       * When the user is typing, multiple events will be debounced into one.
+       *
+       * @event text-editor-change
+       */
 
       properties: {
         /**
@@ -59,7 +76,7 @@
         },
 
         /**
-         * the text editor
+         * The text editor
          */
         _editor: {
           type: Object,
@@ -73,17 +90,17 @@
         },
 
         /**
-         * don't fire a 'text-editor-change' event the next time the editor's content changes
+         * Don't fire a 'text-editor-change' event the next time the editor's content changes
          */
         _skipNextCodeChangeEvent: {
           type: Boolean,
-          value: false,
-          readOnly: true
+          value: false
         }
       },
 
       /**
        * Get the code the user has provided
+       *
        * @return {string} The code
        */
       getCode: function(){
@@ -96,16 +113,17 @@
        * @param {!string} code - The code
        */
       setCode: function(code){
-        this._set_skipNextCodeChangeEvent(true);
+        this._skipNextCodeChangeEvent = true;
         this._editor.setValue(code, 1);
         this.fire('text-editor-change');
       },
+
       /**
-       * constructs and returns an annotation.
+       * Constructs and returns an annotation.
        *
        * @param {!integer} line - the line number to put annotation on
        * @param {!string} text - the text to put in the annotation
-       * @oaram {!string} type - the type of annotation to place
+       * @param {!string} type - the type of annotation to place
        * @returns {!object} - an annotation object
        */
       constructAnnotation: function(line, text, type) {
@@ -143,7 +161,7 @@
         // fire a 'text-editor-change' event when the text editor's content changes
         this._editor.on('change', function() {
           if (this._skipNextCodeChangeEvent){
-            this._set_skipNextCodeChangeEvent(false);
+            this._skipNextCodeChangeEvent = false;
             return;
           }
 
