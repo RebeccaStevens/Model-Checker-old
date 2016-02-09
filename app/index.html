@@ -29,7 +29,6 @@
   <meta name="msapplication-TileImage" content="images/touch/ms-icon-144x144.png">
 
   <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/help-dialog.css">
 
   <script async src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -106,110 +105,103 @@
 
     <!-- start help-dialog -->
     <paper-dialog id="help-dialog" with-backdrop>
-      <div class="title-bar">
-        <h2>Help</h2>
-        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
-        <paper-tabs selected="{{helpDialogSelectedTab}}">
-          <paper-tab>Creating Automata</paper-tab>
-          <paper-tab>UI Overview</paper-tab>
-        </paper-tabs>
-      </div>
-      <paper-dialog-scrollable class="fit">
-        <neon-animated-pages selected="{{helpDialogSelectedTab}}" class="fit">
+      <h2>Help</h2>
+      <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+      <paper-tabs selected="{{helpDialogSelectedTab}}" no-bar>
+        <paper-tab>Creating Automata</paper-tab>
+        <paper-tab>Second Tab</paper-tab>
+        <paper-tab>Third Tab</paper-tab>
+      </paper-tabs>
+      <paper-dialog-scrollable>
+        <iron-pages selected="{{helpDialogSelectedTab}}">
           <section class="page">
-            <h3>Examples:</h3>
-            <h4>Example 1: Sequence</h4>
-            <div class="centerer">
-              <div class="fwidth"><code>Example1 = action -> STOP.</code></div><br><br>
-              <img src="images/help-dialog/example1.png"></img>
+            <div class="group">
+              <h3 class="name">Structure</h3>
+              <p class="description">
+                Multiple automata can be defined in the same file.<br>
+                Each automaton is first given a name which must begin with a capital letter.
+                This is then followed by an equals sign <code class="inline">=</code> then its definition and finally a dot <code class="inline">.</code>.<br>
+                <code class="block">AutomatonName = <em>{some definition}</em>.</code>
+              </p>
             </div>
 
-            <h4>Example 2: Choice</h4>
-            <div class="centerer">
-              <div class="fwidth"><code>Example2 = x -> STOP | y -> ERROR.</code></div><br><br>
-              <img src="images/help-dialog/example2.png"></img>
+            <div class="group">
+              <h3 class="name">Sequences</h3>
+              <p class="description">
+                Create a transition path from the current state to the next state with the specified label.
+              </p>
+              <div class="example">
+                <h4 class="name">Example:</h4>
+                <h5 class="subtitle">Input:</h5>
+                <code class="block">Example1 = action -> STOP.</code>
+                <h5 class="subtitle">Output:</h5>
+                <img src="images/help-dialog/example1.png"></img>
+              </div>
             </div>
 
-            <h4>Example 3: Simple Referencing</h4>
-            <div class="centerer">
-              <div class="fwidth"><code>A = x -> B.<br>B = y -> STOP.</code></div><br><br>
-              <img src="images/help-dialog/example3.png"></img>
+            <div class="group">
+              <h3 class="name">Choices</h3>
+              <p class="description">
+                Create a transition path from the current state to each of the specified states with the respective label.
+              </p>
+              <div class="example">
+                <h4 class="name">Example:</h4>
+                <h5 class="subtitle">Input:</h5>
+                <code class="block">Example2 = x -> STOP | y -> ERROR.</code>
+                <h5 class="subtitle">Output:</h5>
+                <img src="images/help-dialog/example2.png"></img>
+              </div>
             </div>
 
-            <h4>Example 4: Referencing</h4>
-            <div class="centerer">
-              <div class="fwidth"><code>A = u -> (w -> A | x -> B).<br>B = y -> A | z -> STOP.</code></div><br><br>
-              <img src="images/help-dialog/example4.png"></img>
+            <div class="group">
+              <h3 class="name">Terminals</h3>
+              <p class="description">
+                A terminal is a way for the automaton to end.<br>
+                There are two types of terminals, each is drawn as double bordered circle:<br>
+                <code class="inline">STOP</code> which is green and indicates a successful termination, and
+                <code class="inline">ERROR</code> which is red and indicates an unsuccessful termination.
+              </p>
             </div>
 
-            <h3>Operations:</h3>
-            <table class="t1">
-              <thead>
-                <tr>
-                  <th class="name">Name</th>
-                  <th class="use">Use</th>
-                  <th class="description">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="name">Sequence</td>
-                  <td class="use">[label] <span class="symbol">&dash;&gt;</span> [next state]</td>
-                  <td class="description">Create a transition path from the current state to the next state with the specified label.</td>
-                </tr><tr>
-                  <td class="name">Choice</td>
-                  <td class="use">[label A] &dash;&gt; [state A] <span class="symbol">|</span> [label B] &dash;&gt; [state B]</td>
-                  <td class="description">Create a transition path from the current state to each of the specified states with the respective label.</td>
-                </tr><tr>
-                  <td class="name">Parallel <span class="note">(Not yet supported)</span></td>
-                  <td class="use">[state A] <span class="symbol">||</span> [state B]</td>
-                  <td class="description"></td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="group">
+              <h3 class="name">Referencing</h3>
+              <p class="description">
+                One automaton can reference another automaton so long as it has already been defined by using its name.
+              </p>
+              <div class="example">
+                <h4 class="name">Example:</h4>
+                <h5 class="subtitle">Input:</h5>
+                <code class="block">A = x -> y -> STOP.<br>B = z -> A.</code>
+                <h5 class="subtitle">Output:</h5>
+                <img src="images/help-dialog/example3a.png"></img>
+                <img src="images/help-dialog/example3b.png"></img>
+              </div>
+            </div>
 
-            <h3>Terminals:</h3>
-            <table class="t1">
-              <thead>
-                <tr>
-                  <th class="name">Name</th>
-                  <th class="description">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="name">STOP</td>
-                  <td class="description">A successful termination.</td>
-                </tr><tr>
-                  <td class="name">ERROR</td>
-                  <td class="description">An unsuccessful termination.</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h3>Grammar:</h3>
-            <span class="title">Automata Name:</span> First character must be an uppercase alphabet character. Following can be any alpha-numeric characters (excluding all whitespace).<br></br>
-            <span class="title">Edge Label:</span> First character must be a lowercase alphabet character. Following can be any alpha-numeric characters (excluding all whitespace).<br></br>
-            <span class="title">Definition End:</span> '.' <br></br><span class="title">Definition Assignment:</span> '=' <br></br><span class="title">Choice Operation:</span> '|'<br></br>
-            <span class="title">Sequence Operation:</span> '->' <br></br><span class="title">Sequence Stop:</span> 'STOP'
+            <div class="group">
+              <h3 class="name">Sub-Automata</h3>
+              <p class="description">
+                More complex automaton can be created by using sub-automata.<br>
+                Sub-automata are defined after the main automaton and are comma seperated.<br>
+                Sub-automata and the main automaton can each reference one another other.
+              </p>
+              <div class="example">
+                <h4 class="name">Example:</h4>
+                <h5 class="subtitle">Input:</h5>
+                <code class="block">A = u -> (w -> A | x -> B),<br>B = y -> A | z -> STOP.</code>
+                <h5 class="subtitle">Output:</h5>
+                <img src="images/help-dialog/example4.png"></img>
+              </div>
+            </div>
           </section>
           <section class="page">
-            <p>Starting from the toolbar from the top left, the pink compile button is used to compile your defined automata and display your automata.
-            You use the save and open buttons alongside this to open and save predifined automata.
-            The definition frame on the left below the main tool buttons is the input area for defining automata.
-            Refer to 'Automata Definition' for more information on how to define your automata.</p>
-            <div class="centerer"><img src="images/help-dialog/toolbar.png"></img></div>
-            <p>On the right is the automata frame and displays your automata outlined in the definition frame, once the compile button is used.
-              If their is an error in the definition, an alert will be shown on the console which can be found right beneath the text frame, outlining the error.
-              Just above the automata frame where the defined automata are pictured, is the walker tool.
-              The walker tool allows the navigation of the currently displayed automata by first selecting the automata you want to navigate, then selecting the edge to navigate down.
-              Clicking the walk button will confirm the selected options and walk through the automata one step.
-              The blue coloured node as shown below shows the current node that is being visited.</p>
-            <div class="centerer"><img src="images/help-dialog/walker.png"></img></div>
+            No Content
           </section>
-        </neon-animated-pages>
+          <section class="page">
+            No Content
+          </section>
+        </iron-pages>
       </paper-dialog-scrollable>
-      <paper-icon-button="icons:cancel" title="Exit" on-tap="closehelp"></paper-icon-button>
     </paper-dialog>
     <!-- end help-dialog -->
 
