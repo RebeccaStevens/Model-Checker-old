@@ -1,16 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../bower_components/sm3-resizable/sm3-resizable.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/dagre-d3.html">
+<link rel="import" href="../imports/graph.html">
 
 <!--
 An element for rendering out an automaton.
 
 Example:<br>
 
-    <automata-visualisation name="My Automaton" graph="[[graph]]"></automata-visualisation>
+    <automaton-renderer name="My Automaton" graph="[[graph]]"></automaton-renderer>
 
 ### Styling
 
@@ -18,73 +17,50 @@ The following custom properties and mixins are available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--automata-visualisation-height` | The initial height of the element | `100%`
-`--automata-visualisation-min-height` | The min-height of the element |
-`--automata-visualisation-name-color` | The color of the name of the automaton | `black`
-`--automata-visualisation-name-font-size` | The font size of the name of the automaton | `12pt`
-`--automata-visualisation-node-label-color` | The color of all node labels | `black`
-`--automata-visualisation-node-fill` | The fill color of all nodes | `lightgrey`
-`--automata-visualisation-node-stroke` | The stroke color of all nodes | `black`
-`--automata-visualisation-node-stroke-width` | The stroke width of all nodes | `3px`
-`--automata-visualisation-node-inner-stroke-width` | The inner stroke width of terminal nodes | `2px`
-`--automata-visualisation-edge-label-color` | The color of the edge labels | `black`
-`--automata-visualisation-edge-fill` | The fill color of the edges | `blue`
-`--automata-visualisation-edge-stroke` | The stroke color of the edges | `black`
-`--automata-visualisation-edge-stroke-width` | The stroke width of the edges | `2px`
-`--automata-visualisation-stop-node-stroke` | The stroke color of stop nodes | `green`
-`--automata-visualisation-stop-node-inner-stroke` | The inner stroke color of stop nodes | `green`
-`--automata-visualisation-error-node-stroke` | The stroke color of error nodes | `red`
-`--automata-visualisation-error-node-inner-stroke` | The inner stroke color of error nodes | `red`
-`--automata-visualisation-highlighted-node-fill` | The fill color of the highlighted node | `yellow`
-`--automata-visualisation-highlighted-edge-fill` | The fill color of the highlighted edge | `blue`
-`--automata-visualisation-highlighted-edge-stroke` | The stroke color of the highlighted edge | `blue`
-`--automata-visualisation-highlighted-edge-stroke-width` | The stroke width of the highlighted edge | `2px`
-`--automata-visualisation-name` | A mixin applied to the automaton's name | {}
-`--automata-visualisation-node` | A mixin applied to all nodes | {}
-`--automata-visualisation-node-label` | A mixin applied to all node labels | {}
-`--automata-visualisation-edge` | A mixin applied to all edges | {}
-`--automata-visualisation-edge-label` | A mixin applied to all edge labels | {}
-`--automata-visualisation-terminal-node` | A mixin applied to all terminal nodes | {}
-`--automata-visualisation-terminal-node-inner` | A mixin applied to the inner of terminal nodes | {}
-`--automata-visualisation-terminal-node-label` | A mixin applied to the terminal node labels | {}
-`--automata-visualisation-stop-node` | A mixin applied to all stop nodes | {}
-`--automata-visualisation-stop-node-inner` | A mixin applied to the inner of stop nodes | {}
-`--automata-visualisation-stop-node-label` | A mixin applied to the stop node labels | {}
-`--automata-visualisation-error-node` | A mixin applied to all error nodes | {}
-`--automata-visualisation-error-node-inner` | A mixin applied to the inner of error nodes | {}
-`--automata-visualisation-error-node-label` | A mixin applied to the error node labels | {}
-`--automata-visualisation-reference-node` | A mixin applied to all reference nodes | {}
-`--automata-visualisation-reference-node-label` | A mixin applied to the reference node labels | {}
-`--automata-visualisation-highlighted-node` | A mixin applied to the highlighted node | {}
-`--automata-visualisation-highlighted-node-label` | A mixin applied to the highlighted node's label | {}
-`--automata-visualisation-highlighted-edge` | A mixin applied to the highlighted edge | {}
+`--automaton-renderer-node-label-color` | The color of all node labels | `black`
+`--automaton-renderer-node-fill` | The fill color of all nodes | `lightgrey`
+`--automaton-renderer-node-stroke` | The stroke color of all nodes | `black`
+`--automaton-renderer-node-stroke-width` | The stroke width of all nodes | `3px`
+`--automaton-renderer-node-inner-stroke-width` | The inner stroke width of terminal nodes | `2px`
+`--automaton-renderer-edge-label-color` | The color of the edge labels | `black`
+`--automaton-renderer-edge-fill` | The fill color of the edges | `blue`
+`--automaton-renderer-edge-stroke` | The stroke color of the edges | `black`
+`--automaton-renderer-edge-stroke-width` | The stroke width of the edges | `2px`
+`--automaton-renderer-stop-node-stroke` | The stroke color of stop nodes | `green`
+`--automaton-renderer-stop-node-inner-stroke` | The inner stroke color of stop nodes | `green`
+`--automaton-renderer-error-node-stroke` | The stroke color of error nodes | `red`
+`--automaton-renderer-error-node-inner-stroke` | The inner stroke color of error nodes | `red`
+`--automaton-renderer-highlighted-node-fill` | The fill color of the highlighted node | `yellow`
+`--automaton-renderer-highlighted-edge-fill` | The fill color of the highlighted edge | `blue`
+`--automaton-renderer-highlighted-edge-stroke` | The stroke color of the highlighted edge | `blue`
+`--automaton-renderer-highlighted-edge-stroke-width` | The stroke width of the highlighted edge | `2px`
+`--automaton-renderer-node` | A mixin applied to all nodes | {}
+`--automaton-renderer-node-label` | A mixin applied to all node labels | {}
+`--automaton-renderer-edge` | A mixin applied to all edges | {}
+`--automaton-renderer-edge-label` | A mixin applied to all edge labels | {}
+`--automaton-renderer-terminal-node` | A mixin applied to all terminal nodes | {}
+`--automaton-renderer-terminal-node-inner` | A mixin applied to the inner of terminal nodes | {}
+`--automaton-renderer-terminal-node-label` | A mixin applied to the terminal node labels | {}
+`--automaton-renderer-stop-node` | A mixin applied to all stop nodes | {}
+`--automaton-renderer-stop-node-inner` | A mixin applied to the inner of stop nodes | {}
+`--automaton-renderer-stop-node-label` | A mixin applied to the stop node labels | {}
+`--automaton-renderer-error-node` | A mixin applied to all error nodes | {}
+`--automaton-renderer-error-node-inner` | A mixin applied to the inner of error nodes | {}
+`--automaton-renderer-error-node-label` | A mixin applied to the error node labels | {}
+`--automaton-renderer-reference-node` | A mixin applied to all reference nodes | {}
+`--automaton-renderer-reference-node-label` | A mixin applied to the reference node labels | {}
+`--automaton-renderer-highlighted-node` | A mixin applied to the highlighted node | {}
+`--automaton-renderer-highlighted-node-label` | A mixin applied to the highlighted node's label | {}
+`--automaton-renderer-highlighted-edge` | A mixin applied to the highlighted edge | {}
 
-@element automata-visualisation
-@demo demo/index.html
+@element automaton-renderer
+@demo automaton-renderer/demo/index.html
 -->
-<dom-module id="automata-visualisation">
+<dom-module id="automaton-renderer">
   <style include="shared-styles"></style>
   <style>
     :host {
-      color: #6C7A89;
       position: relative;
-    }
-    :host([disable-resizer]) sm3-resizable {
-      @apply(--layout-fit);
-    }
-    sm3-resizable {
-      width: 100% !important;
-      height: var(--automata-visualisation-height, 100%);
-      min-height: var(--automata-visualisation-min-height);
-      --sm3-resizable-handle-s: {
-        bottom: 0;
-        left: 8px;
-        right: 8px;
-        height: 16px;
-      };
-    }
-    paper-material {
-      @apply(--layout-fit);
     }
     #svg-parent {
       @apply(--layout-fit);
@@ -94,106 +70,93 @@ Custom property | Description | Default
       width: 100%;
       height: 100%;
     }
-    #name {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      color: var(--automata-visualisation-name-color, black);
-      font-size: var(--automata-visualisation-name-font-size, 12pt);
-      @apply(--automata-visualisation-name);
-    }
     .node circle.outer {
-      fill: var(--automata-visualisation-node-fill, lightgrey);
-      stroke: var(--automata-visualisation-node-stroke, black);
-      stroke-width: var(--automata-visualisation-node-stroke-width, 3px);
-      @apply(--automata-visualisation-node);
+      fill: var(--automaton-renderer-node-fill, lightgrey);
+      stroke: var(--automaton-renderer-node-stroke, black);
+      stroke-width: var(--automaton-renderer-node-stroke-width, 3px);
+      @apply(--automaton-renderer-node);
     }
     .node circle.inner {
       fill: transparent;
       stroke: transparent;
-      stroke-width: var(--automata-visualisation-node-inner-stroke-width, 2px);
+      stroke-width: var(--automaton-renderer-node-inner-stroke-width, 2px);
     }
     .node .label {
       font-size: 22px;
-      fill: var(--automata-visualisation-node-label-color, black);
-      @apply(--automata-visualisation-node-label);
+      fill: var(--automaton-renderer-node-label-color, black);
+      @apply(--automaton-renderer-node-label);
     }
     .node.start {
       transform: scale(0);
       display: none;
     }
     .node.terminal circle.outer {
-      @apply(--automata-visualisation-terminal-node);
+      @apply(--automaton-renderer-terminal-node);
     }
     .node.terminal circle.inner {
-      @apply(--automata-visualisation-terminal-node-inner);
+      @apply(--automaton-renderer-terminal-node-inner);
     }
     .node.terminal .label {
-      @apply(--automata-visualisation-terminal-node-label);
+      @apply(--automaton-renderer-terminal-node-label);
     }
     .node.stop circle.outer {
-      stroke: var(--automata-visualisation-stop-node-stroke, green);
-      @apply(--automata-visualisation-stop-node);
+      stroke: var(--automaton-renderer-stop-node-stroke, green);
+      @apply(--automaton-renderer-stop-node);
     }
     .node.stop circle.inner {
-      stroke: var(--automata-visualisation-stop-node-inner-stroke, green);
-      @apply(--automata-visualisation-stop-node-inner);
+      stroke: var(--automaton-renderer-stop-node-inner-stroke, green);
+      @apply(--automaton-renderer-stop-node-inner);
     }
     .node.stop .label {
-      @apply(--automata-visualisation-stop-node-label);
+      @apply(--automaton-renderer-stop-node-label);
     }
     .node.error circle.outer {
-      stroke: var(--automata-visualisation-error-node-stroke, red);
-      @apply(--automata-visualisation-error-node);
+      stroke: var(--automaton-renderer-error-node-stroke, red);
+      @apply(--automaton-renderer-error-node);
     }
     .node.error circle.inner {
-      stroke: var(--automata-visualisation-error-node-inner-stroke, red);
-      @apply(--automata-visualisation-error-node-inner);
+      stroke: var(--automaton-renderer-error-node-inner-stroke, red);
+      @apply(--automaton-renderer-error-node-inner);
     }
     .node.error .label {
-      @apply(--automata-visualisation-error-node-label);
+      @apply(--automaton-renderer-error-node-label);
     }
     .node.reference circle.outer {
-      @apply(--automata-visualisation-reference-node);
+      @apply(--automaton-renderer-reference-node);
     }
     .node.reference .label {
-      @apply(--automata-visualisation-reference-node-label);
+      @apply(--automaton-renderer-reference-node-label);
     }
     .node.highlighted circle.outer {
-      fill: var(--automata-visualisation-highlighted-node-fill, yellow);
-      @apply(--automata-visualisation-highlighted-node);
+      fill: var(--automaton-renderer-highlighted-node-fill, yellow);
+      @apply(--automaton-renderer-highlighted-node);
     }
     .node.highlighted .label {
-      @apply(--automata-visualisation-highlighted-node-label);
+      @apply(--automaton-renderer-highlighted-node-label);
     }
     .edgePath path {
-      fill: var(--automata-visualisation-edge-fill, black);
-      stroke: var(--automata-visualisation-edge-stroke, black);
-      stroke-width: var(--automata-visualisation-edge-stroke-width, 2px);
-      @apply(--automata-visualisation-edge);
+      fill: var(--automaton-renderer-edge-fill, black);
+      stroke: var(--automaton-renderer-edge-stroke, black);
+      stroke-width: var(--automaton-renderer-edge-stroke-width, 2px);
+      @apply(--automaton-renderer-edge);
     }
     .edgeLabel {
       font-size: 20px;
-      fill: var(--automata-visualisation-edge-label-color, black);
-      @apply(--automata-visualisation-edge-label);
+      fill: var(--automaton-renderer-edge-label-color, black);
+      @apply(--automaton-renderer-edge-label);
     }
     .edgePath.highlighted path {
-      fill: var(--automata-visualisation-highlighted-fill, blue);
-      stroke: var(--automata-visualisation-highlighted-edge-stroke, blue);
-      stroke-width: var(--automata-visualisation-highlighted-edge-stroke-width, 2px);
-      @apply(--automata-visualisation-highlighted-edge);
+      fill: var(--automaton-renderer-highlighted-edge-fill, blue);
+      stroke: var(--automaton-renderer-highlighted-edge-stroke, blue);
+      stroke-width: var(--automaton-renderer-highlighted-edge-stroke-width, 2px);
+      @apply(--automaton-renderer-highlighted-edge);
     }
   </style>
 
   <template>
-    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="_onResize" disabled$="[[disableResizer]]">
-      <paper-material>
-        <div id="svg-parent">
-          <svg id="svg"></svg>
-        </div>
-        <div id="name">[[name]]</div>
-      </paper-material>
-    </sm3-resizable>
+    <div id="svg-parent">
+      <svg id="svg"></svg>
+    </div>
   </template>
 </dom-module>
 
@@ -206,25 +169,17 @@ Custom property | Description | Default
       /**
        * Fired after the visualisation has been rendered.
        *
-       * @event automata-visualisation-rendered
+       * @event automaton-renderer-rendered
        */
 
-      is: 'automata-visualisation',
+      is: 'automaton-renderer',
 
       properties: {
-        /**
-        * The name of the automaton.
-        */
-        name: {
-          type: String,
-          value: 'Unnamed Automaton'
-        },
-
         /**
         * The graph to render.
         */
         graph: {
-          type: Object,
+          type: Graph,
           value: function() {
             return { nodes: [], edges: [] };
           }
@@ -238,15 +193,6 @@ Custom property | Description | Default
         arrowhead: {
           type: String,
           value: 'normal'
-        },
-
-        /**
-         * Whether or this element is resizeable.
-         */
-        disableResizer: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
         },
 
         /**
@@ -431,25 +377,14 @@ Custom property | Description | Default
         render(svgGroup, this._automaton);
 
         this._center(svg, svgGroup);
-        this.fire('automata-visualisation-rendered');
-      },
-
-      /**
-       * Called when `#resizer` is resized
-       */
-      _onResize: function() {
-        this.debounce('automata-visualisation-resize', function() {
-          var svg = d3.select(this.$.svg);
-          var svgGroup = svg.select('g');
-          this._center(svg, svgGroup);
-        }, 300);
+        this.fire('automaton-renderer-rendered');
       },
 
       /**
        * Called when `graph` is updated (the nodes or edges change)
        */
       _onGraphUpdated: function() {
-        this.debounce('automata-visualisation-render', function() {
+        this.debounce('automaton-renderer-render', function() {
           this.render();  // re-render the automaton (this will also do the first render)
         });
       },
@@ -482,6 +417,15 @@ Custom property | Description | Default
         };
 
         return render;
+      },
+
+      /**
+       * Center the render.
+       */
+      centerRender: function() {
+        var svg = d3.select(this.$.svg);
+        var svgGroup = svg.select('g');
+        this._center(svg, svgGroup);
       },
 
       /**

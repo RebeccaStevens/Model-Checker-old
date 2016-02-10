@@ -2,7 +2,7 @@
 <html>
 <head>
 
-  <title>automata-visualisation</title>
+  <title>automaton-renderer</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,27 +10,27 @@
   <link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../imports/graph.html">
 
-  <link rel="import" href="../automata-visualisation.html">
+  <link rel="import" href="../automaton-renderer.html">
 
   <style is="custom-style">
-    automata-visualisation {
-      --automata-visualisation-node-label-color: blue;
-      --automata-visualisation-node-fill: lightblue;
-      --automata-visualisation-node-stroke: green;
-      --automata-visualisation-node-stroke-width: 5px;
-      --automata-visualisation-node-inner-stroke-width: 3px;
-      --automata-visualisation-edge-label-color: grey;
-      --automata-visualisation-edge-fill: purple;
-      --automata-visualisation-edge-stroke: orange;
-      --automata-visualisation-edge-stroke-width: 4px;
-      --automata-visualisation-stop-node-stroke: blue;
-      --automata-visualisation-stop-node-inner-stroke: red;
+    automaton-renderer {
+      --automaton-renderer-node-label-color: blue;
+      --automaton-renderer-node-fill: lightblue;
+      --automaton-renderer-node-stroke: green;
+      --automaton-renderer-node-stroke-width: 5px;
+      --automaton-renderer-node-inner-stroke-width: 3px;
+      --automaton-renderer-edge-label-color: grey;
+      --automaton-renderer-edge-fill: purple;
+      --automaton-renderer-edge-stroke: orange;
+      --automaton-renderer-edge-stroke-width: 4px;
+      --automaton-renderer-stop-node-stroke: blue;
+      --automaton-renderer-stop-node-inner-stroke: red;
     }
   </style>
 </head>
 <body class="fullbleed">
   <template is="dom-bind" id="app">
-    <automata-visualisation name="My Automaton" graph="[[graph]]" class="fit"></automata-visualisation>
+    <automaton-renderer graph="[[graph]]" class="fit"></automaton-renderer>
   </template>
   <script>
   (function(document) {

@@ -16,7 +16,7 @@
   :root {
     --dark-primary-color: #303F9F;
     --default-primary-color: #3F51B5;
-    --light-primary-color: #C5CAE9;
+    --light-primary-color: #dce0f5;
     --text-primary-color: #ffffff; /*text/icons*/
     --accent-color: #FF4081;
     --primary-background-color: #ecf0f1;
@@ -35,6 +35,23 @@
     /* paper-menu */
     --paper-menu-background-color: #fff;
     --menu-link-color: #111111;
+
+    /* automaton render styling */
+    --automaton-renderer-node-label-color: #000000;
+    --automaton-renderer-node-fill: #dadedf;
+    --automaton-renderer-node-stroke: #000000;
+    --automaton-renderer-node-stroke-width: 3px;
+    --automaton-renderer-edge-label-color: #000000;
+    --automaton-renderer-edge-fill: #000000;
+    --automaton-renderer-edge-stroke: #000000;
+    --automaton-renderer-edge-stroke-width: 2px;
+    --automaton-renderer-stop-node-inner-stroke: #00BB00;
+    --automaton-renderer-stop-node-stroke: #00FF00;
+    --automaton-renderer-error-node-stroke: #ff0000;
+    --automaton-renderer-highlighted-node-fill: #ffff00;
+    --automaton-renderer-highlighted-fill: #0000ff;
+    --automaton-renderer-highlighted-edge-stroke: #0000ff;
+    --automaton-renderer-highlighted-edge-stroke-width: 3px;
   }
 
   /* General styles */
@@ -64,24 +81,14 @@
     overflow: auto;
   }
 
-  automata-visualisation {
-    --automata-visualisation-min-height: 150px;
-    --automata-visualisation-height: 250px;
-    --automata-visualisation-name-color: #ff0000;
-    --automata-visualisation-node-label-color: #000000;
-    --automata-visualisation-node-fill: #dadedf;
-    --automata-visualisation-node-stroke: #000000;
-    --automata-visualisation-node-stroke-width: 3px;
-    --automata-visualisation-edge-label-color: #000000;
-    --automata-visualisation-edge-fill: #000000;
-    --automata-visualisation-edge-stroke: #000000;
-    --automata-visualisation-edge-stroke-width: 2px;
-    --automata-visualisation-stop-node-inner-stroke: #00BB00;
-    --automata-visualisation-stop-node-stroke: #00FF00;
-    --automata-visualisation-error-node-stroke: #ff0000;
-    --automata-visualisation-highlighted-node-fill: #ffff00;
-    --automata-visualisation-highlighted-fill: #0000ff;
-    --automata-visualisation-highlighted-edge-stroke: #0000ff;
+  automaton-visualisation {
+    --automaton-visualisation-min-height: 250px;
+    --automaton-visualisation-height: 350px;
+    --automaton-visualisation-name-font-weight: bold;
+    --automaton-visualisation-name-color: var(--default-primary-color);
+    --automaton-visualisation-toolbar-icon-color: var(--default-primary-color);
+    --automaton-visualisation-toolbar-icon-active-color: #5522BB;
+    --automaton-visualisation-toolbar-icon-active-border: solid 1px #5522BB;
   }
 
   #main-toolbar {

@@ -40,7 +40,7 @@ be set
     is on, the text given by the user is updated on each key press by firing a text-editor-change event. These events are limited
     to be a second away from each other at least. This value is given as the changeEventDebounceTime defined in text-editor.html.
 
-  * **automata-walker**
+  * **automaton-walker**
    
      This element outlines the walker in its entirety. By updating the Automata dropdown menu on each compilation the user can
     then select a given automata and a corresponding edge based on the current Node. The _walk function is invoked onClick of

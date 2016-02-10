@@ -2,35 +2,31 @@
 <html>
 <head>
 
-  <title>automata-walker</title>
+  <title>automaton-walker</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../imports/automaton.html">
   <link rel="import" href="../../imports/graph.html">
-  <link rel="import" href="../automata-walker.html">
-  <link rel="import" href="../../automata-visualisation/automata-visualisation.html">
+  <link rel="import" href="../automaton-walker.html">
+  <link rel="import" href="../../automaton-renderer/automaton-renderer.html">
 
 </head>
 <body class="fullbleed layout vertical">
 
   <template is="dom-bind" id="demo">
 
-    <automata-walker id="walker"
+    <automaton-walker id="walker"
       automaton="[[automaton]]"
-      on-automata-walker-walk="onWalk"
-      on-automata-walker-step-back="onStepBack"
-      on-automata-walker-reset="onReset"
-      on-automata-walker-edge-selected="onEdgeSelect"></automata-walker>
+      on-automaton-walker-walk="onWalk"
+      on-automaton-walker-step-back="onStepBack"
+      on-automaton-walker-reset="onReset"
+      on-automaton-walker-edge-selected="onEdgeSelect"></automaton-walker>
 
-    <automata-visualisation id="vis" class="flex"
-      disable-resizer
-      name="[[automaton.name]]"
-      graph="[[automaton.graph]]"
-      on-automata-visualisation-rendered="onRender"></automata-visualisation>
+    <automaton-renderer id="renderer" class="flex"
+      graph="[[automaton.graph]]"></automaton-renderer>
 
   </template>
 
@@ -59,28 +55,27 @@
     demo.automaton = new Automaton('Automaton', graph);
 
     demo.onWalk = function(e) {
-      this.$.vis.setHighlightedNode(e.detail.edge.to.id);
-      this.$.vis.unsetHighlightedEdge();
+      demo.$.renderer.setHighlightedNode(e.detail.edge.to.id);
+      demo.$.renderer.unsetHighlightedEdge();
     };
 
     demo.onStepBack = function(e) {
-      this.$.vis.setHighlightedNode(e.detail.edge.from.id);
-      this.$.vis.unsetHighlightedEdge();
+      demo.$.renderer.setHighlightedNode(e.detail.edge.from.id);
+      demo.$.renderer.unsetHighlightedEdge();
     };
 
     demo.onReset = function(e) {
-      this.$.vis.setHighlightedNode(e.detail.root.id);
-      this.$.vis.unsetHighlightedEdge();
+      demo.$.renderer.setHighlightedNode(e.detail.root.id);
+      demo.$.renderer.unsetHighlightedEdge();
     };
 
     demo.onEdgeSelect = function(e) {
-      this.$.vis.setHighlightedEdge(e.detail.edge.id);
+      demo.$.renderer.setHighlightedEdge(e.detail.edge.id);
     };
 
-    demo.onRender = function() {
-      this.$.vis.setHighlightedNode(this.$.vis.graph.root.id);
-    };
-
+    window.addEventListener('WebComponentsReady', function() {
+      demo.$.walker.reset();
+    });
   })(document);
   </script>
 </body>

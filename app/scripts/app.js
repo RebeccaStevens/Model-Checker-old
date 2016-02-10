@@ -113,11 +113,11 @@
                   app.$.console.log('Rendered successfully after ' + renderTime.toFixed(3) + ' seconds.');
                   app.$.console.log('Total time: ' + (compileTime + renderTime).toFixed(3) + ' seconds.');
 
-                  document.removeEventListener('automata-visualisation-rendered', renderComplete);
+                  document.removeEventListener('automaton-renderer-rendered', renderComplete);
                 }
               };
 
-              document.addEventListener('automata-visualisation-rendered', renderComplete);
+              document.addEventListener('automaton-renderer-rendered', renderComplete);
             }.bind(this), 0);
           }
 
@@ -249,58 +249,6 @@
     app.showHelp = function() {
       var help = app.$['help-dialog'];
       help.open();
-    };
-
-    /**
-     * Called when a walker walks.
-     *
-     * @param {!Object} e - the event
-     */
-    app.onWalkerWalk = function(e) {
-      var walker = e.srcElement;
-      var vis = Polymer.dom(walker).nextElementSibling;
-
-      vis.setHighlightedNode(e.detail.edge.to.id);
-      vis.unsetHighlightedEdge();
-    };
-
-    /**
-     * Called when a walker steps back.
-     *
-     * @param {!Object} e - the event
-     */
-    app.onWalkerStepBack = function(e) {
-      var walker = e.srcElement;
-      var vis = Polymer.dom(walker).nextElementSibling;
-
-      vis.setHighlightedNode(e.detail.edge.from.id);
-      vis.unsetHighlightedEdge();
-    };
-
-    /**
-     * Called when a walker is reset.
-     *
-     * @param {!Object} e - the event
-     */
-    app.onWalkerReset = function(e) {
-      var walker = e.srcElement;
-      var vis = Polymer.dom(walker).nextElementSibling;
-
-      vis.setHighlightedNode(e.detail.root.id);
-      vis.unsetHighlightedEdge();
-    };
-
-    /**
-     * Called when a walker selects an edge.
-     *
-     * @param {!Object} e - the event
-     */
-    app.onWalkerEdgeSelect = function(e) {
-      var walker = e.srcElement;
-      var vis = Polymer.dom(walker).nextElementSibling;
-
-      vis.setHighlightedEdge(e.detail.edge.id);
-      vis.setHighlightedNode(e.detail.edge.from.id);
     };
 
     /**

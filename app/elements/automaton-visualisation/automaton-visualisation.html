@@ -1,0 +1,249 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/sm3-resizable/sm3-resizable.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../imports/dagre-d3.html">
+<link rel="import" href="../imports/automaton.html">
+<link rel="import" href="../automaton-renderer/automaton-renderer.html">
+<link rel="import" href="../automaton-walker/automaton-walker.html">
+
+<!--
+An element for displaying an automaton.
+
+Example:<br>
+
+    <automaton-visualisation automaton="[[automaton]]"></automaton-visualisation>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--automaton-visualisation-height` | The initial height of the element | `100%`
+`--automaton-visualisation-min-height` | The min-height of the element |
+`--automaton-visualisation-name-color` | The color of the name of the automaton | `black`
+`--automaton-visualisation-name-font-size` | The font size of the name of the automaton | `12pt`
+`--automaton-visualisation-name` | A mixin applied to the automaton's name | {}
+`--automaton-visualisation-renderer` | A mixin applied to the automaton renderer | {}
+
+@element automaton-visualisation
+@demo automaton-visualisation/demo/index.html
+-->
+<dom-module id="automaton-visualisation">
+  <style include="shared-styles"></style>
+  <style>
+    :host {
+      color: #6C7A89;
+      position: relative;
+    }
+    :host([disable-resizer]) sm3-resizable {
+      @apply(--layout-fit);
+    }
+    sm3-resizable {
+      width: 100% !important;
+      height: var(--automaton-visualisation-height, 100%);
+      min-height: var(--automaton-visualisation-min-height);
+      --sm3-resizable-handle-s: {
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 16px;
+      };
+    }
+    paper-material {
+      padding: 0;
+      @apply(--layout-fit);
+    }
+    #toolbar {
+      position: relative;;
+      top: 0;
+      left: 0;
+      right: 0;
+      --paper-toolbar-height: var(--automaton-visualisation-toolbar-height, 38px);
+      --paper-toolbar-sm-height: var(--automaton-visualisation-toolbar-height, 38px);
+      --paper-toolbar-background: var(--automaton-visualisation-toolbar-background, --light-primary-color);
+      --paper-toolbar-title: {
+        margin-left: 0;
+      };
+      @apply(--automaton-visualisation-toolbar);
+    }
+    #toolbar paper-icon-button {
+      color: var(--automaton-visualisation-toolbar-icon-color, --text-primary-color);
+      border: var(--automaton-visualisation-toolbar-icon-border, none);
+      width: var(--automaton-visualisation-toolbar-icon-width, 32px);
+      height: var(--automaton-visualisation-toolbar-icon-height, 32px);
+      border-radius: 8px;
+      padding: 2px;
+      margin-left: 2px;
+      @apply(--automaton-visualisation-toolbar-icon);
+    }
+    #toolbar paper-icon-button[active] {
+      color: var(--automaton-visualisation-toolbar-icon-active-color, blue);
+      border: var(--automaton-visualisation-toolbar-icon-active-border, solid 1px blue);
+      background: rgba(0, 0, 0, 0.175);
+      @apply(--automaton-visualisation-toolbar-icon-active);
+    }
+    #name {
+      color: var(--automaton-visualisation-name-color, black);
+      font-size: var(--automaton-visualisation-name-font-size, 20px);
+      font-weight: var(--automaton-visualisation-name-font-weight, normal);
+      @apply(--automaton-visualisation-name);
+    }
+    #walker {
+      color: #000000;
+      @apply(--automaton-visualisation-walker);
+    }
+    #renderer {
+      @apply(--automaton-visualisation-renderer);
+    }
+  </style>
+
+  <template>
+    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="_onResize" disabled$="[[disableResizer]]">
+      <paper-material class="layout vertical">
+        <paper-toolbar id="toolbar">
+          <div id="name" class="title">[[automaton.name]]</div>
+          <span class="flex"></span>
+          <paper-icon-button toggles icon="maps:directions-walk" title="Automaton Walker" active="{{showWalker}}"></paper-icon-button>
+        </paper-toolbar>
+        <automaton-walker id="walker" hidden$="[[!showWalker]]"
+          automaton="[[automaton]]"
+          on-automaton-walker-walk="_onWalkerWalk"
+          on-automaton-walker-step-back="_onWalkerStepBack"
+          on-automaton-walker-reset="_onWalkerReset"
+          on-automaton-walker-edge-selected="_onWalkerEdgeSelect"></automaton-walker>
+        <automaton-renderer id="renderer" graph="[[automaton.graph]]" arrowhead="[[arrowhead]]" class="flex"></automaton-renderer>
+      </paper-material>
+    </sm3-resizable>
+  </template>
+</dom-module>
+
+<script>
+  (function() {
+    'use strict';
+
+    Polymer({
+
+      is: 'automaton-visualisation',
+
+      properties: {
+        /**
+        * The automaton to visualise.
+        */
+        automaton: Automaton,
+
+        /**
+         * The arrowhead style that the render will use.
+         *
+         * either `normal`, `vee`, or `undirected`.
+         */
+        arrowhead: {
+          type: String,
+          value: 'normal'
+        },
+
+        /**
+         * If true, this element wont be user resizable.
+         */
+        disableResizer: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        /**
+         * If true, the automaton walker will be visible.
+         */
+        showWalker: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          observer: '_onWalkerVisibilityToggle'
+        },
+
+        /**
+         * Get the automaton render.
+         */
+        renderer: {
+          type: HTMLElement,
+          value: function() {
+            return this.$.renderer;
+          },
+          readOnly: true
+        }
+      },
+
+      /**
+       * Called when `#resizer` is resized
+       */
+      _onResize: function() {
+        this.debounce('automaton-visualisation-resize', this.$.renderer.centerRender.bind(this.$.renderer), 100);
+      },
+
+      /**
+       * Called when a walker walks.
+       *
+       * @param {!Object} e - the event
+       */
+      _onWalkerWalk: function(e) {
+        this.$.renderer.setHighlightedNode(e.detail.edge.to.id);
+        this.$.renderer.unsetHighlightedEdge();
+      },
+
+      /**
+       * Called when a walker steps back.
+       *
+       * @param {!Object} e - the event
+       */
+      _onWalkerStepBack: function(e) {
+        this.$.renderer.setHighlightedNode(e.detail.edge.from.id);
+        this.$.renderer.unsetHighlightedEdge();
+      },
+
+      /**
+       * Called when a walker is reset.
+       *
+       * @param {!Object} e - the event
+       */
+      _onWalkerReset: function(e) {
+        this.$.renderer.setHighlightedNode(e.detail.root.id);
+        this.$.renderer.unsetHighlightedEdge();
+      },
+
+      /**
+       * Called when a walker selects an edge.
+       *
+       * @param {!Object} e - the event
+       */
+      _onWalkerEdgeSelect: function(e) {
+        this.$.renderer.setHighlightedEdge(e.detail.edge.id);
+        this.$.renderer.setHighlightedNode(e.detail.edge.from.id);
+      },
+
+      /**
+       * Called when a walker is show/hidden.
+       */
+      _onWalkerVisibilityToggle: function() {
+        if (this.showWalker) {
+          // highlight the first node
+          if (this.automaton) {
+            this.$.renderer.setHighlightedNode(this.automaton.graph.root.id);
+          }
+          this.$.renderer.unsetHighlightedEdge();
+        }
+        else {
+          // unhighlight everything
+          this.$.renderer.unsetHighlightedNode();
+          this.$.renderer.unsetHighlightedEdge();
+        }
+        // recenter the render
+        this.debounce('automaton-visualisation-resize', this.$.renderer.centerRender.bind(this.$.renderer), 0);
+      }
+    });
+  })();
+</script>

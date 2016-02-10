@@ -7,6 +7,12 @@
   <link rel="import" href="../../bower_components/iron-component-page/iron-component-page.html">
 </head>
 <body unresolved>
-  <iron-component-page></iron-component-page>
+  <iron-component-page id="docs"></iron-component-page>
+  <script>
+    var docs = document.querySelector('#docs');
+    var splash0 = docs.base.lastIndexOf('/');
+    var splash1 = docs.base.lastIndexOf('/', splash0-1);
+    docs.base = docs.base.substring(0, splash1) + docs.base.substring(splash0);
+  </script>
 </body>
 </html>

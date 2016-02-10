@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>automaton-visualisation</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../imports/automaton.html">
+  <link rel="import" href="../../imports/graph.html">
+
+  <link rel="import" href="../automaton-visualisation.html">
+
+  <style is="custom-style">
+    automaton-visualisation {
+      --automaton-visualisation-node-label-color: blue;
+      --automaton-visualisation-node-fill: lightblue;
+      --automaton-visualisation-node-stroke: green;
+      --automaton-visualisation-node-stroke-width: 5px;
+      --automaton-visualisation-node-inner-stroke-width: 3px;
+      --automaton-visualisation-edge-label-color: grey;
+      --automaton-visualisation-edge-fill: purple;
+      --automaton-visualisation-edge-stroke: orange;
+      --automaton-visualisation-edge-stroke-width: 4px;
+      --automaton-visualisation-stop-node-stroke: blue;
+      --automaton-visualisation-stop-node-inner-stroke: red;
+    }
+  </style>
+</head>
+<body class="fullbleed">
+  <template is="dom-bind" id="app">
+    <automaton-visualisation automaton="[[automaton]]" class="fit"></automaton-visualisation>
+  </template>
+  <script>
+  (function(document) {
+    'use strict';
+
+    var app = document.querySelector('#app');
+    var graph = new Graph();
+
+    var n0 = graph.addNode(0, '0', { startNode: true });
+    var n1 = graph.addNode(1, '1');
+    var n2 = graph.addNode(2, '2');
+    var n3 = graph.addNode(3, '3', { isTerminal: 'stop' });
+    var n4 = graph.addNode(4, '4');
+
+    graph.addEdge(0, n0, n1, 'a');
+    graph.addEdge(1, n1, n2, 'b');
+    graph.addEdge(2, n2, n3, 'c');
+    graph.addEdge(3, n1, n3, 'd');
+    graph.addEdge(4, n3, n0, 'e');
+    graph.addEdge(5, n0, n4, 'f');
+    graph.addEdge(6, n4, n1, 'g');
+
+    app.automaton = new Automaton('My Automaton', graph);
+
+  })(document);
+  </script>
+</body>
+</html>
