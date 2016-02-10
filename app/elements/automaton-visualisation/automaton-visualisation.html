@@ -230,11 +230,7 @@ Custom property | Description | Default
        */
       _onWalkerVisibilityToggle: function() {
         if (this.showWalker) {
-          // highlight the first node
-          if (this.automaton) {
-            this.$.renderer.setHighlightedNode(this.automaton.graph.root.id);
-          }
-          this.$.renderer.unsetHighlightedEdge();
+          this.$.walker.reset();
         }
         else {
           // unhighlight everything
