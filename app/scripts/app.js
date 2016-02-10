@@ -1,31 +1,28 @@
 (function(document) {
   'use strict';
 
-  var app = document.querySelector('#app');
-
   /**
-   * Return whether or not the given array has a length greater than zero.
-   *
-   * @param {!array} array - an array
-   * @returns {boolean}
+   * Called once the element definision import is loaded
    */
-  app.arrayHasData = function(array) {
-    return array.length > 0;
-  };
+  function onImportLoaded() {
+    // Elements have now been upgraded and are ready to use
 
-  window.addEventListener('WebComponentsReady', function() {
+    // styles are also ready so we can now add the shared styles to the app's root
+    var sharedStyles = document.createElement('style', 'custom-style');
+    sharedStyles.include = 'shared-styles';
+    document.head.appendChild(sharedStyles);
 
-    /**
-     * The data to use.
+    Polymer.updateStyles(); // and update the app's look
+
+    // Grab a reference to our auto-binding template
+    // and give it some initial binding values
+    var app = document.querySelector('#app');
+
+    /*
+     * Methods
+     *
+     * Define the methods before initialising the fields.
      */
-    app.automata = [];
-    app.settings = {
-      liveCompiling: true,
-      liveBuilding: true,
-      fairAbstraction: true
-    };
-    app.helpDialogSelectedTab = 0;
-    app.previousCode = '';
 
     /**
      * Compile the code in the text editor.
@@ -252,6 +249,61 @@
     };
 
     /**
+     * Return whether or not the given array has a length greater than zero.
+     *
+     * @param {!array} array - an array
+     * @returns {boolean}
+     */
+    app.arrayHasData = function(array) {
+      return array.length > 0;
+    };
+
+    /*
+     * Fields
+     *
+     * Initialise the fields after the methods are defined.
+     *
+     * Note: when some fields are initialised, they may cause
+     * methods calls and those methods need to already be defined.
+     */
+
+    /**
+     * An array of Automaton.
+     *
+     * @type {Automaton[]}
+     */
+    app.automata = [];
+
+    /**
+     * An object containing any user settings.
+     *
+     * @type Object
+     */
+    app.settings = {
+      liveCompiling: true,
+      liveBuilding: true,
+      fairAbstraction: true
+    };
+
+    /**
+     * The selected tab on the help dialog.
+     *
+     * @type {Number}
+     */
+    app.helpDialogSelectedTab = 0;
+
+    /**
+     * The previous code in the text editor.
+     *
+     * @type {String}
+     */
+    app.previousCode = '';
+
+    /*
+     * Listener
+     */
+
+    /**
      * Called when any of the settings are changed.
      *
      * Note: settings must be changed using `app.set(path, value)`
@@ -320,6 +372,36 @@
         default: return;
       }
     });
+  }
 
-  });
+  /**
+   * Called once the web components polyfill is loaded or straight away if it's not needed.
+   */
+  function webComponentsReady() {
+    // call `onImportLoaded` (if the import is complete,
+    // otherwise setup a listener to do so)
+    var link = document.querySelector('#elements');
+
+    if (link.import && link.import.readyState === 'complete') {
+      onImportLoaded();
+    } else {
+      link.addEventListener('load', onImportLoaded);
+    }
+  }
+
+  // detect if web components supported are natively supported by the browser
+  var webComponentsSupported = (
+    'registerElement' in document &&
+    'import' in document.createElement('link') &&
+    'content' in document.createElement('template'));
+
+  // if they're not, load the polyfill
+  if (webComponentsSupported) {
+    webComponentsReady();
+  } else {
+    var script = document.createElement('script');
+    script.onload = webComponentsReady;
+    script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+    document.head.appendChild(script);
+  }
 })(document);
