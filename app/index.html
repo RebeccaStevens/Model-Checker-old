@@ -34,6 +34,90 @@
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
+
+  <!-- splash screen markup -->
+  <div id="splash">
+    <style>
+      body {
+        visibility: hidden;
+        margin: 0;
+        overflow: hidden;
+      }
+      #splash {
+        visibility: visible;
+        background: #f7f7f7;
+      }
+      .splash-main-toolbar {
+        background: #3F51B5;
+        height: 64px;
+      }
+      .splash-frame {
+        position: absolute;
+        top: 64px;
+        bottom: 0;
+        margin: 8px;
+      }
+      .splash-frame.splash-left {
+        left: 0;
+        right: 50%;
+      }
+      .splash-frame.splash-right {
+        left: 50%;
+        right: 0;
+      }
+      .splash-frame .splash-element {
+        border: solid 1px #cccedd;
+        background: #ffffff;
+        box-sizing: border-box;
+      }
+      .splash-frame.splash-left .splash-editor {
+        width: 100%;
+        height: calc(100% - 148px);
+        margin-bottom: 8px;
+      }
+      .splash-frame.splash-left .splash-console {
+        width: 100%;
+        height: 140px;
+      }
+      .splash-frame.splash-right .splash-message {
+        width: 100%;
+        height: 50px;
+      }
+      .splash-backdrop {
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .splash-loading {
+        border: solid 3px #333;
+        background: #fff;
+        font-size: 32pt;
+        position: fixed;
+        left: calc(50vw - 200px);
+        top: calc(50vh - 75px);
+        width: 400px;
+        height: 150px;
+        line-height: 150px;
+        text-align: center;
+      }
+    </style>
+    <div class="splash-main-toolbar"></div>
+    <div class="splash-frame splash-left">
+      <div class="splash-element splash-editor"></div>
+      <div class="splash-element splash-console"></div>
+    </div>
+    <div class="splash-frame splash-right">
+      <div class="splash-element splash-message"></div>
+    </div>
+    <div class="splash-backdrop"></div>
+    <div class="splash-loading">
+      Loading...
+    </div>
+  </div>
+
   <template is="dom-bind" id="app">
     <automata-parser id="parser"></automata-parser>
 

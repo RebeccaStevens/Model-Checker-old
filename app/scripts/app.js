@@ -12,6 +12,8 @@
     sharedStyles.include = 'shared-styles';
     document.head.appendChild(sharedStyles);
 
+    document.getElementById('splash').remove(); // remove the splashscreen
+
     Polymer.updateStyles(); // and update the app's look
 
     // Grab a reference to our auto-binding template
