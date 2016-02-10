@@ -220,10 +220,20 @@
      */
     app.showSettings = function() {
       var dialog = app.$['settings-dialog'];
-      app.$['settings-live-compiling'].checked = app.settings.liveCompiling;
-      app.$['settings-live-building'].checked = app.settings.liveBuilding;
-      app.$['settings-fair-abstraction'].checked = app.settings.fairAbstraction;
       dialog.open();
+    };
+
+    /**
+     * Called when the settings dialog is opened.
+     */
+    app.onSettingsOpened = function() {
+      var dialog = app.$['settings-dialog'];
+
+      // set the values displayed to what they actually are.
+      // Note: can't use `app.$['...']` syntax here as these element where not in the dom from the beginning.
+      dialog.querySelector('#settings-live-compiling').checked = app.settings.liveCompiling;
+      dialog.querySelector('#settings-live-building').checked = app.settings.liveBuilding;
+      dialog.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
     };
 
     /**
