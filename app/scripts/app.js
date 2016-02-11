@@ -4,7 +4,7 @@
   /**
    * Called once the element definision import is loaded
    */
-  function onImportLoaded() {
+  function onImportsLoaded() {
     // Elements have now been upgraded and are ready to use
 
     // styles are also ready so we can now add the shared styles to the app's root
@@ -390,20 +390,52 @@
   }
 
   /**
+   * Calls `onImportsLoaded` once all the element definisions are loaded.
+   */
+  function waitUntilElementsFullyParsed() {
+    var link = document.querySelector('#elements');   // the main element bundle
+    var allImports = link.import.querySelectorAll('link[rel="import"]');  // all the imports in the main element bundle
+    var numberOfImportsComplete = 0;
+
+    /**
+     * Called once each import is ready.
+     */
+    var importComplete = function() {
+      numberOfImportsComplete++;
+      // if all imports are complete
+      if (numberOfImportsComplete === allImports.length) {
+        onImportsLoaded();
+      }
+    };
+
+    // loop through all the imports and call `importComplete` if it's complete,
+    // otherwise setup a listener to do so
+    for (var i = 0; i < allImports.length; i++) {
+      if (allImports[i].import && (
+        allImports[i].import.readyState === 'complete' ||
+        allImports[i].import.readyState === 'interactive')) {
+        importComplete();
+      } else {
+        allImports[i].addEventListener('load', importComplete);
+      }
+    }
+  }
+
+  /**
    * Called once the web components polyfill is loaded or straight away if it's not needed.
    */
-  function webComponentsReady() {
+  function webComponentsLibReady() {
     // Use native Shadow DOM if it's available in the browser.
     // window.Polymer = window.Polymer || {dom: 'shadow'};
 
-    // call `onImportLoaded` (if the import is complete,
+    // call `onImportsLoaded` (if the import is complete,
     // otherwise setup a listener to do so)
     var link = document.querySelector('#elements');
 
-    if (link.import && link.import.readyState === 'complete') {
-      onImportLoaded();
+    if (link.import && (link.import.readyState === 'complete' || link.import.readyState === 'interactive')) {
+      waitUntilElementsFullyParsed();
     } else {
-      link.addEventListener('load', onImportLoaded);
+      link.addEventListener('load', waitUntilElementsFullyParsed);
     }
   }
 
@@ -415,10 +447,11 @@
 
   // if they're not, load the polyfill
   if (webComponentsSupported) {
-    webComponentsReady();
+    webComponentsLibReady();
   } else {
     var script = document.createElement('script');
-    script.onload = webComponentsReady;
+    script.onload = webComponentsLibReady;
+    script.async = true;
     script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
     document.head.appendChild(script);
   }
