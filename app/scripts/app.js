@@ -2,25 +2,10 @@
   'use strict';
 
   /**
-   * Called once the element definision import is loaded
+   * Create the methods and initialise fields of the app.
    */
-  function onImportsLoaded() {
-    // Elements have now been upgraded and are ready to use
-
-    // styles are also ready so we can now add the shared styles to the app's root
-    var sharedStyles = document.createElement('style', 'custom-style');
-    sharedStyles.include = 'shared-styles';
-    document.head.appendChild(sharedStyles);
-
-    // everything is now setup - remove the splashscreen
-    var splash = document.getElementById('splash');
-    splash.addEventListener('transitionend', splash.remove);
-    document.body.classList.remove('loading');
-
-    Polymer.updateStyles(); // and update the app's look
-
-    // Grab a reference to our auto-binding template
-    // and give it some initial binding values
+  function setupAppClass() {
+    // Grab a reference to our auto-binding template and set it up
     var app = document.querySelector('#app');
 
     /*
@@ -387,6 +372,27 @@
         default: return;
       }
     });
+  }
+
+  /**
+   * Called once the element definision import is loaded.
+   */
+  function onImportsLoaded() {
+    // Elements have now been upgraded and are ready to use
+
+    // styles are also ready so we can now add the shared styles to the app's root
+    var sharedStyles = document.createElement('style', 'custom-style');
+    sharedStyles.include = 'shared-styles';
+    document.head.appendChild(sharedStyles);
+
+    setupAppClass();
+
+    // everything is now setup - remove the splashscreen
+    var splash = document.getElementById('splash');
+    splash.addEventListener('transitionend', splash.remove);
+    document.body.classList.remove('loading');
+
+    Polymer.updateStyles(); // and update the app's look
   }
 
   /**
