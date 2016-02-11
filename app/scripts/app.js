@@ -379,7 +379,9 @@
    */
   function splashLoadingPercentUpdate(taskComple, totalTasks) {
     var splashLoadingPercent = document.getElementById('splash-loading-percent');
-    splashLoadingPercent.textContent = (100 * (taskComple / totalTasks)).toFixed(1) + '%';
+    if (splashLoadingPercent) {
+      splashLoadingPercent.textContent = (100 * (taskComple / totalTasks)).toFixed(1) + '%';
+    }
   }
 
   /**
