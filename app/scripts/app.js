@@ -375,6 +375,14 @@
   }
 
   /**
+   * Update the percentage that is displayed on the splash screen
+   */
+  function splashLoadingPercentUpdate(taskComple, totalTasks) {
+    var splashLoadingPercent = document.getElementById('splash-loading-percent');
+    splashLoadingPercent.textContent = (100 * (taskComple / totalTasks)).toFixed(1) + '%';
+  }
+
+  /**
    * Called once the element definision import is loaded.
    */
   function onImportsLoaded() {
@@ -403,14 +411,14 @@
     var allImports = link.import.querySelectorAll('link[rel="import"]');  // all the imports in the main element bundle
     var numberOfImportsComplete = 0;
 
+    splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
+
     /**
      * Called once each import is ready.
      */
     var importComplete = function() {
       numberOfImportsComplete++;
-
-      var splashLoadingPercent = document.getElementById('splash-loading-percent');
-      splashLoadingPercent.textContent = (100 * (numberOfImportsComplete / allImports.length)).toFixed(1) + '%';
+      splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
 
       // if all imports are complete
       if (numberOfImportsComplete === allImports.length) {
