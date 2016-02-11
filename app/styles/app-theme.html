@@ -162,11 +162,8 @@
    */
   paper-dialog paper-dialog-scrollable {
     height: calc(100% - 123px);
-    margin-top: 0;
+    margin-top: 0 !important;
     margin-bottom: 0;
-    --paper-dialog-scrollable: {
-      max-height: 100% !important;
-    };
   }
 
   paper-dialog paper-tabs {
@@ -317,11 +314,6 @@
       margin-top: 0;
       margin-bottom: 0;
       padding: 0;
-      --paper-dialog-scrollable: {
-        max-height: 100% !important;
-        max-width: none !important;
-        padding: 0 16px;
-      };
     }
 
     #help-dialog {
