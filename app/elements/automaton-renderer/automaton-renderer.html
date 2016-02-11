@@ -164,6 +164,10 @@ Custom property | Description | Default
   (function() {
     'use strict';
 
+    var DELTA = '\u03B4';
+    var EPSILON = '\u03B5';
+    var TAU = '\u03C4';
+
     Polymer({
 
       /**
@@ -345,13 +349,13 @@ Custom property | Description | Default
         //  - the to node's label
         //  - the edge's extra data (could be label, width, height, etc.)
         this.graph.edges.forEach(function(edge) {
-          var label = edge.label || '\u03B5';
+          var label = edge.label || EPSILON;
 
           if (edge.isHidden) {
-            label = '\u03C4';
+            label = TAU;
           }
           else if (edge.isDeadlock) {
-            label = '\u03B4';
+            label = DELTA;
           }
 
           // add the edge to the graph
