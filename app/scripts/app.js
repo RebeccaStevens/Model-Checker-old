@@ -390,6 +390,9 @@
    * Called once the web components polyfill is loaded or straight away if it's not needed.
    */
   function webComponentsReady() {
+    // Use native Shadow DOM if it's available in the browser.
+    // window.Polymer = window.Polymer || {dom: 'shadow'};
+
     // call `onImportLoaded` (if the import is complete,
     // otherwise setup a listener to do so)
     var link = document.querySelector('#elements');
