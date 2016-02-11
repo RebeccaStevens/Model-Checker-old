@@ -29,16 +29,16 @@
   <meta name="msapplication-TileImage" content="images/touch/ms-icon-144x144.png">
 
   <link rel="stylesheet" href="styles/main.css">
-
-  <script async src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-  <link rel="import" href="elements/elements.html">
-
-  <style is="custom-style" include="shared-styles"></style>
+  <link rel="import" id="elements" href="elements/elements.html" async>
 </head>
 
-<body unresolved class="fullbleed layout vertical">
+<body class="fullbleed layout vertical loading">
   <span id="browser-sync-binding"></span>
+
+  <!-- inject:splashscreen -->
+  <!-- the contents of "partials/splash.html" will be injected here during the build process -->
+  <!-- endinject -->
+
   <template is="dom-bind" id="app">
     <automata-parser id="parser"></automata-parser>
 
@@ -73,126 +73,130 @@
     <!-- end main content -->
 
     <!-- start settings dialog -->
-    <paper-dialog id="settings-dialog" with-backdrop on-iron-overlay-closed="onSettingsClosed">
-      <h2>Settings</h2>
-      <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
-      <p class="vertical layout">
-        <paper-checkbox id="settings-live-compiling" title="Automatically compile the automata as you define them.">
-          <span>Live Compiling</span>
-        </paper-checkbox>
-        <paper-checkbox id="settings-live-building" title="Automatically build the automata as you define them.">
-          <span>Live Building</span>
-        </paper-checkbox>
-        <paper-checkbox id="settings-fair-abstraction" title="Visualise abstracted automata fairly.">
-          <span>Fair Abstraction</span>
-        </paper-checkbox>
-      </p>
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm autofocus>OK</paper-button>
-      </div>
+    <paper-dialog id="settings-dialog" with-backdrop opened="{{settingsDialogOpened}}" on-iron-overlay-opened="onSettingsOpened" on-iron-overlay-closed="onSettingsClosed">
+      <template is="dom-if" if="[[settingsDialogOpened]]">
+        <h2>Settings</h2>
+        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+        <p class="vertical layout">
+          <paper-checkbox id="settings-live-compiling" title="Automatically compile the automata as you define them.">
+            <span>Live Compiling</span>
+          </paper-checkbox>
+          <paper-checkbox id="settings-live-building" title="Automatically build the automata as you define them.">
+            <span>Live Building</span>
+          </paper-checkbox>
+          <paper-checkbox id="settings-fair-abstraction" title="Visualise abstracted automata fairly.">
+            <span>Fair Abstraction</span>
+          </paper-checkbox>
+        </p>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-confirm autofocus>OK</paper-button>
+        </div>
+      </template>
     </paper-dialog>
     <!-- end settings dialog -->
 
     <!-- start help-dialog -->
-    <paper-dialog id="help-dialog" with-backdrop>
-      <h2>Help</h2>
-      <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
-      <paper-tabs selected="{{helpDialogSelectedTab}}" no-bar>
-        <paper-tab>Creating Automata</paper-tab>
-        <paper-tab>Second Tab</paper-tab>
-        <paper-tab>Third Tab</paper-tab>
-      </paper-tabs>
-      <paper-dialog-scrollable>
-        <iron-pages selected="{{helpDialogSelectedTab}}">
-          <section class="page">
-            <div class="group">
-              <h3 class="name">Structure</h3>
-              <p class="description">
-                Multiple automata can be defined in the same file.<br>
-                Each automaton is first given a name which must begin with a capital letter.
-                This is then followed by an equals sign <code class="inline">=</code> then its definition and finally a dot <code class="inline">.</code>.<br>
-                <code class="block">AutomatonName = <em>{some definition}</em>.</code>
-              </p>
-            </div>
-
-            <div class="group">
-              <h3 class="name">Sequences</h3>
-              <p class="description">
-                Create a transition path from the current state to the next state with the specified label.
-              </p>
-              <div class="example">
-                <h4 class="name">Example:</h4>
-                <h5 class="subtitle">Input:</h5>
-                <code class="block">Example1 = action -> STOP.</code>
-                <h5 class="subtitle">Output:</h5>
-                <img src="images/help-dialog/example1.png"></img>
+    <paper-dialog id="help-dialog" with-backdrop opened="{{helpDialogOpened}}">
+      <template is="dom-if" if="[[helpDialogOpened]]">
+        <h2>Help</h2>
+        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+        <paper-tabs selected="{{helpDialogSelectedTab}}" no-bar>
+          <paper-tab>Creating Automata</paper-tab>
+          <paper-tab>Second Tab</paper-tab>
+          <paper-tab>Third Tab</paper-tab>
+        </paper-tabs>
+        <paper-dialog-scrollable>
+          <iron-pages selected="{{helpDialogSelectedTab}}">
+            <section class="page">
+              <div class="group">
+                <h3 class="name">Structure</h3>
+                <p class="description">
+                  Multiple automata can be defined in the same file.<br>
+                  Each automaton is first given a name which must begin with a capital letter.
+                  This is then followed by an equals sign <code class="inline">=</code> then its definition and finally a dot <code class="inline">.</code>.<br>
+                  <code class="block">AutomatonName = <em>{some definition}</em>.</code>
+                </p>
               </div>
-            </div>
 
-            <div class="group">
-              <h3 class="name">Choices</h3>
-              <p class="description">
-                Create a transition path from the current state to each of the specified states with the respective label.
-              </p>
-              <div class="example">
-                <h4 class="name">Example:</h4>
-                <h5 class="subtitle">Input:</h5>
-                <code class="block">Example2 = x -> STOP | y -> ERROR.</code>
-                <h5 class="subtitle">Output:</h5>
-                <img src="images/help-dialog/example2.png"></img>
+              <div class="group">
+                <h3 class="name">Sequences</h3>
+                <p class="description">
+                  Create a transition path from the current state to the next state with the specified label.
+                </p>
+                <div class="example">
+                  <h4 class="name">Example:</h4>
+                  <h5 class="subtitle">Input:</h5>
+                  <code class="block">Example1 = action -> STOP.</code>
+                  <h5 class="subtitle">Output:</h5>
+                  <iron-image src="images/help-dialog/example1.png" width="464" height="134" sizing="contain"></iron-image>
+                </div>
               </div>
-            </div>
 
-            <div class="group">
-              <h3 class="name">Terminals</h3>
-              <p class="description">
-                A terminal is a way for the automaton to end.<br>
-                There are two types of terminals, each is drawn as double bordered circle:<br>
-                <code class="inline">STOP</code> which is green and indicates a successful termination, and
-                <code class="inline">ERROR</code> which is red and indicates an unsuccessful termination.
-              </p>
-            </div>
-
-            <div class="group">
-              <h3 class="name">Referencing</h3>
-              <p class="description">
-                One automaton can reference another automaton so long as it has already been defined by using its name.
-              </p>
-              <div class="example">
-                <h4 class="name">Example:</h4>
-                <h5 class="subtitle">Input:</h5>
-                <code class="block">A = x -> y -> STOP.<br>B = z -> A.</code>
-                <h5 class="subtitle">Output:</h5>
-                <img src="images/help-dialog/example3a.png"></img>
-                <img src="images/help-dialog/example3b.png"></img>
+              <div class="group">
+                <h3 class="name">Choices</h3>
+                <p class="description">
+                  Create a transition path from the current state to each of the specified states with the respective label.
+                </p>
+                <div class="example">
+                  <h4 class="name">Example:</h4>
+                  <h5 class="subtitle">Input:</h5>
+                  <code class="block">Example2 = x -> STOP | y -> ERROR.</code>
+                  <h5 class="subtitle">Output:</h5>
+                  <iron-image src="images/help-dialog/example2.png" width="464" height="209" sizing="contain"></iron-image>
+                </div>
               </div>
-            </div>
 
-            <div class="group">
-              <h3 class="name">Sub-Automata</h3>
-              <p class="description">
-                More complex automaton can be created by using sub-automata.<br>
-                Sub-automata are defined after the main automaton and are comma seperated.<br>
-                Sub-automata and the main automaton can each reference one another other.
-              </p>
-              <div class="example">
-                <h4 class="name">Example:</h4>
-                <h5 class="subtitle">Input:</h5>
-                <code class="block">A = u -> (w -> A | x -> B),<br>B = y -> A | z -> STOP.</code>
-                <h5 class="subtitle">Output:</h5>
-                <img src="images/help-dialog/example4.png"></img>
+              <div class="group">
+                <h3 class="name">Terminals</h3>
+                <p class="description">
+                  A terminal is a way for the automaton to end.<br>
+                  There are two types of terminals, each is drawn as double bordered circle:<br>
+                  <code class="inline">STOP</code> which is green and indicates a successful termination, and
+                  <code class="inline">ERROR</code> which is red and indicates an unsuccessful termination.
+                </p>
               </div>
-            </div>
-          </section>
-          <section class="page">
-            No Content
-          </section>
-          <section class="page">
-            No Content
-          </section>
-        </iron-pages>
-      </paper-dialog-scrollable>
+
+              <div class="group">
+                <h3 class="name">Referencing</h3>
+                <p class="description">
+                  One automaton can reference another automaton so long as it has already been defined by using its name.
+                </p>
+                <div class="example">
+                  <h4 class="name">Example:</h4>
+                  <h5 class="subtitle">Input:</h5>
+                  <code class="block">A = x -> y -> STOP.<br>B = z -> A.</code>
+                  <h5 class="subtitle">Output:</h5>
+                  <iron-image src="images/help-dialog/example3a.png" width="464" height="134" sizing="contain"></iron-image>
+                  <iron-image src="images/help-dialog/example3b.png" width="464" height="134" sizing="contain"></iron-image>
+                </div>
+              </div>
+
+              <div class="group">
+                <h3 class="name">Sub-Automata</h3>
+                <p class="description">
+                  More complex automaton can be created by using sub-automata.<br>
+                  Sub-automata are defined after the main automaton and are comma seperated.<br>
+                  Sub-automata and the main automaton can each reference one another other.
+                </p>
+                <div class="example">
+                  <h4 class="name">Example:</h4>
+                  <h5 class="subtitle">Input:</h5>
+                  <code class="block">A = u -> (w -> A | x -> B),<br>B = y -> A | z -> STOP.</code>
+                  <h5 class="subtitle">Output:</h5>
+                  <iron-image src="images/help-dialog/example4.png" width="464" height="134" sizing="contain"></iron-image>
+                </div>
+              </div>
+            </section>
+            <section class="page">
+              No Content
+            </section>
+            <section class="page">
+              No Content
+            </section>
+          </iron-pages>
+        </paper-dialog-scrollable>
+      </template>
     </paper-dialog>
     <!-- end help-dialog -->
 

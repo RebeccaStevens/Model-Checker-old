@@ -26,6 +26,7 @@ var crypto = require('crypto');
 var polybuild = require('polybuild');
 var dom = require('gulp-dom');
 var babel = require('gulp-babel');
+var inject = require('gulp-inject');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -237,8 +238,20 @@ gulp.task('clean', function(cb) {
   del(['.tmp', 'dist'], cb);
 });
 
+// inject the splash screen into the index.html file
+gulp.task('splash-inject', function() {
+  gulp.src('app/index.html')
+    .pipe(inject(gulp.src(['app/partials/splash.html']), {
+    starttag: '<!-- inject:splashscreen -->',
+    transform: function(filePath, file) {
+      return file.contents.toString('utf8');  // return file contents as string
+    }
+  }))
+  .pipe(gulp.dest('./.tmp'));
+});
+
 // Watch files for changes & reload
-gulp.task('serve', ['styles', 'elements', 'scripts:es6', 'images'], function() {
+gulp.task('serve', ['styles', 'elements', 'scripts:es6', 'images', 'splash-inject'], function() {
   browserSync({
     port: 5000,
     notify: false,
@@ -267,6 +280,7 @@ gulp.task('serve', ['styles', 'elements', 'scripts:es6', 'images'], function() {
   gulp.watch(['app/**/*.es6.js'], ['scripts:es6', reload]);
   gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['jshint']);
   gulp.watch(['app/images/**/*'], reload);
+  gulp.watch(['app/partials/splash.html'], reload);
 });
 
 // Build and serve the output from the dist build
@@ -286,7 +300,7 @@ gulp.task('default', ['clean'], function(cb) {
   runSequence(
     ['copy', 'styles'],
     'elements',
-    ['scripts', 'scripts:es6', 'images', 'fonts', 'html'],
+    ['scripts', 'scripts:es6', 'images', 'fonts', 'html', 'splash-inject'],
     'vulcanize','rename-index', // 'cache-config',
     cb);
 });

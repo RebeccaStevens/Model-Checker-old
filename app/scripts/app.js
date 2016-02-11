@@ -1,31 +1,18 @@
 (function(document) {
   'use strict';
 
-  var app = document.querySelector('#app');
-
   /**
-   * Return whether or not the given array has a length greater than zero.
-   *
-   * @param {!array} array - an array
-   * @returns {boolean}
+   * Create the methods and initialise fields of the app.
    */
-  app.arrayHasData = function(array) {
-    return array.length > 0;
-  };
+  function setupAppClass() {
+    // Grab a reference to our auto-binding template and set it up
+    var app = document.querySelector('#app');
 
-  window.addEventListener('WebComponentsReady', function() {
-
-    /**
-     * The data to use.
+    /*
+     * Methods
+     *
+     * Define the methods before initialising the fields.
      */
-    app.automata = [];
-    app.settings = {
-      liveCompiling: true,
-      liveBuilding: true,
-      fairAbstraction: true
-    };
-    app.helpDialogSelectedTab = 0;
-    app.previousCode = '';
 
     /**
      * Compile the code in the text editor.
@@ -221,10 +208,20 @@
      */
     app.showSettings = function() {
       var dialog = app.$['settings-dialog'];
-      app.$['settings-live-compiling'].checked = app.settings.liveCompiling;
-      app.$['settings-live-building'].checked = app.settings.liveBuilding;
-      app.$['settings-fair-abstraction'].checked = app.settings.fairAbstraction;
       dialog.open();
+    };
+
+    /**
+     * Called when the settings dialog is opened.
+     */
+    app.onSettingsOpened = function() {
+      var dialog = app.$['settings-dialog'];
+
+      // set the values displayed to what they actually are.
+      // Note: can't use `app.$['...']` syntax here as these element where not in the dom from the beginning.
+      dialog.querySelector('#settings-live-compiling').checked = app.settings.liveCompiling;
+      dialog.querySelector('#settings-live-building').checked = app.settings.liveBuilding;
+      dialog.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
     };
 
     /**
@@ -250,6 +247,61 @@
       var help = app.$['help-dialog'];
       help.open();
     };
+
+    /**
+     * Return whether or not the given array has a length greater than zero.
+     *
+     * @param {!array} array - an array
+     * @returns {boolean}
+     */
+    app.arrayHasData = function(array) {
+      return array.length > 0;
+    };
+
+    /*
+     * Fields
+     *
+     * Initialise the fields after the methods are defined.
+     *
+     * Note: when some fields are initialised, they may cause
+     * methods calls and those methods need to already be defined.
+     */
+
+    /**
+     * An array of Automaton.
+     *
+     * @type {Automaton[]}
+     */
+    app.automata = [];
+
+    /**
+     * An object containing any user settings.
+     *
+     * @type Object
+     */
+    app.settings = {
+      liveCompiling: true,
+      liveBuilding: true,
+      fairAbstraction: true
+    };
+
+    /**
+     * The selected tab on the help dialog.
+     *
+     * @type {Number}
+     */
+    app.helpDialogSelectedTab = 0;
+
+    /**
+     * The previous code in the text editor.
+     *
+     * @type {String}
+     */
+    app.previousCode = '';
+
+    /*
+     * Listener
+     */
 
     /**
      * Called when any of the settings are changed.
@@ -320,6 +372,107 @@
         default: return;
       }
     });
+  }
 
-  });
+  /**
+   * Update the percentage that is displayed on the splash screen
+   */
+  function splashLoadingPercentUpdate(taskComple, totalTasks) {
+    var splashLoadingPercent = document.getElementById('splash-loading-percent');
+    if (splashLoadingPercent) {
+      splashLoadingPercent.textContent = (100 * (taskComple / totalTasks)).toFixed(1) + '%';
+    }
+  }
+
+  /**
+   * Called once the element definision import is loaded.
+   */
+  function onImportsLoaded() {
+    // Elements have now been upgraded and are ready to use
+
+    // styles are also ready so we can now add the shared styles to the app's root
+    var sharedStyles = document.createElement('style', 'custom-style');
+    sharedStyles.include = 'shared-styles';
+    document.head.appendChild(sharedStyles);
+
+    setupAppClass();
+
+    // everything is now setup - remove the splashscreen
+    var splash = document.getElementById('splash');
+    splash.addEventListener('transitionend', splash.remove);
+    document.body.classList.remove('loading');
+
+    Polymer.updateStyles(); // and update the app's look
+  }
+
+  /**
+   * Calls `onImportsLoaded` once all the element definisions are loaded.
+   */
+  function waitUntilElementsFullyParsed() {
+    var link = document.querySelector('#elements');   // the main element bundle
+    var allImports = link.import.querySelectorAll('link[rel="import"]');  // all the imports in the main element bundle
+    var numberOfImportsComplete = 0;
+
+    splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
+
+    /**
+     * Called once each import is ready.
+     */
+    var importComplete = function() {
+      numberOfImportsComplete++;
+      splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
+
+      // if all imports are complete
+      if (numberOfImportsComplete === allImports.length) {
+        onImportsLoaded();
+      }
+    };
+
+    // loop through all the imports and call `importComplete` if it's complete,
+    // otherwise setup a listener to do so
+    for (var i = 0; i < allImports.length; i++) {
+      if (allImports[i].import && (
+        allImports[i].import.readyState === 'complete' ||
+        allImports[i].import.readyState === 'interactive')) {
+        importComplete();
+      } else {
+        allImports[i].addEventListener('load', importComplete);
+      }
+    }
+  }
+
+  /**
+   * Called once the web components polyfill is loaded or straight away if it's not needed.
+   */
+  function webComponentsLibReady() {
+    // Use native Shadow DOM if it's available in the browser.
+    // window.Polymer = window.Polymer || {dom: 'shadow'};
+
+    // call `onImportsLoaded` (if the import is complete,
+    // otherwise setup a listener to do so)
+    var link = document.querySelector('#elements');
+
+    if (link.import && (link.import.readyState === 'complete' || link.import.readyState === 'interactive')) {
+      waitUntilElementsFullyParsed();
+    } else {
+      link.addEventListener('load', waitUntilElementsFullyParsed);
+    }
+  }
+
+  // detect if web components supported are natively supported by the browser
+  var webComponentsSupported = (
+    'registerElement' in document &&
+    'import' in document.createElement('link') &&
+    'content' in document.createElement('template'));
+
+  // if they're not, load the polyfill
+  if (webComponentsSupported) {
+    webComponentsLibReady();
+  } else {
+    var script = document.createElement('script');
+    script.onload = webComponentsLibReady;
+    script.async = true;
+    script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+    document.head.appendChild(script);
+  }
 })(document);
