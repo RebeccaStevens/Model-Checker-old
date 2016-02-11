@@ -106,14 +106,22 @@
       .splash-loading {
         border: solid 3px #333;
         background: #fff;
-        font-size: 32pt;
         position: fixed;
         left: calc(50vw - 200px);
         top: calc(50vh - 75px);
         width: 400px;
         height: 150px;
-        line-height: 150px;
         text-align: center;
+      }
+      .splash-loading .splash-loading-messgae {
+        height: 50px;
+        line-height: 60px;
+        font-size: 22pt;
+      }
+      .splash-loading #splash-loading-percent {
+        height: 100px;
+        line-height: 80px;
+        font-size: 42pt;
       }
     </style>
     <div class="splash-main-toolbar"></div>
@@ -126,7 +134,8 @@
     </div>
     <div class="splash-backdrop"></div>
     <div class="splash-loading">
-      Loading...
+      <div class="splash-loading-messgae">Loading...</div>
+      <div id="splash-loading-percent">0.0%</div>
     </div>
   </div>
 

@@ -402,6 +402,10 @@
      */
     var importComplete = function() {
       numberOfImportsComplete++;
+
+      var splashLoadingPercent = document.getElementById('splash-loading-percent');
+      splashLoadingPercent.textContent = (100 * (numberOfImportsComplete / allImports.length)).toFixed(1) + '%';
+
       // if all imports are complete
       if (numberOfImportsComplete === allImports.length) {
         onImportsLoaded();
