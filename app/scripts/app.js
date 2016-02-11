@@ -12,7 +12,10 @@
     sharedStyles.include = 'shared-styles';
     document.head.appendChild(sharedStyles);
 
-    document.getElementById('splash').remove(); // remove the splashscreen
+    // everything is now setup - remove the splashscreen
+    var splash = document.getElementById('splash');
+    splash.addEventListener('transitionend', splash.remove);
+    document.body.classList.remove('loading');
 
     Polymer.updateStyles(); // and update the app's look
 
