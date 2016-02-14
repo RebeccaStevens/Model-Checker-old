@@ -1,8 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/juicy-ace-editor/juicy-ace-editor.html">
 <link rel="import" href="../../styles/shared-styles.html">
-<link rel="import" href="../imports/ace.html">
 
 <!--
 An element for accepting text content from the user.
@@ -25,8 +25,7 @@ Example:<br>
       padding: 0;
       @apply(--layout-fit);
     }
-    #editor {
-      box-sizing: border-box;
+    #jeditor {
       position: absolute;
       top: 0;
       right: 0;
@@ -35,8 +34,12 @@ Example:<br>
     }
   </style>
   <template>
-    <paper-material>
-      <div id="editor"></div>
+    <paper-material id="frame">
+      <template is="dom-bind" id="juicy-fixer">
+        <juicy-ace-editor id="jeditor"
+          on-change="_onCodeChanged"
+          on-editor-ready="_onEditorReady"></juicy-ace-editor>
+      </template>
     </paper-material>
   </template>
 </dom-module>
@@ -47,75 +50,32 @@ Example:<br>
       is: 'text-editor',
 
       /**
-       * Fired when the text in the editor is changed.
-       * When the user is typing, multiple events will be debounced into one.
+       * Fired when the code in the editor is changed.
        *
-       * @event text-editor-change
+       * @event code-changed
+       * @param {Event} originalEvent - the original change event that was fired.
        */
 
       properties: {
         /**
-         * If true the editor will be brought into focus automatically when the elements is added to the dom
-         *
-         * @default false
+         * If true, the editor will be brought into focus automatically when the elements is attached to the dom.
          */
         autofocus: {
           type: Boolean,
-          value: false
-        },
-
-        /**
-         * The amount of time before a text-editor-change event is fired after the editor's content changes.
-         *
-         * @default 1000
-         */
-        changeEventDebounceTime: {
-          type: Number,
-          value: 1000,
-          notify: true
-        },
-
-        /**
-         * The text editor
-         */
-        _editor: {
-          type: Object,
-          value: function(){
-            var editor = ace.edit(this.$.editor);
-            editor.setTheme('ace/theme/github');
-            editor.getSession().setMode('ace/mode/plain_text'); // syntax highlighting
-            return editor;
-          },
-          readOnly: true
-        },
-
-        /**
-         * Don't fire a 'text-editor-change' event the next time the editor's content changes
-         */
-        _skipNextCodeChangeEvent: {
-          type: Boolean,
-          value: false
+          value: false,
+          reflectToAttribute: true
         }
       },
 
       /**
-       * Get the code the user has provided
-       *
-       * @return {string} The code
-       */
-      getCode: function(){
-        return this._editor.getValue();
-      },
-
-      /**
-       * Set the code.
+       * Set the code in the editor.
        *
        * @param {!string} code - The code
        */
       setCode: function(code){
         this._skipNextCodeChangeEvent = true;
-        this._editor.setValue(code, 1);
-        this.fire('text-editor-change');
+        this.$.jeditor.setValue(code, 1);
+        this.fire('code-changed');
       },
 
       /**
@@ -132,7 +92,7 @@ Example:<br>
           column: 2,
           text: text,
           type: type
-        }
+        };
 
         return annotation;
       },
@@ -143,33 +103,74 @@ Example:<br>
        * @param {!array} annotations - an array of annotations
        */
       setAnnotations: function(annotations) {
-        this._editor.session.setAnnotations(annotations);
+        this.$.jeditor.session.setAnnotations(annotations);
       },
 
       /**
        * Bring this element into focus
        */
-      focus: function(){
-        this._editor.focus();
+      focus: function() {
+        if (this.$.jeditor.editor) {
+          this.$.jeditor.editor.focus();
+        }
       },
 
-      ready: function(){
-        if(this.autofocus){
-          this.focus();
-        }
+      /**
+       * Called when the element has been created, but before property values are set and local DOM is initialized.
+       */
+      created: function() {
 
-        // fire a 'text-editor-change' event when the text editor's content changes
-        this._editor.on('change', function() {
-          if (this._skipNextCodeChangeEvent){
-            this._skipNextCodeChangeEvent = false;
-            return;
+        // Define `this.code`
+        // Defined here instead of in the properties object as we want control over the getter and setter
+
+        /**
+         * The code in the editor.
+         *
+         * @type {String}
+         */
+        Object.defineProperty(this, 'code', {
+          get: function() {
+            return this.$.jeditor.value;
+          },
+          set: function(val) {
+            this.$.jeditor.value = val;
+            this.$.jeditor.editor.clearSelection();
+            this.$.jeditor.editor.navigateFileEnd();
+            return val;
           }
+        });
+      },
 
-          // merge multiple events into one (debounce them)
-          this.debounce('text-editor-change', function() {
-            this.fire('text-editor-change');
-          }, this.changeEventDebounceTime);
-        }.bind(this));
+      ready: function() {
+        // there's a bug with adding the <juicy-ace-editor> straight into the dom as normal
+        // `juicy-fixer` is a work around for it
+        this.$.jeditor = this.$['juicy-fixer'].$.jeditor;
+        this.$['juicy-fixer']._onEditorReady = this._onEditorReady.bind(this);
+        this.$['juicy-fixer']._onCodeChanged = this._onCodeChanged.bind(this);
+      },
+
+      /**
+       * Called when the code in the editor changes.
+       */
+      _onCodeChanged: function(e) {
+        this.fire('code-changed', {originalEvent: e});
+      },
+
+      /**
+       * Called when the editor is ready.
+       */
+      _onEditorReady: function() {
+        // for some reason `this.$.jeditor.editor` is not defined yet so wait a bit until it is
+        this.async(function() {
+          this.$.jeditor.editor.$blockScrolling = Infinity;   // disable warning messgae
+
+          // if this should autofocus, wait 100ms then do it
+          if (this.autofocus) {
+            this.async(function() {
+              this.focus();
+            }, 100);
+          }
+        });
       }
     });
   })();

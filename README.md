@@ -37,7 +37,7 @@ be set
     to on or off in the toolbar. Assuming the live compiling option is off, definitions are retrieved from the text editor 
     using the private getCode function outlined in text-editor.html when the compile button is used. SetCode is used here when
     the user opts to load a txt file of their choosing and updates the corresponding field within this element. If live compilation
-    is on, the text given by the user is updated on each key press by firing a text-editor-change event. These events are limited
+    is on, the text given by the user is updated on each key press by firing a code-changed event. These events are limited
     to be a second away from each other at least. This value is given as the changeEventDebounceTime defined in text-editor.html.
 
   * **automaton-walker**
