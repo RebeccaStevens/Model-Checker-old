@@ -65,15 +65,16 @@ Example:<br>
         /**
          * The ace editor object
          */
-        _editor: {
-          type: Object,
-          value: function(){
-            var editor = ace.edit(this.$.editor);
-            editor.setTheme('ace/theme/github');
-            editor.getSession().setMode('ace/mode/plain_text'); // syntax highlighting
-            return editor;
-          },
-          readOnly: true
+        _editor: Object,
+
+        /**
+         * This stores the `code` before the ace text editor is ready
+         */
+        _initialCode: {
+          type: String,
+          value: function() {
+            return this.textContent;
+          }
         }
       },
 
@@ -109,7 +110,7 @@ Example:<br>
        * Bring this element into focus
        */
       focus: function(){
-        this._editor.focus();
+        // this._editor.focus();
       },
 
       /**
@@ -127,10 +128,17 @@ Example:<br>
          */
         Object.defineProperty(this, 'code', {
           get: function() {
-            return this._editor.getValue();
+            if (this._editor) {
+              return this._editor.getValue();
+            }
+            return this._initialCode;
           },
           set: function(val) {
-            return this._editor.setValue(val, 1);
+            if (this._editor) {
+              return this._editor.setValue(val, 1);
+            }
+            this._initialCode = val;
+            return this._initialCode;
           }
         });
       },
@@ -139,21 +147,18 @@ Example:<br>
        * Called after property values are set and local DOM is initialized.
        */
       ready: function() {
-        this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
-
-        // fire a 'code-changed' event when the text editor's content changes
-        this._editor.addEventListener('change', function(e) {
-          this.fire('code-changed', {originalEvent: e});
-        }.bind(this));
+        this._editor = ace.edit(this.$.editor);
       },
 
       /**
        * Called after the element is attached to the document.
        */
       attached: function() {
+        this.initializeEditor();
+
         if(this.autofocus) {
           this.async(function() {
-              this.focus();
+            this.focus();
           }, 100);
         }
       },
@@ -165,7 +170,7 @@ Example:<br>
         if(!this.isAttached){
             return false;
         }
-        switch(attr){
+        switch(attr) {
           case 'theme':
             this._editor.setTheme(newVal);
             break;
@@ -188,6 +193,20 @@ Example:<br>
             this._editor.getSession().setUseWrapMode(newVal !== null);
             break;
         }
+      },
+
+
+      initializeEditor: function() {
+        this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
+
+        // ace.config.set('basePath', this.resolveUrl('../ace-builds/src-min-noconflict/'));
+
+        // fire a 'code-changed' event when the text editor's content changes
+        this._editor.addEventListener('change', function(e) {
+          this.fire('code-changed', {originalEvent: e});
+        }.bind(this));
+
+        this.code = this._initialCode;
       }
     });
   })();
