@@ -50,14 +50,12 @@ Example:<br>
        * Fired when the text in the editor is changed.
        * When the user is typing, multiple events will be debounced into one.
        *
-       * @event text-editor-change
+       * @event code-changed
        */
 
       properties: {
         /**
-         * If true the editor will be brought into focus automatically when the elements is added to the dom
-         *
-         * @default false
+         * If true the editor will be brought into focus automatically when the elements is attached to the dom.
          */
         autofocus: {
           type: Boolean,
@@ -65,18 +63,7 @@ Example:<br>
         },
 
         /**
-         * The amount of time before a text-editor-change event is fired after the editor's content changes.
-         *
-         * @default 1000
-         */
-        changeEventDebounceTime: {
-          type: Number,
-          value: 1000,
-          notify: true
-        },
-
-        /**
-         * The text editor
+         * The ace editor object
          */
         _editor: {
           type: Object,
@@ -87,35 +74,7 @@ Example:<br>
             return editor;
           },
           readOnly: true
-        },
-
-        /**
-         * Don't fire a 'text-editor-change' event the next time the editor's content changes
-         */
-        _skipNextCodeChangeEvent: {
-          type: Boolean,
-          value: false
         }
-      },
-
-      /**
-       * Get the code the user has provided
-       *
-       * @return {string} The code
-       */
-      getCode: function(){
-        return this._editor.getValue();
-      },
-
-      /**
-       * Set the code.
-       *
-       * @param {!string} code - The code
-       */
-      setCode: function(code){
-        this._skipNextCodeChangeEvent = true;
-        this._editor.setValue(code, 1);
-        this.fire('text-editor-change');
       },
 
       /**
@@ -132,7 +91,7 @@ Example:<br>
           column: 2,
           text: text,
           type: type
-        }
+        };
 
         return annotation;
       },
@@ -153,23 +112,82 @@ Example:<br>
         this._editor.focus();
       },
 
-      ready: function(){
-        if(this.autofocus){
-          this.focus();
-        }
+      /**
+       * Called when the element has been created, but before property values are set and local DOM is initialized.
+       */
+      created: function() {
 
-        // fire a 'text-editor-change' event when the text editor's content changes
-        this._editor.on('change', function() {
-          if (this._skipNextCodeChangeEvent){
-            this._skipNextCodeChangeEvent = false;
-            return;
+        // Define `this.code`
+        // Defined here instead of in the properties object as we want control over the getter and setter
+
+        /**
+         * The code in the editor.
+         *
+         * @type {String}
+         */
+        Object.defineProperty(this, 'code', {
+          get: function() {
+            return this._editor.getValue();
+          },
+          set: function(val) {
+            return this._editor.setValue(val, 1);
           }
+        });
+      },
 
-          // merge multiple events into one (debounce them)
-          this.debounce('text-editor-change', function() {
-            this.fire('text-editor-change');
-          }, this.changeEventDebounceTime);
+      /**
+       * Called after property values are set and local DOM is initialized.
+       */
+      ready: function() {
+        this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
+
+        // fire a 'code-changed' event when the text editor's content changes
+        this._editor.addEventListener('change', function(e) {
+          this.fire('code-changed', {originalEvent: e});
         }.bind(this));
+      },
+
+      /**
+       * Called after the element is attached to the document.
+       */
+      attached: function() {
+        if(this.autofocus) {
+          this.async(function() {
+              this.focus();
+          }, 100);
+        }
+      },
+
+      /**
+       * Called when one of the element's attributes is changed.
+       */
+      attributeChanged: function(attr, oldVal, newVal) {
+        if(!this.isAttached){
+            return false;
+        }
+        switch(attr){
+          case 'theme':
+            this._editor.setTheme(newVal);
+            break;
+          case 'mode':
+            this._editor.getSession().setMode(newVal);
+            break;
+          case 'fontsize':
+            this._editor.setFontSize(newVal);
+            break;
+          case 'softtabs':
+            this._editor.getSession().setUseSoftTabs(newVal);
+            break;
+          case 'tabsize':
+            this._editor.getSession().setTabSize(newVal);
+            break;
+          case 'readonly':
+            this._editor.setReadOnly(newVal);
+            break;
+          case 'wrapmode':
+            this._editor.getSession().setUseWrapMode(newVal !== null);
+            break;
+        }
       }
     });
   })();
