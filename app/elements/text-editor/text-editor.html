@@ -11,6 +11,14 @@ Example:<br>
 
     <text-editor>console.log("Example of initial code.");</text-editor>
 
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--text-editor` | A mixin applied to the editor | `{}`
+
 @element text-editor
 @demo text-editor/demo/index.html
 -->
@@ -32,6 +40,7 @@ Example:<br>
       right: 0;
       bottom: 0;
       left: 0;
+      @apply(--text-editor);
     }
   </style>
   <template>
