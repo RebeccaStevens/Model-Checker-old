@@ -109,8 +109,8 @@ Example:<br>
       /**
        * Bring this element into focus
        */
-      focus: function(){
-        // this._editor.focus();
+      focus: function() {
+        this._editor.focus();
       },
 
       /**
@@ -147,7 +147,7 @@ Example:<br>
        * Called after property values are set and local DOM is initialized.
        */
       ready: function() {
-        this._editor = ace.edit(this.$.editor);
+        this._editor = ace.edit(this.$.editor); // turn `this.$.editor` into a text editor
       },
 
       /**
@@ -156,7 +156,7 @@ Example:<br>
       attached: function() {
         this.initializeEditor();
 
-        if(this.autofocus) {
+        if (this.autofocus) {
           this.async(function() {
             this.focus();
           }, 100);
@@ -167,10 +167,10 @@ Example:<br>
        * Called when one of the element's attributes is changed.
        */
       attributeChanged: function(attr, oldVal, newVal) {
-        if(!this.isAttached){
-            return false;
+        if (!this.isAttached) {
+          return false;
         }
-        switch(attr) {
+        switch (attr) {
           case 'theme':
             this._editor.setTheme(newVal);
             break;
@@ -220,6 +220,7 @@ Example:<br>
       },
 
       /**
+       * Inject an ace theme style into this element.
        */
       injectTheme: function(themeId) {
         var n = document.querySelector(themeId);
@@ -227,6 +228,7 @@ Example:<br>
       },
 
       /**
+       * Helper function to clone a style tag.
        */
       cloneStyle: function(style) {
         var s = document.createElement('style');
