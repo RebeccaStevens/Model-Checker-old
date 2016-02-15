@@ -110,7 +110,7 @@ Example:<br>
         /**
          * Wrap text.
          */
-        wrapmode: {
+        wrap: {
           type: Boolean,
           value: false,
           reflectToAttribute: true
@@ -233,18 +233,18 @@ Example:<br>
             this._editor.getSession().setMode(newVal);
             break;
           case 'fontsize':
-            this._editor.setFontSize(newVal);
+            this._editor.setFontSize(Number.parseInt(newVal, 10));
             break;
           case 'softtabs':
-            this._editor.getSession().setUseSoftTabs(newVal);
+            this._editor.getSession().setUseSoftTabs(this.stringToBoolean(newVal));
             break;
           case 'tabsize':
-            this._editor.getSession().setTabSize(newVal);
+            this._editor.getSession().setTabSize(Number.parseInt(newVal, 10));
             break;
           case 'readonly':
-            this._editor.setReadOnly(newVal);
+            this._editor.setReadOnly(this.stringToBoolean(newVal));
             break;
-          case 'wrapmode':
+          case 'wrap':
             this._editor.getSession().setUseWrapMode(newVal !== null);
             break;
         }
@@ -320,6 +320,26 @@ Example:<br>
         s.id = style.id;
         s.textContent = style.textContent;
         return s;
+      },
+
+      /**
+       * Helper function to convert a string to a Boolean.
+       * "false" -> false
+       * "true" -> true
+       *
+       * @param {String} string - the string to convert
+       * @returns {Boolean}
+       */
+      stringToBoolean: function(string) {
+        switch (string.toLowerCase().trim()) {
+          case 'true':
+            return true;
+          case 'false':
+          case null:
+            return false;
+          default:
+            return Boolean(string);
+        }
       }
     });
   })();
