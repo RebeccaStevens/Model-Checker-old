@@ -233,13 +233,13 @@ Example:<br>
             this._editor.setFontSize(Number.parseInt(newVal, 10));
             break;
           case 'softtabs':
-            this._editor.getSession().setUseSoftTabs(this._stringToBoolean(newVal));
+            this._editor.getSession().setUseSoftTabs(newVal !== null);
             break;
           case 'tabsize':
             this._editor.getSession().setTabSize(Number.parseInt(newVal, 10));
             break;
           case 'readonly':
-            this._editor.setReadOnly(this._stringToBoolean(newVal));
+            this._editor.setReadOnly(newVal !== null);
             break;
           case 'wrap':
             this._editor.getSession().setUseWrapMode(newVal !== null);
@@ -317,26 +317,6 @@ Example:<br>
         s.id = style.id;
         s.textContent = style.textContent;
         return s;
-      },
-
-      /**
-       * Helper function to convert a string to a Boolean.
-       * "false" -> false
-       * "true" -> true
-       *
-       * @param {String} string - the string to convert
-       * @returns {Boolean}
-       */
-      _stringToBoolean: function(string) {
-        switch (string.toLowerCase().trim()) {
-          case 'true':
-            return true;
-          case 'false':
-          case null:
-            return false;
-          default:
-            return Boolean(string);
-        }
       }
     });
   })();
