@@ -55,6 +55,11 @@ Example:<br>
 
       properties: {
         /**
+         * The code in the editor.
+         */
+        code: String,
+
+        /**
          * If true the editor will be brought into focus automatically when the elements is attached to the dom.
          */
         autofocus: {
@@ -172,14 +177,8 @@ Example:<br>
        */
       created: function() {
 
-        // Define `this.code`
-        // Defined here instead of in the properties object as we want control over the getter and setter
-
-        /**
-         * The code in the editor.
-         *
-         * @type {String}
-         */
+        // Define `this.code`'s getter and setter.
+        // This will override the code property defined in the properties array.
         Object.defineProperty(this, 'code', {
           get: function() {
             if (this._editor) {
