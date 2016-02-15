@@ -212,6 +212,13 @@ Example:<br>
             this.focus();
           }, 100);
         }
+
+        // call attributeChanged with the initial value of each attribute (so long as it is defined)
+        ['theme', 'mode', 'fontsize', 'softtabs', 'tabsize', 'readonly', 'wrap'].forEach(function(e) {
+          if (this[e]) {
+            this.attributeChanged(e, undefined, this[e]);
+          }
+        }.bind(this));
       },
 
       /**
