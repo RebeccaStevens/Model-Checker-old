@@ -63,6 +63,60 @@ Example:<br>
         },
 
         /**
+         * The ace theme to use.
+         */
+        theme: {
+          type: String,
+          value: undefined,
+          reflectToAttribute: true
+        },
+
+        /**
+         * The ace mode to use.
+         */
+        mode: {
+          type: String,
+          value: 'ace/mode/text',
+          reflectToAttribute: true
+        },
+
+        /**
+         * Font size to use.
+         */
+        fontsize: {
+          type: Number,
+          value: 12,
+          reflectToAttribute: true
+        },
+
+        /**
+         * Use softtabs.
+         */
+        softtabs: {
+          type: Boolean,
+          value: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * Readonly.
+         */
+        readonly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        /**
+         * Wrap text.
+         */
+        wrapmode: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        /**
          * The ace editor object
          */
         _editor: Object,
@@ -173,6 +227,7 @@ Example:<br>
         switch (attr) {
           case 'theme':
             this._editor.setTheme(newVal);
+            this.injectTheme(newVal);
             break;
           case 'mode':
             this._editor.getSession().setMode(newVal);
@@ -213,7 +268,7 @@ Example:<br>
         // if we are using the shadow dom (not the shady dom)
         if (Polymer.Settings.useShadow) {
           // we need to copy the stylings from the main document to this element's shadow root
-          // as ace put's its stylings in the wrong place
+          // as ace is putting its stylings in the wrong place
           this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace_editor.css')));
           this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace-tm')));
         }
@@ -221,14 +276,44 @@ Example:<br>
 
       /**
        * Inject an ace theme style into this element.
+       *
+       * @param {!String} theme - the name/path of the ace theme to use
        */
-      injectTheme: function(themeId) {
-        var n = document.querySelector(themeId);
-        this.shadowRoot.appendChild(this.cloneStyle(n));
+      injectTheme: function(theme) {
+        // this is only needed when using the shadow dom (not the shady dom)
+        if (Polymer.Settings.useShadow) {
+          var id = 'ace-' + theme.substring(theme.lastIndexOf('/') + 1);  // the id of this theme
+
+          // does the element already have this theme style loaded?
+          if (Polymer.dom(this).querySelector('#' + id) !== null) {
+            return;   // if so, we don't need to do any thing else
+          }
+
+          var style = document.getElementById(id);  // does the style element aready exist in the document
+
+          // if so, simply copy it
+          if (style) {
+            this.shadowRoot.appendChild(this.cloneStyle(style));
+          }
+          // if not, wait until it does then copy it
+          else {
+            var copyTheme = function(e) {
+              if (e.srcElement.id === id) {
+                this.shadowRoot.appendChild(this.cloneStyle(e.srcElement));
+                document.head.removeEventListener('DOMNodeInserted', copyTheme, false);
+              }
+            }.bind(this);
+
+            // wait until the theme is injected into the head, then copy it to this element
+            document.head.addEventListener('DOMNodeInserted', copyTheme, false);
+          }
+        }
       },
 
       /**
        * Helper function to clone a style tag.
+       *
+       * @param {!HTMLStyleElement} style - the style element to copy
        */
       cloneStyle: function(style) {
         var s = document.createElement('style');
