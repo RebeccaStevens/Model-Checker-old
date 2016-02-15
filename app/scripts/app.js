@@ -327,7 +327,7 @@
      * This is the event which triggers when the text in the text area is changed.
      * Only care about this if the live-compiling check-box is ticked.
      */
-    app.$.editor.addEventListener('code-changed', function() {
+    document.addEventListener('code-changed', function() {
       if (app.settings.liveCompiling) {
         app.compile(false);
       }
