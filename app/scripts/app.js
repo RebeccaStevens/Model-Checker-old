@@ -450,7 +450,7 @@
    */
   function webComponentsLibReady() {
     // Use native Shadow DOM if it's available in the browser.
-    // window.Polymer = window.Polymer || {dom: 'shadow'};
+    window.Polymer = window.Polymer || {dom: 'shadow'};
 
     // call `onImportsLoaded` (if the import is complete,
     // otherwise setup a listener to do so)
