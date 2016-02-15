@@ -217,11 +217,13 @@
     app.onSettingsOpened = function() {
       var dialog = app.$['settings-dialog'];
 
+      var d = Polymer.dom(dialog);
+
       // set the values displayed to what they actually are.
       // Note: can't use `app.$['...']` syntax here as these element where not in the dom from the beginning.
-      dialog.querySelector('#settings-live-compiling').checked = app.settings.liveCompiling;
-      dialog.querySelector('#settings-live-building').checked = app.settings.liveBuilding;
-      dialog.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
+      d.querySelector('#settings-live-compiling').checked = app.settings.liveCompiling;
+      d.querySelector('#settings-live-building').checked = app.settings.liveBuilding;
+      d.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
     };
 
     /**
@@ -232,9 +234,11 @@
 
       // if 'ok' button was clicked
       if (dialog.closingReason.confirmed) {
-        app.set('settings.liveCompiling', app.$['settings-live-compiling'].checked);
-        app.set('settings.liveBuilding', app.$['settings-live-building'].checked);
-        app.set('settings.fairAbstraction', app.$['settings-fair-abstraction'].checked);
+        var d = Polymer.dom(dialog);
+
+        app.set('settings.liveCompiling', d.querySelector('#settings-live-compiling').checked);
+        app.set('settings.liveBuilding', d.querySelector('#settings-live-building').checked);
+        app.set('settings.fairAbstraction', d.querySelector('#settings-fair-abstraction').checked);
       }
 
       app.$.editor.focus();
