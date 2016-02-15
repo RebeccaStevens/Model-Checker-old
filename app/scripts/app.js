@@ -50,7 +50,7 @@
           app.previousCode = code;
 
           // re-get code to ensure correct line positions for annotations and error highlighting
-          code = app.$.editor.getCode();
+          code = app.$.editor.code;
 
           var automata = [];
           try {
@@ -147,7 +147,7 @@
      */
     app.getCode = function() {
       var code = '';
-      var temp = app.$.editor.getCode();
+      var temp = app.$.editor.code;
 
       // remove white space and line breaks
       temp = temp.replace(/ /g, '');
@@ -178,7 +178,7 @@
         var reader = new FileReader();
         reader.onload = function() {
           var text = reader.result;
-          app.$.editor.setCode(text);
+          app.$.editor.code = text;
           app.$.editor.focus();
         };
         reader.readAsText(input.files[0]);
@@ -198,7 +198,7 @@
       }
 
       var blob = new Blob(
-        [app.$.editor.getCode()],
+        [app.$.editor.code],
         {type: 'text/plain;charset=utf-8'});
       saveAs(blob, filename + '.txt');
     };
@@ -327,7 +327,7 @@
      * This is the event which triggers when the text in the text area is changed.
      * Only care about this if the live-compiling check-box is ticked.
      */
-    document.addEventListener('text-editor-change', function() {
+    app.$.editor.addEventListener('code-changed', function() {
       if (app.settings.liveCompiling) {
         app.compile(false);
       }
