@@ -206,7 +206,7 @@ Example:<br>
        * Called after the element is attached to the document.
        */
       attached: function() {
-        this.initializeEditor();
+        this._initializeEditor();
 
         if (this.autofocus) {
           this.async(function() {
@@ -225,7 +225,7 @@ Example:<br>
         switch (attr) {
           case 'theme':
             this._editor.setTheme(newVal);
-            this.injectTheme(newVal);
+            this._injectTheme(newVal);
             break;
           case 'mode':
             this._editor.getSession().setMode(newVal);
@@ -234,13 +234,13 @@ Example:<br>
             this._editor.setFontSize(Number.parseInt(newVal, 10));
             break;
           case 'softtabs':
-            this._editor.getSession().setUseSoftTabs(this.stringToBoolean(newVal));
+            this._editor.getSession().setUseSoftTabs(this._stringToBoolean(newVal));
             break;
           case 'tabsize':
             this._editor.getSession().setTabSize(Number.parseInt(newVal, 10));
             break;
           case 'readonly':
-            this._editor.setReadOnly(this.stringToBoolean(newVal));
+            this._editor.setReadOnly(this._stringToBoolean(newVal));
             break;
           case 'wrap':
             this._editor.getSession().setUseWrapMode(newVal !== null);
@@ -251,7 +251,7 @@ Example:<br>
       /**
        * Initialize the editor.
        */
-      initializeEditor: function() {
+      _initializeEditor: function() {
         this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
 
         // ace.config.set('basePath', this.resolveUrl('../ace-builds/src-min-noconflict/'));
@@ -267,8 +267,8 @@ Example:<br>
         if (Polymer.Settings.useShadow) {
           // we need to copy the stylings from the main document to this element's shadow root
           // as ace is putting its stylings in the wrong place
-          this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace_editor.css')));
-          this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace-tm')));
+          this.shadowRoot.appendChild(this._cloneStyle(document.getElementById('ace_editor.css')));
+          this.shadowRoot.appendChild(this._cloneStyle(document.getElementById('ace-tm')));
         }
       },
 
@@ -277,7 +277,7 @@ Example:<br>
        *
        * @param {!String} theme - the name/path of the ace theme to use
        */
-      injectTheme: function(theme) {
+      _injectTheme: function(theme) {
         // this is only needed when using the shadow dom (not the shady dom)
         if (Polymer.Settings.useShadow) {
           var id = 'ace-' + theme.substring(theme.lastIndexOf('/') + 1);  // the id of this theme
@@ -291,13 +291,13 @@ Example:<br>
 
           // if so, simply copy it
           if (style) {
-            this.shadowRoot.appendChild(this.cloneStyle(style));
+            this.shadowRoot.appendChild(this._cloneStyle(style));
           }
           // if not, wait until it does then copy it
           else {
             var copyTheme = function(e) {
               if (e.srcElement.id === id) {
-                this.shadowRoot.appendChild(this.cloneStyle(e.srcElement));
+                this.shadowRoot.appendChild(this._cloneStyle(e.srcElement));
                 document.head.removeEventListener('DOMNodeInserted', copyTheme, false);
               }
             }.bind(this);
@@ -313,7 +313,7 @@ Example:<br>
        *
        * @param {!HTMLStyleElement} style - the style element to copy
        */
-      cloneStyle: function(style) {
+      _cloneStyle: function(style) {
         var s = document.createElement('style');
         s.id = style.id;
         s.textContent = style.textContent;
@@ -328,7 +328,7 @@ Example:<br>
        * @param {String} string - the string to convert
        * @returns {Boolean}
        */
-      stringToBoolean: function(string) {
+      _stringToBoolean: function(string) {
         switch (string.toLowerCase().trim()) {
           case 'true':
             return true;
