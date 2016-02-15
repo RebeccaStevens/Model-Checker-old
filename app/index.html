@@ -47,7 +47,7 @@
       <paper-button id="btn-compile" title="Compile and Build" raised on-tap="compileAndBuild"><iron-icon icon="av:play-arrow"></iron-icon></paper-button>
       <span class="spacer"></span>
       <paper-icon-button icon="icons:folder-open" title="Open" on-tap="openFile"></paper-icon-button>
-      <input id="open-file" type="file" accept="text/plain" style="display: none;"></input>
+      <input id="open-file" type="file" accept="text/plain" style="display: none;" />
       <span class="spacer"></span>
       <paper-input  id="filename" label="Insert Filename Here" type="text" placeholder="untitled" title="The name given to the file when it is downloaded."></paper-input>
       <paper-icon-button icon="icons:file-download" title="Download" on-tap="downloadFile"></paper-icon-button>
@@ -66,7 +66,7 @@
       <div class="right">
         <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
         <template is="dom-repeat" items="[[automata]]" as="automaton">
-          <automaton-visualisation automaton="[[automaton]]" arrowhead="vee"></automata-visualisation>
+          <automaton-visualisation automaton="[[automaton]]" arrowhead="vee"></automaton-visualisation>
         </template>
       </div>
     </div>
