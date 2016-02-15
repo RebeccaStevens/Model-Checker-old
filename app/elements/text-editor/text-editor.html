@@ -195,7 +195,9 @@ Example:<br>
         }
       },
 
-
+      /**
+       * Initialize the editor.
+       */
       initializeEditor: function() {
         this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
 
@@ -207,6 +209,30 @@ Example:<br>
         }.bind(this));
 
         this.code = this._initialCode;
+
+        // if we are using the shadow dom (not the shady dom)
+        if (Polymer.Settings.useShadow) {
+          // we need to copy the stylings from the main document to this element's shadow root
+          // as ace put's its stylings in the wrong place
+          this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace_editor.css')));
+          this.shadowRoot.appendChild(this.cloneStyle(document.getElementById('ace-tm')));
+        }
+      },
+
+      /**
+       */
+      injectTheme: function(themeId) {
+        var n = document.querySelector(themeId);
+        this.shadowRoot.appendChild(this.cloneStyle(n));
+      },
+
+      /**
+       */
+      cloneStyle: function(style) {
+        var s = document.createElement('style');
+        s.id = style.id;
+        s.textContent = style.textContent;
+        return s;
       }
     });
   })();
