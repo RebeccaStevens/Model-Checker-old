@@ -437,7 +437,11 @@
       splash.parentElement.removeChild(splash);
     };
     splash.addEventListener('transitionend', removeSplash); // IE11 doesn't support `splash.remove`
-    document.body.classList.remove('loading');
+    if (document.body.classList) {
+      document.body.classList.remove('loading');
+    } else {
+      document.body.setAttribute('class', document.body.getAttribute('class').split('loading').join());
+    }
 
     Polymer.updateStyles(); // and update the app's look
   }

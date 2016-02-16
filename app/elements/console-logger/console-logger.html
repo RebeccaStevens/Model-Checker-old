@@ -88,7 +88,12 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       log: function(msg) {
-        this._addMessage(msg).classList.add('log');
+        var node = this._addMessage(msg);
+        if (node.classList) {
+          node.classList.add('log');
+        } else {
+          node.setAttribute('class', node.getAttribute('class') + ' log');
+        }
       },
 
       /**
@@ -97,7 +102,12 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       warn: function(msg) {
-        this._addMessage(msg).classList.add('warn');
+        var node = this._addMessage(msg);
+        if (node.classList) {
+          node.classList.add('warn');
+        } else {
+          node.setAttribute('class', node.getAttribute('class') + ' warn');
+        }
       },
 
       /**
@@ -106,7 +116,12 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       error: function(msg) {
-        this._addMessage(msg).classList.add('error');
+        var node = this._addMessage(msg);
+        if (node.classList) {
+          node.classList.add('error');
+        } else {
+          node.setAttribute('class', node.getAttribute('class') + ' error');
+        }
       },
 
       /**

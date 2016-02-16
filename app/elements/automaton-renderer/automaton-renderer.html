@@ -223,7 +223,11 @@ Custom property | Description | Default
         this.unsetHighlightedNode();
         var node = Polymer.dom(this.$.svg).querySelector('#n' + id);
         if (node) {
-          node.classList.add('highlighted');
+          if (node.classList) {
+            node.classList.add('highlighted');
+          } else {
+            node.setAttribute('class', node.getAttribute('class') + ' highlighted');
+          }
         }
       },
 
@@ -236,7 +240,11 @@ Custom property | Description | Default
         this.unsetHighlightedEdge();
         var edge = Polymer.dom(this.$.svg).querySelector('#e' + id);
         if (edge) {
-          edge.classList.add('highlighted');
+          if (edge.classList) {
+            edge.classList.add('highlighted');
+          } else {
+            edge.setAttribute('class', edge.getAttribute('class') + ' highlighted');
+          }
         }
       },
 
@@ -245,7 +253,11 @@ Custom property | Description | Default
        */
       unsetHighlightedNode: function() {
         Polymer.dom(this.$.svg).querySelectorAll('.node.highlighted').forEach(function(n) {
-          n.classList.remove('highlighted');
+          if (n.classList) {
+            n.classList.remove('highlighted');
+          } else {
+            n.setAttribute('class', n.getAttribute('class').split('highlighted').join());
+          }
         });
       },
 
@@ -253,8 +265,12 @@ Custom property | Description | Default
        * De-highlight all edges.
        */
       unsetHighlightedEdge: function() {
-        Polymer.dom(this.$.svg).querySelectorAll('.edgePath.highlighted').forEach(function(n) {
-          n.classList.remove('highlighted');
+        Polymer.dom(this.$.svg).querySelectorAll('.edgePath.highlighted').forEach(function(e) {
+          if (e.classList) {
+            e.classList.remove('highlighted');
+          } else {
+            e.setAttribute('class', e.getAttribute('class').split('highlighted').join());
+          }
         });
       },
 
