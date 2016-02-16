@@ -139,8 +139,16 @@ Custom property | Description | Default
         _initialCode: {
           type: String,
           value: function() {
-            return this.textContent;
+            return this.textContent.trim();
           }
+        },
+
+        /**
+         * Set to true once the editor has been initialized.
+         */
+        _initialized: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -184,17 +192,35 @@ Custom property | Description | Default
        */
       created: function() {
 
+        var initCode = this.getAttribute('code'); // get any initial code given as an attribute
+
+        // if there is some initCode
+        if (initCode) {
+          var escapeRegExp = function(str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+          };
+
+          var replaceAll = function(str, find, replace) {
+            return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+          };
+
+          // set `_initialCode` to in - replace special characters
+          this._initialCode = replaceAll(replaceAll(initCode,
+              '\\n', '\n'),
+              '\\t', '\t');
+        }
+
         // Define `this.code`'s getter and setter.
-        // This will override the code property defined in the properties array.
+        // This will override the code property defined in the properties object.
         Object.defineProperty(this, 'code', {
           get: function() {
-            if (this._editor) {
+            if (this._initialized) {
               return this._editor.getValue();
             }
             return this._initialCode;
           },
           set: function(val) {
-            if (this._editor) {
+            if (this._initialized) {
               return this._editor.setValue(val, 1);
             }
             this._initialCode = val;
@@ -267,6 +293,7 @@ Custom property | Description | Default
        * Initialize the editor.
        */
       _initializeEditor: function() {
+        this._initialized = true;    // editor has been initialized - this line needs to be before the line "code = ..."
         this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
 
         // ace.config.set('basePath', this.resolveUrl('../ace-builds/src-min-noconflict/'));
