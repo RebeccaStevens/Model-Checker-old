@@ -262,9 +262,12 @@ Custom property | Description | Default
        * Render the automaton.
        */
       render: function() {
+        // use .children if it's available, otherwise use .childNodes
+        var svgChildren = this.$.svg.children || this.$.svg.childNodes;
+
         // remove the child nodes (the old graph) from the svg element
-        for (var i = 0; i < this.$.svg.children.length; i++) {
-          Polymer.dom(this.$.svg).removeChild(this.$.svg.children[i]);
+        for (var i = 0; i < svgChildren.length; i++) {
+          Polymer.dom(this.$.svg).removeChild(svgChildren[i]);
         }
 
         // create a new directed graph
