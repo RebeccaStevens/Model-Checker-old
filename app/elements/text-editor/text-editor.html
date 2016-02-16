@@ -102,7 +102,7 @@ Custom property | Description | Default
         },
 
         /**
-         * if true, soft tabs will be used.
+         * If true, soft tabs will be used.
          */
         softTabs: {
           type: Boolean,
@@ -144,7 +144,7 @@ Custom property | Description | Default
         _editor: Object,
 
         /**
-         * This stores the `code` before the ace text editor is ready
+         * This stores the `code` before the ace text editor is ready.
          */
         _initialCode: {
           type: String,
@@ -153,6 +153,9 @@ Custom property | Description | Default
           }
         },
 
+        /**
+         * The annotations in the text editor.
+         */
         _annotations: {
           type: Array,
           value: function() {
@@ -197,7 +200,7 @@ Custom property | Description | Default
       },
 
       /**
-       * Bring this element into focus
+       * Bring this element into focus.
        */
       focus: function() {
         this._editor.focus();
@@ -249,15 +252,13 @@ Custom property | Description | Default
        * Called after property values are set and local DOM is initialized.
        */
       ready: function() {
-        this._editor = ace.edit(this.$.editor); // turn `this.$.editor` into a text editor
+        this._initializeEditor();
       },
 
       /**
        * Called after the element is attached to the document.
        */
       attached: function() {
-        this._initializeEditor();
-
         if (this.autofocus) {
           this.async(function() {
             this.focus();
@@ -334,7 +335,9 @@ Custom property | Description | Default
        * Initialize the editor.
        */
       _initializeEditor: function() {
-        this._initialized = true;    // editor has been initialized - this line needs to be before the line "code = ..."
+        this._editor = ace.edit(this.$.editor); // turn `this.$.editor` into a text editor
+        this._initialized = true;    // `_editor` has been initialized
+
         this._editor.$blockScrolling = Infinity;   // disable scrolling warning messgae
 
         // ace.config.set('basePath', this.resolveUrl('../ace-builds/src-min-noconflict/'));
