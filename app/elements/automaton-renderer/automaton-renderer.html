@@ -33,9 +33,11 @@ Custom property | Description | Default
 `--automaton-renderer-error-node-stroke` | The stroke color of error nodes | `red`
 `--automaton-renderer-error-node-inner-stroke` | The inner stroke color of error nodes | `red`
 `--automaton-renderer-highlighted-node-fill` | The fill color of the highlighted node | `yellow`
-`--automaton-renderer-highlighted-edge-fill` | The fill color of the highlighted edge | `blue`
 `--automaton-renderer-highlighted-edge-stroke` | The stroke color of the highlighted edge | `blue`
 `--automaton-renderer-highlighted-edge-stroke-width` | The stroke width of the highlighted edge | `2px`
+`--automaton-renderer-highlighted-edge-arrowhead-fill` | The fill color of the highlighted edge | `blue`
+`--automaton-renderer-highlighted-edge-arrowhead-stroke` | The stroke color of the highlighted edge's arrowhead | `blue`
+`--automaton-renderer-highlighted-edge-arrowhead-stroke-width` | The stroke width of the highlighted edge's arrowhead | `1px`
 `--automaton-renderer-node` | A mixin applied to all nodes | {}
 `--automaton-renderer-node-label` | A mixin applied to all node labels | {}
 `--automaton-renderer-edge` | A mixin applied to all edges | {}
@@ -55,6 +57,7 @@ Custom property | Description | Default
 `--automaton-renderer-highlighted-node` | A mixin applied to the highlighted node | {}
 `--automaton-renderer-highlighted-node-label` | A mixin applied to the highlighted node's label | {}
 `--automaton-renderer-highlighted-edge` | A mixin applied to the highlighted edge | {}
+`--automaton-renderer-highlighted-edge-arrowhead` | A mixin applied to the highlighted edge's arrowhead | {}
 
 @element automaton-renderer
 @demo automaton-renderer/demo/index.html
@@ -154,11 +157,16 @@ Custom property | Description | Default
       fill: var(--automaton-renderer-edge-label-color, black);
       @apply(--automaton-renderer-edge-label);
     }
-    .edgePath.highlighted path {
-      fill: var(--automaton-renderer-highlighted-edge-fill, blue);
+    .edgePath.highlighted .path {
       stroke: var(--automaton-renderer-highlighted-edge-stroke, blue);
       stroke-width: var(--automaton-renderer-highlighted-edge-stroke-width, 2px);
       @apply(--automaton-renderer-highlighted-edge);
+    }
+    .edgePath.highlighted marker path {
+      fill: var(--automaton-renderer-highlighted-edge-arrowhead-fill, blue);
+      stroke: var(--automaton-renderer-highlighted-edge-arrowhead-stroke, none);
+      stroke-width: var(--automaton-renderer-highlighted-edge-arrowhead-stroke-width, 1px);
+      @apply(--automaton-renderer-highlighted-edge-arrowhead);
     }
   </style>
 
