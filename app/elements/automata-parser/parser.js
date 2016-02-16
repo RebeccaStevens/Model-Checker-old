@@ -124,7 +124,7 @@ PEG.automataParser = (function() {
             if(action2 == null){
                 return action1;
             }
-            
+
             // otherwise construct and return new action node
             return constructActionNode(action1, action2);
          },
@@ -162,7 +162,7 @@ PEG.automataParser = (function() {
             if(b == null){
                 return a;
             }
-            
+
             // otherwise join set elements together
             return [a].concat(b);
          },
@@ -230,7 +230,7 @@ PEG.automataParser = (function() {
             if(choice != null){
                 return new Node.ChoiceNode(prefix, choice);
             }
-            
+
             return prefix;
          },
         peg$c90 = "|",
@@ -240,9 +240,9 @@ PEG.automataParser = (function() {
          },
         peg$c93 = function(action1, action2) {
             if(action2 == null){
-                return [action1];   
+                return [action1];
             }
-            
+
             return [action1].concat(action2);
          },
         peg$c94 = "->",
@@ -330,7 +330,7 @@ PEG.automataParser = (function() {
             if(relabel2 == null){
                 return [relabel1];
             }
-            
+
             return [relabel1].concat(relabel2);
          },
         peg$c131 = function(label1, label2) {
@@ -398,7 +398,7 @@ PEG.automataParser = (function() {
         peg$c179 = "%",
         peg$c180 = { type: "literal", value: "%", description: "\"%\"" },
         peg$c181 = function(operand) {
-         
+
          },
 
         peg$currPos          = 0,
@@ -5195,7 +5195,7 @@ PEG.automataParser = (function() {
         var NO_RELABEL = null;
         var NO_HIDE = null;
         var NOT_VISIBLE = '*';
-        
+
         var Node = {
             ModelNode: function(definitions){
                 this.type = 'model';
@@ -5236,11 +5236,6 @@ PEG.automataParser = (function() {
                 this.type = 'index';
                 if(variable != undefined){ this.variable = variable; }
                 this.index = index;
-            },
-            RangeNode: function(start, end){
-                this.type = 'range';
-                this.start = start;
-                this.end = end;
             },
             SetNode: function(set){
                 this.type = 'set';
@@ -5287,7 +5282,7 @@ PEG.automataParser = (function() {
                 this.operand2 = operand2;
             }
         };
-        
+
         function constructModelNode(definition){
             var definitions = [];
             var local = undefined;
@@ -5296,18 +5291,18 @@ PEG.automataParser = (function() {
                 delete definition.process['local'];
                 definitions.push(definition);
                 definition = local;
-            }while(local != undefined);       
-        
+            }while(local != undefined);
+
             return new Node.ModelNode(definitions);
         }
-        
+
         /* constructs a process definition node for the parse tree */
         function constructModelDefinitionNode(subtype, name, process, relabel, hidden, isVisible){
             var node = new Node.DefinitionNode(subtype, name);
             node.isVisible = (isVisible == null) ? true : false;
             node.process = process;
             if(relabel != null){ node.relabel = relabel; }
-            if(hidden != null){ node.hidden = hidden; }       
+            if(hidden != null){ node.hidden = hidden; }
             return node;
         }
 
@@ -5331,19 +5326,19 @@ PEG.automataParser = (function() {
             node.set = set.set;
             return node;
         }
-        
+
         function constructStandardActionNode(action){
             var node = new Node.ActionNode();
             node.action = action;
             return node;
         }
-        
+
         function constructExpressionActionNode(action){
             var node = new Node.ActionNode(EXPRESSION_ACTION);
             node.expressions = [action];
             return node;
         }
-        
+
         function constructActionNode(action1, action2){
             switch(action2.type){
             case 'joined':
@@ -5359,7 +5354,7 @@ PEG.automataParser = (function() {
             }
 
         }
-        
+
         /* Helper function for 'constructActionNode' which constructs and returns a joined action node */
         function _constructJoinedActionNode(action1, action2){
             // if first action is already joined node then combine together
@@ -5367,7 +5362,7 @@ PEG.automataParser = (function() {
                 action1.actions = action1.actions.concat(action2);
                 return action1;
             }
-            
+
             // if the actions are not nodes then construct action nodes for them
             if(typeof(action1) == 'string'){
                 action1 = constructStandardActionNode(action1);
@@ -5375,7 +5370,7 @@ PEG.automataParser = (function() {
             if(typeof(action2) == 'string'){
                 action2 = constructStandardActionNode(action2);
             }
-            
+
             // construct and return a new action node
             var node = new Node.ActionNode(JOINED_ACTION);
             node.actions = [action1, action2];
@@ -5389,14 +5384,14 @@ PEG.automataParser = (function() {
                 action1.expressions = action1.expressions.concat(action2);
                 return action1;
             }
-            
+
             // otherwise construct new node
             var node = new Node.ActionNode(EXPRESSION_ACTION);
             node.action = action1;
             node.expressions = [action2];
             return node;
         }
-        
+
         /* Helper function for 'constructActionNode' which constructs and returns an index action node */
         function _constructIndexActionNode(action1, action2, variable){
             var node = new Node.ActionNode(INDEX_ACTION);
@@ -5407,14 +5402,14 @@ PEG.automataParser = (function() {
             node.index = action2;
             return node;
         }
-        
+
         /* constructs and returns a name node */
         function constructNameNode(name, indices){
             var node = new Node.NameNode(name);
             if(indices != null){ node.index = indices; }
             return node;
         }
-        
+
         /* constructs and returns a sequence node */
         function constructSequenceNode(sequence, guard){
             // pop first two actions from the sequence
@@ -5430,12 +5425,12 @@ PEG.automataParser = (function() {
                 from = sequence.pop();
                 node = new Node.SequenceNode(from, node);
             }
-            
+
             if(guard != null){ node.guard = guard; }
-            
+
             return node;
         }
-        
+
         function processOperationText(text){
             // remove any unnecessary line breaks and whitespace from input
             text = text.replace(/ /g, '\n');
@@ -5450,17 +5445,17 @@ PEG.automataParser = (function() {
             result = result.slice(0, result.length - 1);
             return result;
         }
-        
+
         function constructExpressionNode(operator, operand1, operand2){
             // if second operand is not valid then return first operand
             if(operand2 == null){
                 return operand1;
             }
-            
+
             // otherwise construct new epression node
             return new Node.ExpressionNode(operator, operand1, operand2);
         }
-        
+
         function constructRootExpression(expression){
             return { type: 'expression', expression:expression };
         }
