@@ -219,7 +219,7 @@ Custom property | Description | Default
         }
         this.maximized = true;
         this.$.material.elevation = 2;
-        this.$.renderer.render();
+        this.$.renderer.centerRender();
       },
 
       /**
@@ -234,7 +234,7 @@ Custom property | Description | Default
         this.$.material.elevation = 1;
         this.$.resizer.style.width = '';  // clear the width
         this.$.resizer.style.height = ''; // and height
-        this.$.renderer.render();
+        this.$.renderer.centerRender();
       },
 
       /**
