@@ -77,7 +77,7 @@
       <template is="dom-if" if="[[settingsDialogOpened]]">
         <h2>Settings</h2>
         <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
-        <p class="vertical layout">
+        <div class="vertical layout">
           <paper-checkbox id="settings-live-compiling" title="Automatically compile the automata as you define them.">
             <span>Live Compiling</span>
           </paper-checkbox>
@@ -87,7 +87,24 @@
           <paper-checkbox id="settings-fair-abstraction" title="Visualise abstracted automata fairly.">
             <span>Fair Abstraction</span>
           </paper-checkbox>
-        </p>
+          <h3>Editor Settings</h3>
+          <paper-checkbox id="settings-editor-wrap" title="Wrap text on to the text line if it is too long to fit onto one line.">
+            <span>Text Wrap</span>
+          </paper-checkbox>
+          <paper-checkbox id="settings-editor-softtabs" title="Use soft tabs in the text editor.">
+            <span>Soft Tabs</span>
+          </paper-checkbox>
+          <paper-item>
+            <span>Font Size:</span>
+            <paper-input id="settings-editor-fontsize" no-label-float type="number" label="Font Size" min="10" max="72">
+              <span suffix>px</span>
+            </paper-input>
+          </paper-item>
+          <paper-item>
+            <span>Tab Size:</span>
+            <paper-input id="settings-editor-tabsize" no-label-float type="number" label="Tab Size" min="1" max="8"></paper-input>
+          </paper-item>
+        </div>
         <div class="buttons">
           <paper-button dialog-dismiss>Cancel</paper-button>
           <paper-button dialog-confirm autofocus>OK</paper-button>

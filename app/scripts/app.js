@@ -224,6 +224,11 @@
       d.querySelector('#settings-live-compiling').checked = app.settings.liveCompiling;
       d.querySelector('#settings-live-building').checked = app.settings.liveBuilding;
       d.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
+
+      d.querySelector('#settings-editor-wrap').checked = app.$.editor.wrap;
+      d.querySelector('#settings-editor-softtabs').checked = app.$.editor.softtabs;
+      d.querySelector('#settings-editor-fontsize').value = app.$.editor.fontsize;
+      // d.querySelector('#settings-editor-tabsize').value = app.$.editor.tabsize;
     };
 
     /**
@@ -239,6 +244,11 @@
         app.set('settings.liveCompiling', d.querySelector('#settings-live-compiling').checked);
         app.set('settings.liveBuilding', d.querySelector('#settings-live-building').checked);
         app.set('settings.fairAbstraction', d.querySelector('#settings-fair-abstraction').checked);
+
+        app.$.editor.wrap = d.querySelector('#settings-editor-wrap').checked;
+        app.$.editor.softtabs = d.querySelector('#settings-editor-softtabs').checked;
+        app.$.editor.fontsize = d.querySelector('#settings-editor-fontsize').value;
+        //app.$.editor.tabsize = d.querySelector('#settings-editor-tabsize').value;
       }
 
       app.$.editor.focus();
