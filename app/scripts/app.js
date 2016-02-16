@@ -367,7 +367,7 @@
             app.$['help-dialog'].open();
           }
           break;
-        case 114: // F3
+        case 115: // F4
           if (app.$['settings-dialog'].opened) {
             app.$['settings-dialog'].close();
           } else {
@@ -392,7 +392,7 @@
           }
           return;
         case 112: // F1
-        case 114: // F3
+        case 115: // F4
           break;
         default: return;
       }
