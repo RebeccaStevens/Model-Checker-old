@@ -23,9 +23,11 @@ Custom property | Description | Default
 `--automaton-renderer-node-stroke-width` | The stroke width of all nodes | `3px`
 `--automaton-renderer-node-inner-stroke-width` | The inner stroke width of terminal nodes | `2px`
 `--automaton-renderer-edge-label-color` | The color of the edge labels | `black`
-`--automaton-renderer-edge-fill` | The fill color of the edges | `blue`
 `--automaton-renderer-edge-stroke` | The stroke color of the edges | `black`
 `--automaton-renderer-edge-stroke-width` | The stroke width of the edges | `2px`
+`--automaton-renderer-edge-arrowhead-fill` | The fill color of the edges' arrowhead | `black`
+`--automaton-renderer-edge-arrowhead-stroke` | The stroke color of the edges' arrowhead | `none`
+`--automaton-renderer-edge-arrowhead-stroke-width` | The stroke width of the edges' arrowhead | `1px`
 `--automaton-renderer-stop-node-stroke` | The stroke color of stop nodes | `green`
 `--automaton-renderer-stop-node-inner-stroke` | The inner stroke color of stop nodes | `green`
 `--automaton-renderer-error-node-stroke` | The stroke color of error nodes | `red`
@@ -38,6 +40,7 @@ Custom property | Description | Default
 `--automaton-renderer-node-label` | A mixin applied to all node labels | {}
 `--automaton-renderer-edge` | A mixin applied to all edges | {}
 `--automaton-renderer-edge-label` | A mixin applied to all edge labels | {}
+`--automaton-renderer-edge-arrowhead` | A mixin applied to all edge arrowheads | {}
 `--automaton-renderer-terminal-node` | A mixin applied to all terminal nodes | {}
 `--automaton-renderer-terminal-node-inner` | A mixin applied to the inner of terminal nodes | {}
 `--automaton-renderer-terminal-node-label` | A mixin applied to the terminal node labels | {}
@@ -134,11 +137,17 @@ Custom property | Description | Default
     .node.highlighted .label {
       @apply(--automaton-renderer-highlighted-node-label);
     }
-    .edgePath path {
-      fill: var(--automaton-renderer-edge-fill, black);
+    .edgePath .path {
+      fill: none;
       stroke: var(--automaton-renderer-edge-stroke, black);
       stroke-width: var(--automaton-renderer-edge-stroke-width, 2px);
       @apply(--automaton-renderer-edge);
+    }
+    .edgePath marker path {
+      fill: var(--automaton-renderer-edge-arrowhead-fill, black);
+      stroke: var(--automaton-renderer-edge-arrowhead-stroke, none);
+      stroke-width: var(--automaton-renderer-edge-arrowhead-stroke-width, 1px);
+      @apply(--automaton-renderer-edge-arrowhead);
     }
     .edgeLabel {
       font-size: 20px;
