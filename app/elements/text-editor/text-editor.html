@@ -68,13 +68,6 @@ Custom property | Description | Default
         code: String,
 
         /**
-         * The size of tabs.
-         *
-         * @default 4
-         */
-        tabSize: Boolean,
-
-        /**
          * If true the editor will be brought into focus automatically when the elements is attached to the dom.
          */
         autofocus: {
@@ -86,7 +79,8 @@ Custom property | Description | Default
          * The ace theme to use.
          */
         theme: {
-          type: String
+          type: String,
+          observer: '_onThemeChanged'
         },
 
         /**
@@ -94,23 +88,26 @@ Custom property | Description | Default
          */
         mode: {
           type: String,
-          value: 'ace/mode/text'
+          value: 'ace/mode/text',
+          observer: '_onModeChanged'
         },
 
         /**
          * The font size to use.
          */
-        fontsize: {
+        fontSize: {
           type: Number,
-          value: 14
+          value: 14,
+          observer: '_onFontSizeChanged'
         },
 
         /**
-         * if true, softtabs will be used.
+         * if true, soft tabs will be used.
          */
-        softtabs: {
+        softTabs: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: '_onSoftTabsChanged'
         },
 
         /**
@@ -119,7 +116,8 @@ Custom property | Description | Default
         readonly: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true
+          reflectToAttribute: true,
+          observer: '_onReadonlyChanged'
         },
 
         /**
@@ -127,7 +125,17 @@ Custom property | Description | Default
          */
         wrap: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: '_onWrapChanged'
+        },
+
+        /**
+         * If true, text will be wrapped to the next line if it is too long.
+         */
+        tabSize: {
+          type: Number,
+          value: 4,
+          observer: '_onTabSizeChanged'
         },
 
         /**
@@ -143,14 +151,6 @@ Custom property | Description | Default
           value: function() {
             return this.textContent.trim();
           }
-        },
-
-        /**
-         * This initial tab size.
-         */
-        _initialTabSize: {
-          type: String,
-          value: 4
         },
 
         /**
@@ -216,15 +216,8 @@ Custom property | Description | Default
 
           // set `_initialCode` to in - replace special characters
           this._initialCode = replaceAll(replaceAll(initCode,
-              '\\n', '\n'),
-              '\\t', '\t');
-        }
-
-        var initTabSize = this.getAttribute('tab-size'); // get any initial tab size given as an attribute
-
-        // if there an initial tab size
-        if (initTabSize) {
-          this._initialTabSize = initTabSize;
+            '\\n', '\n'),
+            '\\t', '\t');
         }
 
         // Define `this.code`'s getter and setter.
@@ -242,24 +235,6 @@ Custom property | Description | Default
             }
             this._initialCode = val;
             return this._initialCode;
-          }
-        });
-
-        // Define `this.tabSize`'s getter and setter.
-        // This will override the tabSize property defined in the properties object.
-        Object.defineProperty(this, 'tabSize', {
-          get: function() {
-            if (this._initialized) {
-              return this._editor.getSession().getTabSize();
-            }
-            return this._initialTabSize;
-          },
-          set: function(val) {
-            if (this._initialized) {
-              return this._editor.getSession().setTabSize(val);
-            }
-            this._initialTabSize = val;
-            return this._initialTabSize;
           }
         });
       },
@@ -282,45 +257,70 @@ Custom property | Description | Default
             this.focus();
           }, 100);
         }
-
-        // call attributeChanged with the initial value of each attribute (so long as it is defined)
-        ['theme', 'mode', 'fontsize', 'softtabs', 'tabsize', 'readonly', 'wrap'].forEach(function(e) {
-          if (this[e] !== undefined) {
-            this.attributeChanged(e, undefined, this[e]);
-          }
-        }.bind(this));
       },
 
       /**
-       * Called when one of the element's attributes is changed.
+       * Called when `theme` changes.
        */
-      attributeChanged: function(attr, oldVal, newVal) {
-        if (!this.isAttached) {
-          return false;
+      _onThemeChanged: function() {
+        if (this._initialized) {
+          this._editor.setTheme(this.theme);
+          this._injectTheme(this.theme);
         }
-        switch (attr) {
-          case 'theme':
-            this._editor.setTheme(newVal);
-            this._injectTheme(newVal);
-            break;
-          case 'mode':
-            this._editor.getSession().setMode(newVal);
-            break;
-          case 'fontsize':
-            this._editor.setFontSize(Number.parseInt(newVal, 10));
-            break;
-          case 'softtabs':
-            this._editor.getSession().setUseSoftTabs(newVal);
-            break;
-          case 'tabsize':
-            this._editor.getSession().setTabSize(Number.parseInt(newVal, 10));
-            break;
-          case 'readonly':
-            this._editor.setReadOnly(newVal);
-            break;
-          case 'wrap':
-            this._editor.getSession().setUseWrapMode(newVal);
-            break;
+      },
+
+      /**
+       * Called when `mode` changes.
+       */
+      _onModeChanged: function() {
+        if (this._initialized) {
+          this._editor.getSession().setMode(this.mode);
+        }
+      },
+
+      /**
+       * Called when `fontSize` changes.
+       */
+      _onFontSizeChanged: function() {
+        if (this._initialized) {
+          this._editor.setFontSize(Number.parseInt(this.fontSize, 10));
+        }
+      },
+
+      /**
+       * Called when `softTabs` changes.
+       */
+      _onSoftTabsChanged: function() {
+        if (this._initialized) {
+          this._editor.getSession().setUseSoftTabs(this.softTabs);
+        }
+      },
+
+      /**
+       * Called when `tabsSize` changes.
+       */
+      _onTabSizeChanged: function() {
+        if (this._initialized) {
+          this._editor.getSession().setTabSize(Number.parseInt(this.tabSize, 10));
+          this._editor.renderer.updateCursor();
+        }
+      },
+
+      /**
+       * Called when `readonly` changes.
+       */
+      _onReadonlyChanged: function() {
+        if (this._initialized) {
+          this._editor.setReadOnly(this.readonly);
+        }
+      },
+
+      /**
+       * Called when `wrap` changes.
+       */
+      _onWrapChanged: function() {
+        if (this._initialized) {
+          this._editor.getSession().setUseWrapMode(this.wrap);
         }
       },
 
@@ -339,7 +339,29 @@ Custom property | Description | Default
         }.bind(this));
 
         this.code = this._initialCode;
-        this.tabSize = this._initialTabSize;
+
+        // initialize the fields now that the editor is ready
+        if (this.theme !== undefined) {
+          this._onThemeChanged();
+        }
+        if (this.mode !== undefined) {
+          this._onModeChanged();
+        }
+        if (this.fontSize !== undefined) {
+          this._onFontSizeChanged();
+        }
+        if (this.softTabs !== undefined) {
+          this._onSoftTabsChanged();
+        }
+        if (this.tabSize !== undefined) {
+          this._onTabSizeChanged();
+        }
+        if (this.readonly !== undefined) {
+          this._onReadonlyChanged();
+        }
+        if (this.wrap !== undefined) {
+          this._onWrapChanged();
+        }
 
         // if we are using the shadow dom (not the shady dom)
         if (Polymer.Settings.useShadow) {

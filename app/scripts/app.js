@@ -226,9 +226,9 @@
       d.querySelector('#settings-fair-abstraction').checked = app.settings.fairAbstraction;
 
       d.querySelector('#settings-editor-wrap').checked = app.$.editor.wrap;
-      d.querySelector('#settings-editor-softtabs').checked = app.$.editor.softtabs;
-      d.querySelector('#settings-editor-fontsize').value = app.$.editor.fontsize;
-      d.querySelector('#settings-editor-tabsize').value = app.$.editor.tabSize;
+      d.querySelector('#settings-editor-soft-tabs').checked = app.$.editor.softTabs;
+      d.querySelector('#settings-editor-font-size').value = app.$.editor.fontSize;
+      d.querySelector('#settings-editor-tab-size').value = app.$.editor.tabSize;
     };
 
     /**
@@ -246,9 +246,9 @@
         app.set('settings.fairAbstraction', d.querySelector('#settings-fair-abstraction').checked);
 
         app.$.editor.wrap = d.querySelector('#settings-editor-wrap').checked;
-        app.$.editor.softtabs = d.querySelector('#settings-editor-softtabs').checked;
-        app.$.editor.fontsize = d.querySelector('#settings-editor-fontsize').value;
-        app.$.editor.tabSize = d.querySelector('#settings-editor-tabsize').value;
+        app.$.editor.softTabs = d.querySelector('#settings-editor-soft-tabs').checked;
+        app.$.editor.fontSize = d.querySelector('#settings-editor-font-size').value;
+        app.$.editor.tabSize = d.querySelector('#settings-editor-tab-size').value;
       }
 
       app.$.editor.focus();
