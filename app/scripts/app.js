@@ -496,6 +496,10 @@
     }
   }
 
+  // Fix for IE11
+  Number.parseInt = Number.parseInt || parseInt;
+  Number.parseFloat = Number.parseFloat || parseFloat;
+
   // detect if web components supported are natively supported by the browser
   var webComponentsSupported = (
     'registerElement' in document &&
