@@ -113,19 +113,14 @@
             if (operations.length !== 0) {
               app.$.console.log(' ');
               app.$.console.log('Operations:');
-              var annotations = [];
               for (var i = 0; i < operations.length; i++) {
                 app.$.console.log(operations[i]);
                 // skip over the display of totals
                 if (i !== 0) {
                   var pos = positions[i - 1];
-                  console.log(pos);
                   var line = pos.start.line - 1;
-                  var annotation = app.$.editor.constructAnnotation(line, operations[i], 'info');
-                  annotations.push(annotation);
+                  app.$.editor.addAnnotation(line, operations[i], 'info');
                 }
-                // set annotations on the ace editor
-                app.$.editor.setAnnotations(annotations);
               }
             }
           }.bind(this), 0);

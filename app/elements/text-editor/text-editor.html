@@ -153,6 +153,13 @@ Custom property | Description | Default
           }
         },
 
+        _annotations: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+
         /**
          * Set to true once the editor has been initialized.
          */
@@ -163,14 +170,13 @@ Custom property | Description | Default
       },
 
       /**
-       * Constructs and returns an annotation.
+       * Add an annotation to the editor.
        *
        * @param {!integer} line - the line number to put annotation on
        * @param {!string} text - the text to put in the annotation
        * @param {!string} type - the type of annotation to place
-       * @returns {!object} - an annotation object
        */
-      constructAnnotation: function(line, text, type) {
+      addAnnotation: function(line, text, type) {
         var annotation = {
           row: line,
           column: 2,
@@ -178,16 +184,16 @@ Custom property | Description | Default
           type: type
         };
 
-        return annotation;
+        this.push('_annotations', annotation);
+        this._editor.session.setAnnotations(this._annotations);
       },
 
       /**
-       * Sets the annotations of the editor to those specified in the array.
-       *
-       * @param {!array} annotations - an array of annotations
+       * Clear all the annotations on the editor.
        */
-      setAnnotations: function(annotations) {
-        this._editor.session.setAnnotations(annotations);
+      clearAnnotations: function() {
+        this.set('_annotations', []);
+        this._editor.session.setAnnotations(this._annotations);
       },
 
       /**
