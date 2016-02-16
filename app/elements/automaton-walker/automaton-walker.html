@@ -90,19 +90,19 @@ Custom property | Description | Default
        * @param {{edge: Graph.Edge}} the edge that was stepped back along
        */
 
-       /**
-        * Fired after the reset operation has completed.
-        *
-        * @event automaton-walker-reset
-        * @param {{root: Graph.Node}} the root node of the graph
-        */
+      /**
+       * Fired after the reset operation has completed.
+       *
+       * @event automaton-walker-reset
+       * @param {{root: Graph.Node}} the root node of the graph
+       */
 
-       /**
-        * Fired after an edge has been selected.
-        *
-        * @event automaton-walker-edge-selected
-        * @param {{edge: Graph.Edge}} the edge that was selected
-        */
+      /**
+       * Fired after an edge has been selected.
+       *
+       * @event automaton-walker-edge-selected
+       * @param {{edge: Graph.Edge}} the edge that was selected
+       */
 
       is: 'automaton-walker',
 
@@ -169,7 +169,7 @@ Custom property | Description | Default
        * @param {number} b
        * @returns {!boolean} a > b
        */
-      _greaterThan: function(a, b){
+      _greaterThan: function(a, b) {
         return a > b;
       },
 
