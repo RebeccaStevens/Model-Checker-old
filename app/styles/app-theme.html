@@ -91,6 +91,12 @@
     --automaton-visualisation-toolbar-icon-active-border: solid 1px #5522BB;
   }
 
+  automaton-visualisation[maximized] {
+    top: 64px;
+    z-index: 10;
+    background: #f7f7f7;
+  }
+
   #main-toolbar {
     --primary-text-color: #FFFFFF;
   }
@@ -326,6 +332,10 @@
 
     .frame > .left {
       height: calc(100vh - 56px);
+    }
+
+    automaton-visualisation[maximized] {
+      top: 56px;
     }
 
     paper-toolbar span.spacer{

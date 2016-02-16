@@ -28,6 +28,7 @@ Custom property | Description | Default
 `--automaton-visualisation-min-height` | The min-height of the element |
 `--automaton-visualisation-name-color` | The color of the name of the automaton | `black`
 `--automaton-visualisation-name-font-size` | The font size of the name of the automaton | `12pt`
+`--automaton-visualisation-maximized` | A mixin applied to the element when it is maximized | {}
 `--automaton-visualisation-name` | A mixin applied to the automaton's name | {}
 `--automaton-visualisation-renderer` | A mixin applied to the automaton renderer | {}
 
@@ -41,6 +42,16 @@ Custom property | Description | Default
       color: #6C7A89;
       position: relative;
     }
+    :host([maximized]) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      @apply(--automaton-visualisation-maximized);
+    }
+    :host([maximized]) sm3-resizable,
     :host([disable-resizer]) sm3-resizable {
       @apply(--layout-fit);
     }
@@ -104,12 +115,14 @@ Custom property | Description | Default
   </style>
 
   <template>
-    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="_onResize" disabled$="[[disableResizer]]">
-      <paper-material class="layout vertical">
+    <sm3-resizable id="resizer" handle-s on-sm3-resizable-resized="_onResize" disabled$="[[_isResizerDisabled]]">
+      <paper-material id="material" class="layout vertical">
         <paper-toolbar id="toolbar">
           <div id="name" class="title">[[automaton.name]]</div>
           <span class="flex"></span>
           <paper-icon-button toggles icon="maps:directions-walk" title="Automaton Walker" active="{{showWalker}}"></paper-icon-button>
+          <paper-icon-button icon="icons:add" title="Maximize" hidden$="{{maximized}}" on-tap="maximize"></paper-icon-button>
+          <paper-icon-button icon="icons:remove" title="Restore" hidden$="{{!maximized}}" on-tap="restore"></paper-icon-button>
         </paper-toolbar>
         <automaton-walker id="walker" hidden$="[[!showWalker]]"
           automaton="[[automaton]]"
@@ -175,7 +188,64 @@ Custom property | Description | Default
             return this.$.renderer;
           },
           readOnly: true
+        },
+
+        /**
+         * Whether the element is maximized.
+         */
+        maximized: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * If true, this element wont be user resizable.
+         */
+        _isResizerDisabled: {
+          type: Boolean,
+          computed: '_resizerDisabled(disableResizer, maximized)'
+        },
+      },
+
+      /**
+       * Maximized this element.
+       */
+      maximize: function() {
+        // don't do anything if currently maximized
+        if (this.maximized) {
+          return;
         }
+        this.maximized = true;
+        this.$.material.elevation = 2;
+        this.$.renderer.render();
+      },
+
+      /**
+       * Unaximized this element.
+       */
+      restore: function() {
+        // don't do anything if currently not maximized
+        if (!this.maximized) {
+          return;
+        }
+        this.maximized = false;
+        this.$.material.elevation = 1;
+        this.$.resizer.style.width = '';  // clear the width
+        this.$.resizer.style.height = ''; // and height
+        this.$.renderer.render();
+      },
+
+      /**
+       * Calculate whether or not the resizer should be disabled.
+       *
+       * @param {!Boolean} disableResizer - `this.disableResizer`
+       * @param {!Boolean} maximized - `this.maximized`
+       * @returns {Boolean}
+       */
+      _resizerDisabled: function(disableResizer, maximized) {
+        return disableResizer || maximized;
       },
 
       /**
