@@ -89,6 +89,9 @@
             setTimeout(function() {
               app.set('automata', automata);
 
+              // explicitly call render - fix for MS Edge, but extra overhead on other browsers
+              app.$['automata-renderer'].render();
+
               // listen for each rendered event.
               // once all automata have been rendered, log the results and stop listening.
               var automataRendered = 0;

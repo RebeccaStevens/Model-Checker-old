@@ -65,7 +65,7 @@
       </div>
       <div class="right">
         <paper-material hidden$="[[arrayHasData(automata)]]">No automata to show.</paper-material>
-        <template is="dom-repeat" items="[[automata]]" as="automaton">
+        <template id="automata-renderer" is="dom-repeat" items="[[automata]]" as="automaton">
           <automaton-visualisation automaton="[[automaton]]" arrowhead="vee"></automaton-visualisation>
         </template>
       </div>
