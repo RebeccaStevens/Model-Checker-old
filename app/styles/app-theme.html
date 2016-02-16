@@ -327,7 +327,8 @@
     }
 
     .frame > .left {
-      height: calc(100vh - 64px);
+      height: calc(100vh - 64px - 67px);
+      min-height: calc(100vh - 64px - 67px);
     }
 
     #editor{
@@ -370,7 +371,8 @@
   @media all and (max-width: 600px) {
 
     .frame > .left {
-      height: calc(100vh - 56px);
+      height: calc(100vh - 56px - 67px);
+      min-height: calc(100vh - 56px - 67px);
     }
 
     automaton-visualisation[maximized] {
