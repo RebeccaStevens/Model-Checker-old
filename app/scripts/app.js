@@ -339,42 +339,64 @@
 
     /**
      * Listen for key presses.
-     * Note: Needs to listen for keydown (not keyup) in order to prevent browser default action
      */
-    document.addEventListener('keydown',function(e) {
-      if (app.$['help-dialog'].opened) {
-        return;
-      }
-
+    document.addEventListener('keyup',function(e) {
       switch (e.keyCode) {
-        case 13:
-          // CTRL + ENTER
+        case 13:  // CTRL + ENTER
           if (e.ctrlKey) {
             app.compile();
-            e.preventDefault();
+            break;
           }
-          break;
-        case 79:
-          // CTRL + O
+          return;
+        case 79:  // CTRL + O
           if (e.ctrlKey) {
             app.openFile();
-            e.preventDefault();
+            break;
           }
-          break;
-        case 83:
-          // CTRL + S
+          return;
+        case 83:  // CTRL + S
           if (e.ctrlKey) {
             app.downloadFile();
-            e.preventDefault();
+            break;
+          }
+          return;
+        case 112: // F1
+          if (app.$['help-dialog'].opened) {
+            app.$['help-dialog'].close();
+          } else {
+            app.$['help-dialog'].open();
           }
           break;
-        case 112:
-          // F1
-          app.$['help-dialog'].open();
-          e.preventDefault();
+        case 114: // F3
+          if (app.$['settings-dialog'].opened) {
+            app.$['settings-dialog'].close();
+          } else {
+            app.$['settings-dialog'].open();
+          }
           break;
         default: return;
       }
+      e.preventDefault();
+    });
+
+    /**
+     * Prevent the default browser action on these keys.
+     */
+    document.addEventListener('keydown',function(e) {
+      switch (e.keyCode) {
+        case 13:  // CTRL + ENTER
+        case 79:  // CTRL + O
+        case 83:  // CTRL + S
+          if (e.ctrlKey) {
+            break;
+          }
+          return;
+        case 112: // F1
+        case 114: // F3
+          break;
+        default: return;
+      }
+      e.preventDefault();
     });
   }
 
