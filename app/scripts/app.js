@@ -228,7 +228,7 @@
       d.querySelector('#settings-editor-wrap').checked = app.$.editor.wrap;
       d.querySelector('#settings-editor-softtabs').checked = app.$.editor.softtabs;
       d.querySelector('#settings-editor-fontsize').value = app.$.editor.fontsize;
-      // d.querySelector('#settings-editor-tabsize').value = app.$.editor.tabsize;
+      d.querySelector('#settings-editor-tabsize').value = app.$.editor.tabSize;
     };
 
     /**
@@ -248,7 +248,7 @@
         app.$.editor.wrap = d.querySelector('#settings-editor-wrap').checked;
         app.$.editor.softtabs = d.querySelector('#settings-editor-softtabs').checked;
         app.$.editor.fontsize = d.querySelector('#settings-editor-fontsize').value;
-        //app.$.editor.tabsize = d.querySelector('#settings-editor-tabsize').value;
+        app.$.editor.tabSize = d.querySelector('#settings-editor-tabsize').value;
       }
 
       app.$.editor.focus();

@@ -68,6 +68,13 @@ Custom property | Description | Default
         code: String,
 
         /**
+         * The size of tabs.
+         *
+         * @default 4
+         */
+        tabSize: Boolean,
+
+        /**
          * If true the editor will be brought into focus automatically when the elements is attached to the dom.
          */
         autofocus: {
@@ -79,8 +86,7 @@ Custom property | Description | Default
          * The ace theme to use.
          */
         theme: {
-          type: String,
-          reflectToAttribute: true
+          type: String
         },
 
         /**
@@ -88,8 +94,7 @@ Custom property | Description | Default
          */
         mode: {
           type: String,
-          value: 'ace/mode/text',
-          reflectToAttribute: true
+          value: 'ace/mode/text'
         },
 
         /**
@@ -97,8 +102,7 @@ Custom property | Description | Default
          */
         fontsize: {
           type: Number,
-          value: 14,
-          reflectToAttribute: true
+          value: 14
         },
 
         /**
@@ -106,8 +110,7 @@ Custom property | Description | Default
          */
         softtabs: {
           type: Boolean,
-          value: true,
-          reflectToAttribute: true
+          value: false
         },
 
         /**
@@ -124,8 +127,7 @@ Custom property | Description | Default
          */
         wrap: {
           type: Boolean,
-          value: false,
-          reflectToAttribute: true
+          value: false
         },
 
         /**
@@ -141,6 +143,14 @@ Custom property | Description | Default
           value: function() {
             return this.textContent.trim();
           }
+        },
+
+        /**
+         * This initial tab size.
+         */
+        _initialTabSize: {
+          type: String,
+          value: 4
         },
 
         /**
@@ -210,6 +220,13 @@ Custom property | Description | Default
               '\\t', '\t');
         }
 
+        var initTabSize = this.getAttribute('tab-size'); // get any initial tab size given as an attribute
+
+        // if there an initial tab size
+        if (initTabSize) {
+          this._initialTabSize = initTabSize;
+        }
+
         // Define `this.code`'s getter and setter.
         // This will override the code property defined in the properties object.
         Object.defineProperty(this, 'code', {
@@ -225,6 +242,24 @@ Custom property | Description | Default
             }
             this._initialCode = val;
             return this._initialCode;
+          }
+        });
+
+        // Define `this.tabSize`'s getter and setter.
+        // This will override the tabSize property defined in the properties object.
+        Object.defineProperty(this, 'tabSize', {
+          get: function() {
+            if (this._initialized) {
+              return this._editor.getSession().getTabSize();
+            }
+            return this._initialTabSize;
+          },
+          set: function(val) {
+            if (this._initialized) {
+              return this._editor.getSession().setTabSize(val);
+            }
+            this._initialTabSize = val;
+            return this._initialTabSize;
           }
         });
       },
@@ -250,7 +285,7 @@ Custom property | Description | Default
 
         // call attributeChanged with the initial value of each attribute (so long as it is defined)
         ['theme', 'mode', 'fontsize', 'softtabs', 'tabsize', 'readonly', 'wrap'].forEach(function(e) {
-          if (this[e]) {
+          if (this[e] !== undefined) {
             this.attributeChanged(e, undefined, this[e]);
           }
         }.bind(this));
@@ -275,16 +310,16 @@ Custom property | Description | Default
             this._editor.setFontSize(Number.parseInt(newVal, 10));
             break;
           case 'softtabs':
-            this._editor.getSession().setUseSoftTabs(newVal !== null);
+            this._editor.getSession().setUseSoftTabs(newVal);
             break;
           case 'tabsize':
             this._editor.getSession().setTabSize(Number.parseInt(newVal, 10));
             break;
           case 'readonly':
-            this._editor.setReadOnly(newVal !== null);
+            this._editor.setReadOnly(newVal);
             break;
           case 'wrap':
-            this._editor.getSession().setUseWrapMode(newVal !== null);
+            this._editor.getSession().setUseWrapMode(newVal);
             break;
         }
       },
@@ -304,6 +339,7 @@ Custom property | Description | Default
         }.bind(this));
 
         this.code = this._initialCode;
+        this.tabSize = this._initialTabSize;
 
         // if we are using the shadow dom (not the shady dom)
         if (Polymer.Settings.useShadow) {
