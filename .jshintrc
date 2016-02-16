@@ -20,6 +20,7 @@
     "Platform": true,
     "fixture": true,
     "setup": true,
+    "teardown": true,
     "suite": true,
     "expect": true,
     "assert": true,
