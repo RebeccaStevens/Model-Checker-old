@@ -403,7 +403,10 @@
 
     // everything is now setup - remove the splashscreen
     var splash = document.getElementById('splash');
-    splash.addEventListener('transitionend', splash.remove);
+    var removeSplash = function() {
+      splash.parentElement.removeChild(splash);
+    };
+    splash.addEventListener('transitionend', removeSplash); // IE11 doesn't support `splash.remove`
     document.body.classList.remove('loading');
 
     Polymer.updateStyles(); // and update the app's look
