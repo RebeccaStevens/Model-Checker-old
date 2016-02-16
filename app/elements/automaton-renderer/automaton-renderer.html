@@ -185,7 +185,7 @@ Custom property | Description | Default
         graph: {
           type: Graph,
           value: function() {
-            return { nodes: [], edges: [] };
+            return {nodes: [], edges: []};
           }
         },
 
@@ -221,7 +221,7 @@ Custom property | Description | Default
        */
       setHighlightedNode: function(id) {
         this.unsetHighlightedNode();
-        var node = Polymer.dom(this.$.svg).querySelector('#n'+id);
+        var node = Polymer.dom(this.$.svg).querySelector('#n' + id);
         if (node) {
           node.classList.add('highlighted');
         }
@@ -234,7 +234,7 @@ Custom property | Description | Default
        */
       setHighlightedEdge: function(id) {
         this.unsetHighlightedEdge();
-        var edge = Polymer.dom(this.$.svg).querySelector('#e'+id);
+        var edge = Polymer.dom(this.$.svg).querySelector('#e' + id);
         if (edge) {
           edge.classList.add('highlighted');
         }
@@ -263,12 +263,12 @@ Custom property | Description | Default
        */
       render: function() {
         // remove the child nodes (the old graph) from the svg element
-        for(var i=0; i<this.$.svg.children.length; i++){
+        for (var i = 0; i < this.$.svg.children.length; i++) {
           Polymer.dom(this.$.svg).removeChild(this.$.svg.children[i]);
         }
 
         // create a new directed graph
-        this._automaton = new dagreD3.graphlib.Graph({ multigraph: true });
+        this._automaton = new dagreD3.graphlib.Graph({multigraph: true});
         this._automaton.setGraph({
           rankdir: 'LR',
           ranksep: 75,
@@ -337,10 +337,10 @@ Custom property | Description | Default
           '0',
           'n' + visualStartNode.id,
           {
-             label: '',
-             lineInterpolate: 'basis',
-             arrowhead: this.arrowhead,
-             id: 'startEdge'
+            label: '',
+            lineInterpolate: 'basis',
+            arrowhead: this.arrowhead,
+            id: 'startEdge'
           },
           'startEdge');
 
@@ -353,15 +353,14 @@ Custom property | Description | Default
 
           if (edge.isHidden) {
             label = TAU;
-          }
-          else if (edge.isDeadlock) {
+          } else if (edge.isDeadlock) {
             label = DELTA;
           }
 
           // add the edge to the graph
           this._automaton.setEdge(
-            'n'+edge.from.id,
-            'n'+edge.to.id,
+            'n' + edge.from.id,
+            'n' + edge.to.id,
             {
               label: label,
               lineInterpolate: 'basis',
@@ -414,7 +413,7 @@ Custom property | Description | Default
             .attr('transform', 'translate(0,0)');
 
           node.intersect = function(point) {
-            return dagreD3.intersect.circle(node, r+4, point);  // make the intersect slightly larger for visual effect
+            return dagreD3.intersect.circle(node, r + 4, point);  // make the intersect slightly larger for visual effect
           };
 
           return shapeSvg;
