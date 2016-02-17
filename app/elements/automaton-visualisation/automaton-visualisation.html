@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
@@ -121,6 +123,8 @@ Custom property | Description | Default
           <div id="name" class="title">[[automaton.name]]</div>
           <span class="flex"></span>
           <paper-icon-button toggles icon="maps:directions-walk" title="Automaton Walker" active="{{showWalker}}"></paper-icon-button>
+          <paper-icon-button icon="image:center-focus-strong" title="Re-Center" on-tap="recenter"></paper-icon-button>
+          <paper-icon-button icon="icons:refresh" title="Re-Render" on-tap="rerender"></paper-icon-button>
           <paper-icon-button icon="icons:add" title="Maximize" hidden$="{{maximized}}" on-tap="maximize"></paper-icon-button>
           <paper-icon-button icon="icons:remove" title="Restore" hidden$="{{!maximized}}" on-tap="restore"></paper-icon-button>
         </paper-toolbar>
@@ -235,6 +239,20 @@ Custom property | Description | Default
         this.$.resizer.style.width = '';  // clear the width
         this.$.resizer.style.height = ''; // and height
         this.$.renderer.centerRender();
+      },
+
+      /**
+       * Re-center the render.
+       */
+      recenter: function() {
+        this.$.renderer.centerRender();
+      },
+
+      /**
+       * Re-render the automaton.
+       */
+      rerender: function() {
+        this.$.renderer.render();
       },
 
       /**
