@@ -256,11 +256,6 @@ Custom property | Description | Default
         _automaton: Object
       },
 
-      ready: function() {
-        // mark the svg element as a scoped subtree so that dom modification by dagreD3 are styled correctly
-        this.scopeSubtree(this.$.svg, true);
-      },
-
       observers: [
         '_onGraphUpdated(graph.nodes, graph.edges)'
       ],
@@ -438,6 +433,8 @@ Custom property | Description | Default
           render(svgGroup, this._automaton);
 
           this._center(svg, svgGroup);
+
+          this.scopeSubtree(this.$.svg, false); // tell polymer to style the svg element
 
           this._setRendering(false);
           this.fire('automaton-renderer-rendered');
