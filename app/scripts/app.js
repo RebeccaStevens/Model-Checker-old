@@ -23,10 +23,9 @@
     app.compile = function(build) {
       build = build || false;
 
-      // debounce multiple compile calls
+      // debounce multiple compile calls in to one
       app.debounce('compile', function() {
         var compileStartTime = (new Date()).getTime();
-        var compileTime;
 
         app.$.editor.clearAnnotations();
 
@@ -73,14 +72,14 @@
           var isInterpreterException = e.constructor === app.$.parser.InterpreterException;
           var prefix = isInterpreterException ? 'Error: ' : 'Syntax error ';
 
-          compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
+          var compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
           app.$.console.clear(1);
           app.$.console.log('Compulation failed after ' + compileTime.toFixed(3) + ' seconds.');
           app.$.console.error(prefix + buildErrorMessage(e));
           return;
         }
 
-        compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
+        var compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
         app.$.console.clear(1);
         app.$.console.log('Compiled successfully in ' + compileTime.toFixed(3) + ' seconds.');
 
