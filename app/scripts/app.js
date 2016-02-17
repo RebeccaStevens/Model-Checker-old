@@ -245,6 +245,8 @@
       // if 'ok' button was clicked
       if (dialog.closingReason.confirmed) {
         var d = Polymer.dom(dialog);
+        var el;
+        var val;
 
         app.set('settings.liveCompiling', d.querySelector('#settings-live-compiling').checked);
         app.set('settings.liveBuilding', d.querySelector('#settings-live-building').checked);
@@ -252,8 +254,20 @@
 
         app.$.editor.wrap = d.querySelector('#settings-editor-wrap').checked;
         app.$.editor.softTabs = d.querySelector('#settings-editor-soft-tabs').checked;
-        app.$.editor.fontSize = d.querySelector('#settings-editor-font-size').value;
-        app.$.editor.tabSize = d.querySelector('#settings-editor-tab-size').value;
+
+        // make sure font size has a valid value (ie is not "")
+        el = d.querySelector('#settings-editor-font-size');
+        val = Number.parseInt(el.value, 10);
+        if (val >= Number.parseInt(el.min, 10) && val <= Number.parseInt(el.max, 10)) {
+          app.$.editor.fontSize = val;
+        }
+
+        // make sure tab size has a valid value (ie is not "")
+        el = d.querySelector('#settings-editor-tab-size');
+        val = Number.parseInt(el.value, 10);
+        if (val >= Number.parseInt(el.min, 10) && val <= Number.parseInt(el.max, 10)) {
+          app.$.editor.tabSize = val;
+        }
       }
 
       app.$.editor.focus();
