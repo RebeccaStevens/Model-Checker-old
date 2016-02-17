@@ -30,8 +30,8 @@
       return this.replace(new RegExp(window.escapeRegExp(find), 'g'), replace);
     };
 
-  // create a addClass function for HTMLElements if there isn't already one
-  HTMLElement.prototype.addClass = HTMLElement.prototype.addClass ||
+  // create a addClass function for Dom Nodes if there isn't already one
+  Node.prototype.addClass = Node.prototype.addClass ||
     /**
      * Add the given class to this element.
      *
@@ -45,8 +45,8 @@
       }
     };
 
-  // create a removeClass function for HTMLElements if there isn't already one
-  HTMLElement.prototype.removeClass = HTMLElement.prototype.removeClass ||
+  // create a removeClass function for Dom Nodes if there isn't already one
+  Node.prototype.removeClass = Node.prototype.removeClass ||
     /**
      * Remove the given class from this element.
      *
