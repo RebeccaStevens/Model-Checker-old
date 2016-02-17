@@ -311,7 +311,7 @@ Custom property | Description | Default
        */
       _onReadonlyChanged: function() {
         if (this._initialized) {
-          this._editor.setReadOnly(this.readonly);
+          this._editor.setReadOnly(this.readonly !== null);
         }
       },
 
