@@ -496,6 +496,9 @@ Custom property | Description | Default
        * @param {!Object} svgGroup - the d3 svg group being centered
        */
       _center: function(svg, svgGroup) {
+        if (!this._automaton) {
+          return;
+        }
 
         // Get the SVG's attrs as well as the automaton's attrs
         var svgStyle = window.getComputedStyle(svg[0][0]);
