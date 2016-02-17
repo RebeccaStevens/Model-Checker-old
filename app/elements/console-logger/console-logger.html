@@ -88,6 +88,7 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       log: function(msg) {
+        msg = msg || '';
         var node = this._addMessage(msg);
         if (node.classList) {
           node.classList.add('log');
@@ -102,6 +103,7 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       warn: function(msg) {
+        msg = msg || '';
         var node = this._addMessage(msg);
         if (node.classList) {
           node.classList.add('warn');
@@ -116,6 +118,7 @@ Custom property | Description | Default
        * @param {!string} msg - the message
        */
       error: function(msg) {
+        msg = msg || '';
         var node = this._addMessage(msg);
         if (node.classList) {
           node.classList.add('error');
