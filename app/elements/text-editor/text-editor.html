@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/ace.html">
+<link rel="import" href="../imports/helper-functions.html">
 
 <!--
 An element for accepting text content from the user.
@@ -215,18 +216,10 @@ Custom property | Description | Default
 
         // if there is some initCode
         if (initCode) {
-          var escapeRegExp = function(str) {
-            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-          };
-
-          var replaceAll = function(str, find, replace) {
-            return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-          };
-
           // set `_initialCode` to in - replace special characters
-          this._initialCode = replaceAll(replaceAll(initCode,
-            '\\n', '\n'),
-            '\\t', '\t');
+          this._initialCode = initCode
+            .replaceAll('\\n', '\n')
+            .replaceAll('\\t', '\t');
         }
 
         // Define `this.code`'s getter and setter.

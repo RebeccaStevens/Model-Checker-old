@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../imports/helper-functions.html">
 
 <!--
 An element for displaying console text messages.
@@ -135,6 +136,7 @@ Custom property | Description | Default
        * @returns {!HTMLElement} - the element that was added
        */
       _addMessage: function(msg) {
+        msg = msg.replaceAll(' ', '\u00A0'); // replace spaces with unicode space (this allows leading white space)
         var text = document.createTextNode(msg);
         var node = document.createElement('SPAN');
         node.appendChild(text);
