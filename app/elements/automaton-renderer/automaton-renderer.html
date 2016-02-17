@@ -18,6 +18,8 @@ The following custom properties and mixins are available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
+`--automaton-renderer-rendering-message-font-size` | The font size of the rendering message | `24pt`
+`--automaton-renderer-rendering-message-color` | The color of the rendering message | `--primary-text-color`
 `--automaton-renderer-node-label-color` | The color of all node labels | `black`
 `--automaton-renderer-node-fill` | The fill color of all nodes | `lightgrey`
 `--automaton-renderer-node-stroke` | The stroke color of all nodes | `black`
@@ -39,6 +41,7 @@ Custom property | Description | Default
 `--automaton-renderer-highlighted-edge-arrowhead-fill` | The fill color of the highlighted edge | `blue`
 `--automaton-renderer-highlighted-edge-arrowhead-stroke` | The stroke color of the highlighted edge's arrowhead | `blue`
 `--automaton-renderer-highlighted-edge-arrowhead-stroke-width` | The stroke width of the highlighted edge's arrowhead | `1px`
+`--automaton-renderer-rendering-message` | A mixin applied to the message display when rendering | {}
 `--automaton-renderer-node` | A mixin applied to all nodes | {}
 `--automaton-renderer-node-label` | A mixin applied to all node labels | {}
 `--automaton-renderer-edge` | A mixin applied to all edges | {}
@@ -69,9 +72,17 @@ Custom property | Description | Default
     :host {
       position: relative;
     }
+    #rendering-msg span {
+      font-size: var(--automaton-renderer-rendering-message-font-size, 24pt);
+      color: var(--automaton-renderer-rendering-message-color, --primary-text-color);
+      @apply(--automaton-renderer-rendering-message);
+    }
     #svg-parent {
       @apply(--layout-fit);
       margin: 4px 4px 4px 4px;
+    }
+    :host([rendering]) #svg-parent {
+      visibility: hidden;
     }
     #svg {
       width: 100%;
@@ -172,6 +183,9 @@ Custom property | Description | Default
   </style>
 
   <template>
+    <div id="rendering-msg" class="layout horizontal center center-center fit" hidden$="{{!rendering}}">
+      <span>[[renderingMessage]]</span>
+    </div>
     <div id="svg-parent">
       <svg id="svg"></svg>
     </div>
@@ -215,6 +229,25 @@ Custom property | Description | Default
         arrowhead: {
           type: String,
           value: 'normal'
+        },
+
+        /**
+         * True if the element is currently rendering.
+         */
+        rendering: {
+          type: Boolean,
+          value: false,
+          readOnly: true,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * The message displayed will rendering.
+         */
+        renderingMessage: {
+          type: String,
+          value: 'Rendering...'
         },
 
         /**
@@ -280,128 +313,135 @@ Custom property | Description | Default
        * Render the automaton.
        */
       render: function() {
-        // use .children if it's available, otherwise use .childNodes
-        var svgChildren = this.$.svg.children || this.$.svg.childNodes;
+        this._setRendering(true);
 
-        // remove the child nodes (the old graph) from the svg element
-        for (var i = 0; i < svgChildren.length; i++) {
-          Polymer.dom(this.$.svg).removeChild(svgChildren[i]);
-        }
+        // don't block rendering of the rest of the page
+        setTimeout(function() {
+          // use .children if it's available, otherwise use .childNodes
+          var svgChildren = this.$.svg.children || this.$.svg.childNodes;
 
-        // create a new directed graph
-        this._automaton = new dagreD3.graphlib.Graph({multigraph: true});
-        this._automaton.setGraph({
-          rankdir: 'LR',
-          ranksep: 75,
-          marginx: 0,
-          marginy: 0
-          // nodesep: 0
-          // edgesep: 0
-        });
+          // remove the child nodes (the old graph) from the svg element
+          for (var i = 0; i < svgChildren.length; i++) {
+            Polymer.dom(this.$.svg).removeChild(svgChildren[i]);
+          }
 
-        // Note:
-        // dagreD3 sorts the nodes given to it alphabetically then the root node is
-        // concider to be first node after this sorting.
-        // In order to specifie the actual start node, create a node that will be
-        // first after sorting then create a edge from it to the "visual" start node
-
-        // this is the node in `this.graph.nodes` that is marked as the start node
-        var visualStartNode;
-
-        // create the actual start node
-        this._automaton.setNode(
-          '0',
-          {
-            label: '',
-            shape: 'circle',
-            class: 'start'
+          // create a new directed graph
+          this._automaton = new dagreD3.graphlib.Graph({multigraph: true});
+          this._automaton.setGraph({
+            rankdir: 'LR',
+            ranksep: 75,
+            marginx: 0,
+            marginy: 0
+            // nodesep: 0
+            // edgesep: 0
           });
 
-        // add the nodes to the graph
-        this.graph.nodes.forEach(function(node) {
-          // the classes for this node
-          var styleClasses = '';
+          // Note:
+          // dagreD3 sorts the nodes given to it alphabetically then the root node is
+          // concider to be first node after this sorting.
+          // In order to specifie the actual start node, create a node that will be
+          // first after sorting then create a edge from it to the "visual" start node
 
-          if (node.getMetaData('startNode')) {
-            visualStartNode = node;
-          }
+          // this is the node in `this.graph.nodes` that is marked as the start node
+          var visualStartNode;
 
-          var terminal = node.getMetaData('isTerminal');
-          if (terminal) {
-            styleClasses += ' terminal ' + terminal;
-          }
-
-          var ref = node.getMetaData('references');
-          if (ref && ref !== this.name) {
-            styleClasses += ' reference';
-          }
-
-          // add the node to the graph
+          // create the actual start node
           this._automaton.setNode(
-            'n' + node.id,
+            '0',
             {
-              label: node.label,
-              shape: 'automatonnode',
-              class: styleClasses.trim(),
-              id: 'n' + node.id
+              label: '',
+              shape: 'circle',
+              class: 'start'
             });
 
-        }.bind(this));
+          // add the nodes to the graph
+          this.graph.nodes.forEach(function(node) {
+            // the classes for this node
+            var styleClasses = '';
 
-        // Default to assigning a new object as a label for each new edge.
-        this._automaton.setDefaultEdgeLabel(function() {
-          return {};
-        });
+            if (node.getMetaData('startNode')) {
+              visualStartNode = node;
+            }
 
-        // create an edge from the actual start node to the visual start node
-        this._automaton.setEdge(
-          '0',
-          'n' + visualStartNode.id,
-          {
-            label: '',
-            lineInterpolate: 'basis',
-            arrowhead: this.arrowhead,
-            id: 'startEdge'
-          },
-          'startEdge');
+            var terminal = node.getMetaData('isTerminal');
+            if (terminal) {
+              styleClasses += ' terminal ' + terminal;
+            }
 
-        // add the edges to the graph
-        //  - the from node's label
-        //  - the to node's label
-        //  - the edge's extra data (could be label, width, height, etc.)
-        this.graph.edges.forEach(function(edge) {
-          var label = edge.label || EPSILON;
+            var ref = node.getMetaData('references');
+            if (ref && ref !== this.name) {
+              styleClasses += ' reference';
+            }
 
-          if (edge.isHidden) {
-            label = TAU;
-          } else if (edge.isDeadlock) {
-            label = DELTA;
-          }
+            // add the node to the graph
+            this._automaton.setNode(
+              'n' + node.id,
+              {
+                label: node.label,
+                shape: 'automatonnode',
+                class: styleClasses.trim(),
+                id: 'n' + node.id
+              });
 
-          // add the edge to the graph
+          }.bind(this));
+
+          // Default to assigning a new object as a label for each new edge.
+          this._automaton.setDefaultEdgeLabel(function() {
+            return {};
+          });
+
+          // create an edge from the actual start node to the visual start node
           this._automaton.setEdge(
-            'n' + edge.from.id,
-            'n' + edge.to.id,
+            '0',
+            'n' + visualStartNode.id,
             {
-              label: label,
+              label: '',
               lineInterpolate: 'basis',
               arrowhead: this.arrowhead,
-              id: 'e' + edge.id
+              id: 'startEdge'
             },
-            edge.id);
+            'startEdge');
 
-        }.bind(this));
+          // add the edges to the graph
+          //  - the from node's label
+          //  - the to node's label
+          //  - the edge's extra data (could be label, width, height, etc.)
+          this.graph.edges.forEach(function(edge) {
+            var label = edge.label || EPSILON;
 
-        var svg = d3.select(this.$.svg);
-        var svgGroup = svg.append('g');       // add a new group node to the svg element for the new graph
-        var render = this._createRenderer();    // create the renderer
+            if (edge.isHidden) {
+              label = TAU;
+            } else if (edge.isDeadlock) {
+              label = DELTA;
+            }
 
-        // run the renderer, which will render the graph and insert it into the svgGroup.
-        // Note: trying call render method with a node (first arg) that is not yet in the Dom will cause an error
-        render(svgGroup, this._automaton);
+            // add the edge to the graph
+            this._automaton.setEdge(
+              'n' + edge.from.id,
+              'n' + edge.to.id,
+              {
+                label: label,
+                lineInterpolate: 'basis',
+                arrowhead: this.arrowhead,
+                id: 'e' + edge.id
+              },
+              edge.id);
 
-        this._center(svg, svgGroup);
-        this.fire('automaton-renderer-rendered');
+          }.bind(this));
+
+          var svg = d3.select(this.$.svg);
+          var svgGroup = svg.append('g');       // add a new group node to the svg element for the new graph
+          var render = this._createRenderer();    // create the renderer
+
+          // run the renderer, which will render the graph and insert it into the svgGroup.
+          // Note: trying call render method with a node (first arg) that is not yet in the Dom will cause an error
+          render(svgGroup, this._automaton);
+
+          this._center(svg, svgGroup);
+
+          this._setRendering(false);
+          this.fire('automaton-renderer-rendered');
+        }.bind(this), 0);
       },
 
       /**
