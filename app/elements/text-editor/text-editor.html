@@ -311,7 +311,10 @@ Custom property | Description | Default
        */
       _onReadonlyChanged: function() {
         if (this._initialized) {
-          this._editor.setReadOnly(this.readonly !== null);
+          if (this.readonly !== null && typeof this.readonly !== 'boolean') {
+            this.readonly = true;
+          }
+          this._editor.setReadOnly(this.readonly);
         }
       },
 
