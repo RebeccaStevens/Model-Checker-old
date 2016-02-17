@@ -148,6 +148,8 @@
     /**
      * Gets and returns the code from the editor. Strips the code of all whitespace
      * and unnecessary line breaks.
+     *
+     * @return {String} - the code
      */
     app.getCode = function() {
       var code = '';
@@ -168,8 +170,8 @@
     };
 
     /**
-     * Open a text file from the user's computer and set the text-area to
-     * the text parsed from the file.
+     * Open a text file from the user's computer and set the text-editor's code
+     * to the text in that file.
      */
     app.openFile = function() {
       var opener = app.$['open-file'];
@@ -196,7 +198,7 @@
     app.downloadFile = function() {
       var filename = app.$.filename.value;
 
-      // if filename has not been defined set to untitled
+      // if filename has not been defined, set it to untitled
       if (filename === '') {
         filename = 'untitled';
       }
@@ -342,7 +344,7 @@
     });
 
     /**
-     * This is the event which triggers when the text in the text area is changed.
+     * This is the event which triggers when the text in the text-editor is changed.
      * Only care about this if the live-compiling check-box is ticked.
      */
     document.addEventListener('code-changed', function() {
