@@ -3,6 +3,7 @@
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/dagre-d3.html">
 <link rel="import" href="../imports/graph.html">
+<link rel="import" href="../imports/helper-functions.html">
 
 <!--
 An element for rendering out an automaton.
@@ -240,11 +241,7 @@ Custom property | Description | Default
         this.unsetHighlightedNode();
         var node = Polymer.dom(this.$.svg).querySelector('#n' + id);
         if (node) {
-          if (node.classList) {
-            node.classList.add('highlighted');
-          } else {
-            node.setAttribute('class', node.getAttribute('class') + ' highlighted');
-          }
+          node.addClass('highlighted');
         }
       },
 
@@ -257,11 +254,7 @@ Custom property | Description | Default
         this.unsetHighlightedEdge();
         var edge = Polymer.dom(this.$.svg).querySelector('#e' + id);
         if (edge) {
-          if (edge.classList) {
-            edge.classList.add('highlighted');
-          } else {
-            edge.setAttribute('class', edge.getAttribute('class') + ' highlighted');
-          }
+          edge.addClass('highlighted');
         }
       },
 
@@ -269,12 +262,8 @@ Custom property | Description | Default
        * De-highlight all nodes.
        */
       unsetHighlightedNode: function() {
-        Polymer.dom(this.$.svg).querySelectorAll('.node.highlighted').forEach(function(n) {
-          if (n.classList) {
-            n.classList.remove('highlighted');
-          } else {
-            n.setAttribute('class', n.getAttribute('class').split('highlighted').join());
-          }
+        Polymer.dom(this.$.svg).querySelectorAll('.node.highlighted').forEach(function(node) {
+          node.removeClass('highlighted');
         });
       },
 
@@ -282,12 +271,8 @@ Custom property | Description | Default
        * De-highlight all edges.
        */
       unsetHighlightedEdge: function() {
-        Polymer.dom(this.$.svg).querySelectorAll('.edgePath.highlighted').forEach(function(e) {
-          if (e.classList) {
-            e.classList.remove('highlighted');
-          } else {
-            e.setAttribute('class', e.getAttribute('class').split('highlighted').join());
-          }
+        Polymer.dom(this.$.svg).querySelectorAll('.edgePath.highlighted').forEach(function(edge) {
+          edge.removeClass('highlighted');
         });
       },
 

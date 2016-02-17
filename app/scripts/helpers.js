@@ -29,4 +29,34 @@
     function(find, replace) {
       return this.replace(new RegExp(window.escapeRegExp(find), 'g'), replace);
     };
+
+  // create a addClass function for HTMLElements if there isn't already one
+  HTMLElement.prototype.addClass = HTMLElement.prototype.addClass ||
+    /**
+     * Add the given class to this element.
+     *
+     * @param {!String} className - the class to add
+     */
+    function(className) {
+      if (this.classList) {
+        this.classList.add(className);
+      } else {
+        this.setAttribute('class', this.getAttribute('class') + ' ' + className);
+      }
+    };
+
+  // create a removeClass function for HTMLElements if there isn't already one
+  HTMLElement.prototype.removeClass = HTMLElement.prototype.removeClass ||
+    /**
+     * Remove the given class from this element.
+     *
+     * @param {!String} className - the class to remove
+     */
+    function(className) {
+      if (this.classList) {
+        this.classList.remove(className);
+      } else {
+        this.setAttribute('class', this.getAttribute('class').split(className).join());
+      }
+    };
 })(document);

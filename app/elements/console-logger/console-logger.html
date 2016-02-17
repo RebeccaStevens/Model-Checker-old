@@ -91,11 +91,7 @@ Custom property | Description | Default
       log: function(msg) {
         msg = msg || '';
         var node = this._addMessage(msg);
-        if (node.classList) {
-          node.classList.add('log');
-        } else {
-          node.setAttribute('class', node.getAttribute('class') + ' log');
-        }
+        node.addClass('log');
       },
 
       /**
@@ -106,11 +102,7 @@ Custom property | Description | Default
       warn: function(msg) {
         msg = msg || '';
         var node = this._addMessage(msg);
-        if (node.classList) {
-          node.classList.add('warn');
-        } else {
-          node.setAttribute('class', node.getAttribute('class') + ' warn');
-        }
+        node.addClass('warn');
       },
 
       /**
@@ -121,11 +113,7 @@ Custom property | Description | Default
       error: function(msg) {
         msg = msg || '';
         var node = this._addMessage(msg);
-        if (node.classList) {
-          node.classList.add('error');
-        } else {
-          node.setAttribute('class', node.getAttribute('class') + ' error');
-        }
+        node.addClass('error');
       },
 
       /**
