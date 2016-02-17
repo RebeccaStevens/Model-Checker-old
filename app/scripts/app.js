@@ -348,7 +348,12 @@
      */
     document.addEventListener('code-changed', function() {
       if (app.settings.liveCompiling) {
-        app.compile(false);
+        // don't block the renderer.
+        // give it a chance to displayed the changed code before compiling it.
+        // need when pasting in large amounts of code.
+        setTimeout(function() {
+          app.compile(false);
+        }.bind(this), 0);
       }
     });
 
