@@ -1,7 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
-<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
@@ -10,6 +7,7 @@
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../imports/dagre-d3.html">
 <link rel="import" href="../imports/automaton.html">
+<link rel="import" href="../app-icons/app-icons.html">
 <link rel="import" href="../automaton-renderer/automaton-renderer.html">
 <link rel="import" href="../automaton-walker/automaton-walker.html">
 
@@ -122,11 +120,11 @@ Custom property | Description | Default
         <paper-toolbar id="toolbar">
           <div id="name" class="title">[[automaton.name]]</div>
           <span class="flex"></span>
-          <paper-icon-button toggles icon="maps:directions-walk" title="Automaton Walker" active="{{showWalker}}"></paper-icon-button>
-          <paper-icon-button icon="image:center-focus-strong" title="Re-Center" on-tap="recenter"></paper-icon-button>
-          <paper-icon-button icon="icons:refresh" title="Re-Render" on-tap="rerender"></paper-icon-button>
-          <paper-icon-button icon="icons:add" title="Maximize" hidden$="{{maximized}}" on-tap="maximize"></paper-icon-button>
-          <paper-icon-button icon="icons:remove" title="Restore" hidden$="{{!maximized}}" on-tap="restore"></paper-icon-button>
+          <paper-icon-button toggles icon="app:walker" title="Automaton Walker" active="{{showWalker}}"></paper-icon-button>
+          <paper-icon-button icon="app:center" title="Re-Center" on-tap="recenter"></paper-icon-button>
+          <paper-icon-button icon="app:refresh" title="Re-Render" on-tap="rerender"></paper-icon-button>
+          <paper-icon-button icon="app:maximize" title="Maximize" hidden$="{{maximized}}" on-tap="maximize"></paper-icon-button>
+          <paper-icon-button icon="app:restore" title="Restore" hidden$="{{!maximized}}" on-tap="restore"></paper-icon-button>
         </paper-toolbar>
         <automaton-walker id="walker" hidden$="[[!showWalker]]"
           automaton="[[automaton]]"

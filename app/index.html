@@ -44,16 +44,16 @@
 
     <!-- start toolbar -->
     <paper-toolbar id="main-toolbar">
-      <paper-button id="btn-compile" title="Compile and Build (CTRL + ENTER)" raised on-tap="compileAndBuild"><iron-icon icon="av:play-arrow"></iron-icon></paper-button>
+      <paper-button id="btn-compile" title="Compile and Build (CTRL + ENTER)" raised on-tap="compileAndBuild"><iron-icon icon="app:compile"></iron-icon></paper-button>
       <span class="spacer"></span>
-      <paper-icon-button icon="icons:folder-open" title="Open (CTRL + O)" on-tap="openFile"></paper-icon-button>
+      <paper-icon-button icon="app:open" title="Open (CTRL + O)" on-tap="openFile"></paper-icon-button>
       <input id="open-file" type="file" accept="text/plain" style="display: none;" />
       <span class="spacer"></span>
       <paper-input  id="filename" label="Insert Filename Here" type="text" placeholder="untitled" title="The name given to the file when it is downloaded."></paper-input>
-      <paper-icon-button icon="icons:file-download" title="Download (CTRL + S)" on-tap="downloadFile"></paper-icon-button>
+      <paper-icon-button icon="app:download" title="Download (CTRL + S)" on-tap="downloadFile"></paper-icon-button>
       <span class="flex"></span>
-      <paper-icon-button icon="icons:settings" title="Settings (F4)" on-tap="showSettings"></paper-icon-button>
-      <paper-icon-button icon="icons:help" title="Help (F1)" on-tap="showHelp"></paper-icon-button>
+      <paper-icon-button icon="app:settings" title="Settings (F4)" on-tap="showSettings"></paper-icon-button>
+      <paper-icon-button icon="app:help" title="Help (F1)" on-tap="showHelp"></paper-icon-button>
     </paper-toolbar>
     <!-- end toolbar -->
 
@@ -76,7 +76,7 @@
     <paper-dialog id="settings-dialog" with-backdrop opened="{{settingsDialogOpened}}" on-iron-overlay-opened="onSettingsOpened" on-iron-overlay-closed="onSettingsClosed">
       <template is="dom-if" if="[[settingsDialogOpened]]">
         <h2>Settings</h2>
-        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+        <paper-icon-button class="btn-close" icon="app:cancel" title="Close" dialog-dismiss></paper-icon-button>
         <div class="vertical layout">
           <paper-checkbox id="settings-live-compiling" title="Automatically compile the automata as you define them.">
             <span>Live Compiling</span>
@@ -117,7 +117,7 @@
     <paper-dialog id="help-dialog" with-backdrop opened="{{helpDialogOpened}}">
       <template is="dom-if" if="[[helpDialogOpened]]">
         <h2>Help</h2>
-        <paper-icon-button class="btn-close" icon="icons:cancel" title="Close" dialog-dismiss></paper-icon-button>
+        <paper-icon-button class="btn-close" icon="app:cancel" title="Close" dialog-dismiss></paper-icon-button>
         <paper-tabs selected="{{helpDialogSelectedTab}}" no-bar>
           <paper-tab>Creating Automata</paper-tab>
           <paper-tab>Second Tab</paper-tab>
