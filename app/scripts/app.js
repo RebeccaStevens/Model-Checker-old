@@ -16,120 +16,129 @@
 
     /**
      * Compile the code in the text editor.
-     * Create and display the new automata.
+     * Create and display the automata.
+     *
+     * @param {Boolean} [build=false] - If true automata will be build, otherwise only compiled
      */
-    app.compile = function(overrideBuild) {
+    app.compile = function(build) {
+      build = build || false;
+
       // debounce multiple compile calls
       app.debounce('compile', function() {
         var compileStartTime = (new Date()).getTime();
         var compileTime;
-        var operations = '';
-        var positions;
 
-        // try not to block the renderer
-        setTimeout(function() {
-          var code = app.getCode();
+        app.$.editor.clearAnnotations();
 
-          if (!overrideBuild) {
-            // if there is nothing to parse then do not continue
-            if (code.length === 0) {
-              app.$.console.clear();
-              app.automata = [];
-              app.previousCode = '';
-              return;
-            }
+        var code = app.getCode();
 
-            // if the code has not changed then do not continue
-            if (code === app.previousCode) {
-              return;
-            }
-          }
-
-          app.$.console.clear();
-          app.$.console.log('Compiling...');
-          app.previousCode = code;
-
-          // re-get code to ensure correct line positions for annotations and error highlighting
-          code = app.$.editor.code;
-
-          var automata = [];
-          try {
-            var result = app.$.parser.parse(code, app.settings.liveBuilding, app.settings.fairAbstraction);
-            automata = result.automata;
-            operations = result.operations.operations;
-            positions = result.operations.positions;
-          } catch (e) {
-            var buildErrorMessage = function(e) {
-              return e.location !== undefined ?
-                'on line ' + e.location.start.line + ', col ' + e.location.start.column + ' - ' + e.message :
-                e.message;
-            };
-
-            var isInterpreterException = e.constructor === app.$.parser.InterpreterException;
-            var prefix = isInterpreterException ? 'Error: ' : 'Syntax error ';
-
-            compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
-            app.$.console.clear(1);
-            app.$.console.log('Compulation failed after ' + compileTime.toFixed(3) + ' seconds.');
-            app.$.console.error(prefix + buildErrorMessage(e));
+        if (!build) {
+          // if there is nothing to parse then do not continue
+          if (code.length === 0) {
+            app.$.console.clear();
+            app.automata = [];
+            app.previousCode = '';
             return;
           }
 
+          // if the code has not changed then do not continue
+          if (code === app.previousCode) {
+            return;
+          }
+        }
+
+        app.$.console.clear();
+        app.$.console.log('Compiling...');
+        app.previousCode = code;
+
+        // re-get code to ensure correct line positions for annotations and error highlighting
+        code = app.$.editor.code;
+
+        var automata = [];
+        var operations;
+        var positions;
+
+        try {
+          var result = app.$.parser.parse(code, app.settings.liveBuilding, app.settings.fairAbstraction);
+          automata = result.automata;
+          operations = result.operations.operations;
+          positions = result.operations.positions;
+        } catch (e) {
+          var buildErrorMessage = function(e) {
+            return e.location !== undefined ?
+              'on line ' + e.location.start.line + ', col ' + e.location.start.column + ' - ' + e.message :
+              e.message;
+          };
+
+          var isInterpreterException = e.constructor === app.$.parser.InterpreterException;
+          var prefix = isInterpreterException ? 'Error: ' : 'Syntax error ';
+
           compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
           app.$.console.clear(1);
-          app.$.console.log('Compiled successfully in ' + compileTime.toFixed(3) + ' seconds.');
+          app.$.console.log('Compulation failed after ' + compileTime.toFixed(3) + ' seconds.');
+          app.$.console.error(prefix + buildErrorMessage(e));
+          return;
+        }
 
-          // only render if live building is checked or the compile and build button was pressed
-          if ((app.settings.liveBuilding || overrideBuild) && automata.length > 0) {
-            app.$.console.log('Rendering...');
+        compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
+        app.$.console.clear(1);
+        app.$.console.log('Compiled successfully in ' + compileTime.toFixed(3) + ' seconds.');
 
-            var renderStartTime = (new Date()).getTime();
-            var renderTime;
-
-            setTimeout(function() {
-              app.set('automata', automata);
-
-              // listen for each rendered event.
-              // once all automata have been rendered, log the results and stop listening.
-              var automataRendered = 0;
-              var renderComplete = function() {
-                automataRendered++;
-                if (automataRendered === app.automata.length) {
-                  renderTime = Math.max(1, ((new Date()).getTime() - renderStartTime)) / 1000;
-                  app.$.console.clear(1);
-                  app.$.console.log('Rendered successfully after ' + renderTime.toFixed(3) + ' seconds.');
-                  app.$.console.log('Total time: ' + (compileTime + renderTime).toFixed(3) + ' seconds.');
-
-                  document.removeEventListener('automaton-renderer-rendered', renderComplete);
-                }
-              };
-
-              document.addEventListener('automaton-renderer-rendered', renderComplete);
-            }.bind(this), 0);
-          }
-
-          setTimeout(function() {
-            // only print out operations results if the were any operations performed
-            if (operations.length !== 0) {
-              app.$.console.log(' ');
-              app.$.console.log('Operations:');
-              for (var i = 0; i < operations.length; i++) {
-                app.$.console.log(operations[i]);
-                // skip over the display of totals
-                if (i !== 0) {
-                  var pos = positions[i - 1];
-                  var line = pos.start.line - 1;
-                  app.$.editor.addAnnotation(line, operations[i], 'info');
-                }
-              }
+        // only print out operations results if the were operations performed
+        if (operations.length > 0) {
+          app.$.console.log('Operations:');
+          for (var i = 0; i < operations.length; i++) {
+            app.$.console.log('  ' + operations[i]);
+            // skip over the display of totals
+            if (i !== 0) {
+              var pos = positions[i - 1];
+              var line = pos.start.line - 1;
+              app.$.editor.addAnnotation(line, operations[i], 'info');
             }
-          }.bind(this), 0);
-        }.bind(this), 0);
+          }
+          app.$.console.log();
+        }
+
+        // only render if live building is checked or the compile and build button was pressed
+        if (app.settings.liveBuilding || build) {
+          app.build(automata);
+        }
       });
     };
 
     /**
-     * Compiles and builds what has currenty been entered into the text-area.
+     * Build / render the automata.
+     *
+     * @param {Automaton[]} automata - automata to build
+     */
+    app.build = function(automata) {
+      if (automata.length > 0) {
+        app.$.console.log('Rendering...');
+
+        var renderStartTime = (new Date()).getTime();
+
+        // listen for each rendered event.
+        // once all automata have been rendered, log the results and stop listening.
+        var automataRendered = 0;
+        var renderComplete = function() {
+          automataRendered++;
+          if (automataRendered === app.automata.length) {
+            var renderTime = Math.max(1, ((new Date()).getTime() - renderStartTime)) / 1000;
+            app.$.console.clear(1);
+            app.$.console.log('Rendered successfully in ' + renderTime.toFixed(3) + ' seconds.');
+
+            document.removeEventListener('automaton-renderer-rendered', renderComplete);
+          }
+        };
+
+        document.addEventListener('automaton-renderer-rendered', renderComplete);
+      }
+
+      app.set('automata', automata);  // set app.automata - this will trigger the rendering process
+    };
+
+    /**
+     * Compiles and builds what has currenty been entered into the text-editor.
      * Ignores whether or not live compile and build are currently set.
      */
     app.compileAndBuild = function() {
