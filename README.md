@@ -1,7 +1,6 @@
 # Automata Concocter (Model-Checker)
 
-[Automata Concocter is hosted here](http://modelchecker-swen302.herokuapp.com/).  
-Please Note that current this is quite a bit out of date. It should be updated soon.
+[Automata Concocter is hosted here](http://modelchecker-swen302.herokuapp.com/).
 
 ## Streader's Raiders - SWEN302 Group Project
 
