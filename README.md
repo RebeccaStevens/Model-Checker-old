@@ -67,7 +67,7 @@ Elements' documentation can be viewed on a local server using http://localhost:5
 
 To create a new custom element, start by copying the [\_template-element](app/elements/\_template-element).
 
-Here's an example fire structure for a custom element called *custom-element*:
+Here's an example file structure for a custom element called *custom-element*:
 ```
 .
 └── app/elements/custom-element/
