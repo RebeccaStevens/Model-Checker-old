@@ -117,18 +117,21 @@ Many third party elements that are designed to be used by all will tell you the 
 
 * **[main.css](app/styles/main.css)**
 
-  This stylesheet contains styles that will be applied to the main document but not to elements within `<template is="dom-bind" id="app">...</template>`
+  This stylesheet contains styles that will be applied to the main document. It should not be used for styling elements within `<template is="dom-bind" id="app">...</template>` - use [app-theme.html](app/styles/app-theme.html) for that.
 
 * **[app-theme.html](app/styles/app-theme.html)**
 
-  This file styles the application. It is a `.html` rather than a `.css` file because it needs to us `custom-style` which cannot be applied to `.css` files.  
+  This file styles the application at the top level.  
+  It is a `.html` rather than a `.css` file because it needs to us `custom-style` which cannot be applied to `.css` files.  
   See [here](https://www.polymer-project.org/1.0/docs/devguide/styling.html#custom-style) for details.
+  
+  Note: Our custom elements have their own styles defined with in them. These styles are designed to be quite general and can be overridden with this file.
 
 * **[shared-styles.html](app/styles/shared-styles.html)**
 
   This file styles both the application and the internals of our custom elements (not 3rd party ones).
 
-Note: Our custom elements have their own styles defined with in them. These styles are quite general and can be overridden in [app-theme.html](app/styles/app-theme.html).
+  Note: Our custom elements may override these stylings.
 
 ### Testing
 
