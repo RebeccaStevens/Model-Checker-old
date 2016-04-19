@@ -460,7 +460,9 @@
     // everything is now setup - remove the splashscreen
     var splash = document.getElementById('splash');
     var removeSplash = function() {
-      splash.parentElement.removeChild(splash);
+      if (splash && splash.parentElement) {
+        splash.parentElement.removeChild(splash);
+      }
     };
     splash.addEventListener('transitionend', removeSplash); // IE11 doesn't support `splash.remove`
     document.body.removeClass('loading');
@@ -478,28 +480,32 @@
 
     splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
 
-    /**
-     * Called once each import is ready.
-     */
-    var importComplete = function() {
-      numberOfImportsComplete++;
-      splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
+    if (allImports.length === 0) {
+      onImportsLoaded();
+    } else {
+      /**
+       * Called once each import is ready.
+       */
+      var importComplete = function() {
+        numberOfImportsComplete++;
+        splashLoadingPercentUpdate(1 + numberOfImportsComplete, 1 + allImports.length);
 
-      // if all imports are complete
-      if (numberOfImportsComplete === allImports.length) {
-        onImportsLoaded();
-      }
-    };
+        // if all imports are complete
+        if (numberOfImportsComplete === allImports.length) {
+          onImportsLoaded();
+        }
+      };
 
-    // loop through all the imports and call `importComplete` if it's complete,
-    // otherwise setup a listener to do so
-    for (var i = 0; i < allImports.length; i++) {
-      if (allImports[i].import && (
-        allImports[i].import.readyState === 'complete' ||
-        allImports[i].import.readyState === 'interactive')) {
-        importComplete();
-      } else {
-        allImports[i].addEventListener('load', importComplete);
+      // loop through all the imports and call `importComplete` if it's complete,
+      // otherwise setup a listener to do so
+      for (var i = 0; i < allImports.length; i++) {
+        if (allImports[i].import && (
+          allImports[i].import.readyState === 'complete' ||
+          allImports[i].import.readyState === 'interactive')) {
+          importComplete();
+        } else {
+          allImports[i].addEventListener('load', importComplete);
+        }
       }
     }
   }

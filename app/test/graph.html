@@ -12,9 +12,11 @@
   <script>
   // jshint -W030
   // jshint -W098
-  suite('Graph Data Structure', function () {
+  // jshint -W106
+  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+  suite('Graph Data Structure', function() {
     suite('Positves', function() {
-      suite('Adding Nodes', function () {
+      suite('Adding Nodes', function() {
         test('single node - no meta', function() {
           var g = new Graph();
           var n = g.addNode(0, 'label');
@@ -74,7 +76,7 @@
         test('multiple nodes (2)', function() {
           var g = new Graph();
           var n0 = g.addNode(0, 'x');
-          var n1 = g.addNode(1, 'y', {abc:123});
+          var n1 = g.addNode(1, 'y', {abc: 123});
 
           var node0 = g.getNode(0);
           var node1 = g.getNode(1);
@@ -96,7 +98,7 @@
           expect(node1.id).to.equal(1);
           expect(node1.label).to.equal('y');
           expect(node1.graph).to.equal(g);
-          expect(node1.metaData).to.deep.equal({abc:123});
+          expect(node1.metaData).to.deep.equal({abc: 123});
 
           expect(node0).to.not.equal(node1);
 
@@ -114,9 +116,9 @@
           var g = new Graph();
           var n15 = g.addNode(15, 'a');
           var n76 = g.addNode(76, 'b');
-          var n13 = g.addNode(13, 'c', {abc:123});
+          var n13 = g.addNode(13, 'c', {abc: 123});
           var n27 = g.addNode(27, 'd');
-          var n39 = g.addNode(39, 'e', {xyz:456});
+          var n39 = g.addNode(39, 'e', {xyz: 456});
 
           var node15 = g.getNode(15);
           var node76 = g.getNode(76);
@@ -148,7 +150,7 @@
           expect(node13).to.not.equal(root);
           expect(node13.id).to.equal(13);
           expect(node13.label).to.equal('c');
-          expect(node13.metaData).to.deep.equal({abc:123});
+          expect(node13.metaData).to.deep.equal({abc: 123});
 
           expect(node27).to.exist;
           expect(node27).to.equal(n27);
@@ -164,7 +166,7 @@
           expect(node39.id).to.equal(39);
           expect(node39.label).to.equal('e');
           expect(node39.graph).to.equal(g);
-          expect(node39.metaData).to.deep.equal({xyz:456});
+          expect(node39.metaData).to.deep.equal({xyz: 456});
 
           expect(g.nodeCount).to.equal(5);
           expect(nodes.length).to.equal(5);
@@ -176,7 +178,7 @@
           expect(edges).to.be.empty;
         });
       });
-      suite('Adding Nodes and Edges', function () {
+      suite('Adding Nodes and Edges', function() {
         test('node with loop', function() {
           var g = new Graph();
           var n0 = g.addNode(0);
@@ -286,8 +288,8 @@
           expect(n1neighbors).to.have.members([node0]);
         });
       });
-      suite('Removing Nodes', function () {
-        test('test 1', function () {
+      suite('Removing Nodes', function() {
+        test('test 1', function() {
           var g = new Graph();
           var n0 = g.addNode(0);
           var n1 = g.addNode(1);
@@ -321,7 +323,7 @@
           expect(n0neighbors).to.be.empty;
         });
       });
-      suite('Removing Edges', function () {
+      suite('Removing Edges', function() {
         test('remove an edge from a cycle', function() {
           var g = new Graph();
           var n0 = g.addNode(0);
@@ -362,7 +364,7 @@
           expect(n1neighbors).to.have.members([node0]);
         });
       });
-      suite('Cloning', function () {
+      suite('Cloning', function() {
         test('test 1', function() {
           var g = new Graph();
           var n0 = g.addNode(0);
@@ -381,12 +383,12 @@
           var c_nodes = c.nodes;
           var c_edges = c.edges;
 
-          for(var n in c_nodes){
+          for (var n in c_nodes) {
             expect(c_nodes[n]).to.deep.equal(g_nodes[n]);   // deep equal
             expect(c_nodes[n]).to.not.equal(g_nodes[n]);    // but not strick equal
           }
 
-          for(var e in c_edges){
+          for (var e in c_edges) {
             expect(c_edges[e]).to.deep.equal(g_edges[e]);   // deep equal
             expect(c_edges[e]).to.not.equal(g_edges[e]);    // but not strick equal
           }
@@ -395,11 +397,11 @@
           expect(c.root).to.not.equal(g.root);    // but not strick equal
         });
       });
-      suite('Other', function () {
+      suite('Other', function() {
         test('Changing a node\'s ID', function() {
           var g = new Graph();
           var n0 = g.addNode(0);
-          var n1 = g.addNode(1, 'x', {abc:123});
+          var n1 = g.addNode(1, 'x', {abc: 123});
           var e0 = g.addEdge(0, n0, n1);
 
           var node0_0 = g.getNode(0);
@@ -417,7 +419,7 @@
           expect(node1_0.id).to.equal(1);
           expect(node1_0.label).to.equal('x');
           expect(node1_0.graph).to.equal(g);
-          expect(node1_0.metaData).to.deep.equal({abc:123});
+          expect(node1_0.metaData).to.deep.equal({abc: 123});
           expect(edge0_0).to.exist;
           expect(edge0_0).to.equal(e0);
           expect(edge0_0.graph).to.equal(g);
@@ -455,7 +457,7 @@
           expect(node17_1.id).to.equal(17);
           expect(node17_1.label).to.equal('x');
           expect(node17_1.graph).to.equal(g);
-          expect(node17_1.metaData).to.deep.equal({abc:123});
+          expect(node17_1.metaData).to.deep.equal({abc: 123});
           expect(edge0_1).to.exist;
           expect(edge0_1).to.equal(e0);
           expect(edge0_1.graph).to.equal(g);
@@ -481,7 +483,7 @@
 
         test('Changing the root node\'s ID', function() {
           var g = new Graph();
-          var n0 = g.addNode(0, 'x', {abc:123});
+          var n0 = g.addNode(0, 'x', {abc: 123});
           var n1 = g.addNode(1);
           var e0 = g.addEdge(0, n0, n1);
 
@@ -500,7 +502,7 @@
           expect(node0_0.id).to.equal(0);
           expect(node0_0.label).to.equal('x');
           expect(node0_0.graph).to.equal(g);
-          expect(node0_0.metaData).to.deep.equal({abc:123});
+          expect(node0_0.metaData).to.deep.equal({abc: 123});
           expect(edge0_0).to.exist;
           expect(edge0_0).to.equal(e0);
           expect(edge0_0.graph).to.equal(g);
@@ -538,7 +540,7 @@
           expect(node17_1.id).to.equal(17);
           expect(node17_1.label).to.equal('x');
           expect(node17_1.graph).to.equal(g);
-          expect(node17_1.metaData).to.deep.equal({abc:123});
+          expect(node17_1.metaData).to.deep.equal({abc: 123});
           expect(edge0_1).to.exist;
           expect(edge0_1).to.equal(e0);
           expect(edge0_1.graph).to.equal(g);

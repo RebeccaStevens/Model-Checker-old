@@ -18,6 +18,7 @@
     "unwrap": true,
     "Polymer": true,
     "Platform": true,
+    "WCT": true,
     "fixture": true,
     "setup": true,
     "teardown": true,
