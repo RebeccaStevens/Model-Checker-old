@@ -56,6 +56,7 @@
         var automata = [];
         var operations;
         var positions;
+        var compileTime;
 
         try {
           var result = app.$.parser.parse(code, app.settings.liveBuilding, app.settings.fairAbstraction);
@@ -72,14 +73,14 @@
           var isInterpreterException = e.constructor === app.$.parser.InterpreterException;
           var prefix = isInterpreterException ? 'Error: ' : 'Syntax error ';
 
-          var compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
+          compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
           app.$.console.clear(1);
           app.$.console.log('Compulation failed after ' + compileTime.toFixed(3) + ' seconds.');
           app.$.console.error(prefix + buildErrorMessage(e));
           return;
         }
 
-        var compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
+        compileTime = Math.max(1, ((new Date()).getTime() - compileStartTime)) / 1000;
         app.$.console.clear(1);
         app.$.console.log('Compiled successfully in ' + compileTime.toFixed(3) + ' seconds.');
 

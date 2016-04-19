@@ -1,653 +1,667 @@
 {
-  var Node = {
-      ModelNode: function(definition){
-        this.type = 'model';
-        this.definitions = processLocalDefinitions(definition);
-        //this.position = location();
-      },
-      ConstantNode: function(name, expression){
-        this.type = 'constant';
-        this.name = name;
-        this.expression = expression;
-        //this.position = location();
-      },
-      RangeNode: function(name, start, end){
-        this.type = 'range';
-        this.name = name;
-        this.start = start;
-        this.end = end;
-        //this.position = location();
-      },
-      SetNode: function(name, set){
-        this.type = 'set';
-        this.name = name;
-        this.set = set;
-        //this.position = location();
-      },
-      DefinitionNode: function(name, process, relabel, hidden, isVisible){
-        this.type = 'definition'; // needs to be changed later on
-        this.name = name;
-        this.process = process;
-        this.relabel = (relabel === null) ? undefined : relabel;
-        this.hidden = (hidden === null) ? undefined : hidden;
-        this.isVisible = (isVisible === null) ? true : false;
-        //this.position = location();
-      },
-      OperationNode: function(process, input, definition1, definition2, isNegated){
-        this.type = 'operation';
-        this.process = process;
-        this.input = input;
-        this.definition1 = definition1;
-        this.definition2 = definition2;
-        this.isNegated = isNegated;
-        this.position = location();
-      },
-      RelabelNode: function(relabel){
-        this.type = 'relabel';
-        this.relabel = relabel;
-        //this.position = location();
-      },
-      NameNode: function(name){
-        this.type = 'name';
-        this.name = name;
-        //this.position = location();
-      },
-      LabelNode: function(name, label){
-        this.type = 'label';
-        this.name = name;
-        this.label = (label === null) ? undefined : label;
-        //this.position = location();
-      },
-      VariableNode: function(name){
-        this.type = 'variable'
-        this.name = name;
-        //this.position = location();
-      },
-      ActionNode: function(action){
-        this.type = 'action';
-        this.action = action;
-        //this.position = location();
-      },
-      IndexNode: function(variable, index){
-        this.type = 'action';
-        this.subtype = 'index';
-        this.action = '';
-        this.variable = variable;
-        this.index = index;
-      },
-      SequenceNode: function(from, to){
-        this.type = 'sequence';
-        //TODO: this.guard = guard;
-        this.from = from;
-        this.to = to;
-        //this.position = location();
-      },
-      ChoiceNode: function(option1, option2){
-        this.type = 'choice';
-        this.option1 = option1;
-        this.option2 = option2;
-        //this.position = location();
-      },
-      ParallelNode: function(definition1, definition2){
-        this.type = 'parallel';
-        this.definition1 = definition1;
-        this.definition2 = definition2;
-        //this.position = location();
-      },
-      FunctionNode: function(type, process){
-        this.type = type;
-        this.process = process;
-        //this.position = location();
-      },
-      CompositeNode: function(label, composite, relabel){
-        this.type = 'composite';
-        this.label = (label === null) ? undefined : label;
-        this.composite = composite;
-        this.relabel = (relabel === null) ? undefined : relabel;
-        //this.position = location();
-      },
-      StopNode: function(){
-        this.type = 'stop';
-        //this.position = location();
-      },
-      ErrorNode: function(){
-        this.type = 'error';
-        //this.position = location();
-      },
-      CommentNode: function(comment){
-        this.type = 'comment';
-        this.comment = comment;
-<<<<<<< HEAD
-        this.position = location();
-=======
-        //this.position = location();
-      },
-      ExpressionNode: function(operator, operand1, operand2){
-        this.type = 'expression';
-        this.operator = operator;
-        this.operand1 = operand1;
-        this.operand2 = operand2;
-        //this.position = location();
->>>>>>> parser
-      },
-      SimpleExpressionNode: function(expression){
-        this.type = 'simple-expression';
-        this.expression = expression;
-<<<<<<< HEAD
-=======
-        //this.position = location();
->>>>>>> parser
-      }
-    };
+    /* JavaScript Objects that are constructed through building the parse tree. */
+    var Node = {
+        NameNode: function(name){
+            this.type = 'name';
+            this.name = name;
+        },
+        ActionNode: function(action, indices){
+            this.type = 'action';
+            this.action = action;
+            if(indices.length > 0){ this.indices = indices; }
+        },
+        RangeNode: function(start, end){
+            this.type = 'range';
+            this.start = start;
+            this.end = end;
+        },
+        SetNode: function(set){
+            this.type = 'set';
+            this.set = set;
+        },
+        ModelNode: function(definitions){
+            this.type = 'model';
+            this.definitions = definitions;
+        },
+        DefinitionNode: function(name, process, relabel, hidden, isVisible){
+            this.type = "definition";
+            this.name = name;
+            this.process = process;
+            if(relabel != null){ this.relabel = relabel; }
+            if(hidden != null){ this.hidden = hidden; }
+            if(isVisible != null){ this.isVisible = isVisible; }
+        },
+        SequenceNode: function(from, to){
+            this.type = 'sequence';
+            this.from = from;
+            this.to = to;
+        },
+        IfNode:function(guard, thenProcess, elseProcess){
+            this.type = 'if-statement';
+            this.guard = guard;
+            this.thenProcess = thenProcess;
+            if(elseProcess != null){ this.elseProcess = elseProcess; }
+        },
+        CompositeNode: function(label, composite, relabel){
+            this.type = 'composite';
+            if(label != null){ this.label = label; }
+            this.composite = composite;
+            if(relabel != null){ this.relabel = relabel; }
+        },
+        ParallelNode: function(process1, process2){
+            this.type = 'parallel';
+            this.process1 = process1;
+            this.process2 = process2;
+        },
+        ChoiceNode: function(option1, option2){
+            this.type = 'choice';
+            this.option1 = option1;
+            this.option2 = option2;
+        },
+        FunctionNode: function(func, process, relabel, hidden){
+            this.type = 'function';
+            this.func = func;
+            this.process = process;
+            if(relabel != null){ this.relabel = relabel; }
+            if(hidden != null){ this.hidden = hidden; }
+        },
+        IndexNode: function(variable, index, process){
+            this.type = 'index';
+            this.variable = variable;
+            this.index = index;
+            this.process = process;
+        },
+        TerminalNode: function(type){
+            this.type = type;
+        },
+        OperationNode: function(operator, process1, process2, isNegated, input){
+            this.type = 'operation';
+            this.operator = operator;
+            this.process1 = process1;
+            this.process2 = process2;
+            this.isNegated = isNegated;
+            this.input = text().trim();
+        }
+    }
+    
+    // variables used while parsing
+    var localDefinitions = [];
+    var variableMap = {};
+    var variableCount = 0;
+    var actionIndices = [];
+    var identifierIndices = [];
+    var forallIndices = [];
+    
+    /* Processes the specified index accordingly based on the type of index it is. */
+    function processIndex(index, type){
+        if(index.variable == undefined){
+            index.variable = getNextVariable();
+        }
+        
+        if(type == 'action'){
+            actionIndices.push(index);
+        }
+        else if(type == 'identifier'){
+            identifierIndices.push(index);
+        }
+        else if(type == 'forall'){
+            forallIndices.push(index);
+        }
+   
+        return index.variable;
+    }
     
     /**
-     * Constructs and returns the JSON representation of a
-     * sequence from the specified array of actions.
+     * Constructs and returns an index node.
      */
-    function constructSequence(sequence){
-      var to = sequence.pop();
-      var from = sequence.pop();
-      
-      // if only one node was popped then only return the first on
-      if(from === undefined){ return to; }
-      
-      var node = new Node.SequenceNode(from, to);
-        
-      while(sequence.length !== 0){
-        from = sequence.pop();
-        node = new Node.SequenceNode(from, node);
-      }
-        
-      return node;
-    };
-    
-    function constructJoinedActionNode(action1, action2){
-        var node = new Node.ActionNode();
-        delete node.action;
-        node.subtype = 'joined';
-        node.actions = [action1, action2];
-        return node;
-    };
-    
-    function constructExpressionActionNode(action, expressions){
-      var node = new Node.ActionNode();
-        delete node.action;
-        node.subtype = 'expression';
-        node.action = action;
-        node.expressions = expressions;
-        return node;
-    };
-    
-    function constructIndexActionNode(action, index){
-      index.action = action.action;
-        return index;
-    };
-    
-    function processLocalDefinitions(definition){
-      var definitions = [];
-        var local = undefined;
-    do{
-          local = definition.process.local;
-          delete definition.process['local'];
-          definitions.push(definition);
-          definition = local;
-    }while(local !== undefined);       
-    
-    return definitions;
-    };
+    function constructIndexNode(indices, process){
+        if(indices != undefined){
+            for(var i = 0; i < indices.length; i++){
+                var index = indices[i];
+                process = new Node.IndexNode(index.variable, index.index, process);
+            }
+        }
+
+        return process;    
+    }
     
     /**
-     * Returns the type of operation specified by the given operator.
+     * Constructs and returns a composite node. If indices have been defined then wraps
+     * the composite node within an index node.
      */
-    function getOperation(operator){
-      switch(operator){
-        case '~':
-          return 'bisimulation';
-        default:
-          return undefined;
+    function constructCompositeNode(prefix, composite, relabel){
+        if(prefix == null){
+            return new Node.CompositeNode(prefix, composite, relabel);
+        }
+      
+        var indices = prefix.indices;
+        delete prefix.indices;
+        var node = new Node.CompositeNode(prefix, composite, relabel);
+        return constructIndexNode(indices, node);
+    }
+    
+    /** 
+     * Constructs and returns an expression. Stores expressions in the
+     * variable map and constructs and returns a variable name if necessary.
+     */
+    function constructExpression(exp){
+        if(typeof(exp) == 'number'){
+            return exp;
+        }
+
+        if(!exp.includes(' ')){
+            return exp;
+        }
+        var variable = getNextVariable();
+        variableMap[variable] = exp;
+        return variable;
+    }
+    
+    /**
+     * Returns the next variable name in the sequence.
+     */
+    function getNextVariable(){
+        return '$v<' + variableCount++ + '>';
+    }
+    
+    /**
+     * Process the specifiec set elements to determine whether any of the
+     * elements require indexing.
+     */
+    function processSetElements(label, elements){
+      var indices = label.indices;
+
+      // if no index is defined just return the action label
+      if(indices == undefined){
+          return (elements != null) ? [label.action].concat(elements) : [label.action];
       }
+
+      // otherwise construct and return an index node
+      delete label.indices;
+      var node = constructIndexNode(indices, label.action);
+      return (elements != null) ? [node].concat(elements) : [node];
+    }
+}
+
+/* Constructs and returns a parse try to be passed to the interpreter. */
+ParseTree = processes:ParseTreeProcesses* {
+    return {
+        processes: processes,
+        variableMap: variableMap
     };
 }
 
-ParseTree = (FSP / ConstantDefinition / RangeDefinition / SetDefinition / OperationDefinition / Comment)*
-
-FSP = _ definition:(FunctionDefinition / ReferenceDefinition / CompositeDefinition / ProcessDefinition) _ {
-  return new Node.ModelNode(definition);
-}
+/* Attempts to parse and return a either a process definition or an operation
+   for the parse tree. */
+ParseTreeProcesses
+ = _ process:ProcessDefinition _ {
+    return process;
+ }
+ / _ operation:Operation _ {
+    return operation;
+ }
 
 /**
- * IDENTIFIERS
+ * IDENTIFIERS 
  */
 
-Name = ('STOP' / '(' _ 'STOP' _ ')') { return new Node.StopNode(); }
-     / ('ERROR' / '(' _ 'ERROR' _ ')') { return new Node.ErrorNode(); }
-     / name:UpperCaseIdentifier { return new Node.NameNode(name); }
+/* Attempts to parse and return a name node */
+Identifier
+ = ident:UpperCaseIdentifier {
+    return new Node.NameNode(ident);
+ }
 
-Variable = variable:LowerCaseIdentifier { return new Node.VariableNode(variable); }
+/* Attempts to parse and return a variable reference */
+Variable
+ = variable:LowerCaseIdentifier {
+    return '$' + variable;
+ }
 
-UpperCaseIdentifier = $([A-Z][A-Za-z0-9_]*) { return text(); }
-LowerCaseIdentifier = $([a-z][A-Za-z0-9_]*) { return text(); }
-IntegerLiteral = [-]?[0-9]+ { return parseInt(text(), 10); }
+/* Attempts to parse and return a string beginning with an uppercase letter. */
+UpperCaseIdentifier
+ = $([A-Z][a-zA-Z0-9_]*)
+
+/* Attempts to parse and return a string beginning with a lowercase letter. */
+LowerCaseIdentifier
+ = $([a-z][a-zA-Z0-9_]*)
+
+/* Attempts to parse and return an integer value. */
+IntegerLiteral = [-]?[0-9]+ {
+    return parseInt(text(), 10);
+}
 
 /**
  * ACTION LABELS
  */
 
-ActionLabel = a:LowerCaseIdentifier _ b:JoinedAction { return constructJoinedActionNode(new Node.ActionNode(a), b); }
-            / a:LowerCaseIdentifier _ b:ExpressionAction { return constructExpressionActionNode(a, b); }
-            / action:LowerCaseIdentifier { return new Node.ActionNode(action); }
-            / '[' _ exp:Expression _ ']' { return constructExpressionActionNode('', [exp]); }
+/* Attempts to parse and return an action label. These are simple labels which can either
+   be lower case identifiers or expressions. */
+ActionLabel
+ = label:LowerCaseIdentifier _ label2:(_ActionLabel ?) {
+    return (label2 != null) ? label + label2 : label;
+ }
+ / '[' _ exp:Expression _ ']' _ label:(_ActionLabel ?) {
+    exp = '[' + exp + ']';
+    return (label != null) ? exp + label : exp;
+ }
 
-JoinedAction = '.' _ action:LowerCaseIdentifier _ exp:(ExpressionAction ?) {
-    if(exp === null){
-      return new Node.ActionNode(action);
+/* Helper function for 'ActionLabel' which removes left hand recursion from parsing. */
+_ActionLabel
+ = '.' _ label:LowerCaseIdentifier _ label2:(_ActionLabel ?) {
+    label = '.' + label;
+    return (label2 != null) ? label + label2 : label;
+ }
+ / '[' _ exp:Expression _ ']' _ label:(_ActionLabel ?) {
+    exp = '[' + exp + ']'
+    return (label != null) ? exp + label : exp;
+ }
+
+/* Attempts to parse and return a concatenation of action labels. Action labels also allow
+   for sets and ranges to be defined. */
+ActionLabels
+ = label:ActionLabel _ label2:(_ActionLabels ?) {
+    label = (label2 != null) ? label + label2 : label;
+    var indices = actionIndices;
+    actionIndices = [];
+    return new Node.ActionNode(label, indices);
+ }
+ / set:ActionSet _ label:(_ActionLabels ?) {
+    set = processIndex(set, 'action');
+    set = (label != null) ? set + label : set;
+    var indices = actionIndices;
+    actionIndices = [];
+    return new Node.ActionNode(set, indices);
+ }
+ / '[' _ range:ActionRange _ ']' _ label:(_ActionLabels ?) {
+    range = '[' + processIndex(range, 'action') + ']';
+    range = (label != null) ? range + label : range;
+    var indices = actionIndices;
+    actionIndices = [];
+    return new Node.ActionNode(range, indices);
+ }
+
+/* Helper function for 'ActionLabels' which removes left hand recursion from parsing. */
+_ActionLabels
+ = '.' _ label:ActionLabel _ label2:(_ActionLabels ?) {
+    label = '.' + label;
+    return (label2 != null) ? label + label2 : label;
+ }
+ / '.' _ set:ActionSet _ label:(_ActionLabels ?) {
+    set = '.' + processIndex(set, 'action');
+    return (label != null) ? set + label : set;
+ }
+ / '[' _ range:ActionRange _ ']' _ label:(_ActionLabels ?) {
+    range = '[' + processIndex(range, 'action') + ']';
+    return (label != null) ? range + label : range;
+ }
+ / '[' _ exp:Expression _ ']' _ label:(_ActionLabels ?) {
+    exp = '[' + exp + ']';
+    return (label != null) ? exp + label : exp;
+ }
+
+/* Attempts to parse and return a set defined within an ActionLabel. */
+ActionSet
+ = index:Set {
+    return { index: index };
+ }
+
+/* Attempts to parse and return an action range from within an ActionLabel. */
+ActionRange
+ = index:(Range / Set) {
+    return { index: index };
+ }
+ / variable:Variable _ ':' _ index:(Range / Set) {
+    return { variable: variable, index: index };
+ }
+
+/* Attempts to parse and return a range definition. */
+Range
+ = start:Expression _ '..' _ end:Expression {
+    return new Node.RangeNode(start, end);
+ }
+
+/* Attempts to parse and return a set definition. */
+Set
+ = '{' _ set:SetElements _ '}' {
+    return new Node.SetNode(set);
+ }
+
+/* Attempts to parse set elements for a set definition. */
+SetElements
+ = label:ActionLabels _ elements:(_SetElements ?) {
+    return processSetElements(label, elements);
+ }
+
+/* Helper function for 'SetElements' which removes left hand recursion from parsing. */
+_SetElements
+ = ',' _ label:ActionLabels _ elements:(_SetElements ?) {
+    return processSetElements(label, elements);
+ }
+
+/**
+ * PROCESS DEFINITION
+ */
+
+/* Attempts to parse and return a process definition. */
+ProcessDefinition
+ = ident:Identifier _ '=' _ body:ProcessBody _ relabel:(Relabel ?) _ hide:(Hiding ?) _ '.' {
+    var node = new Node.DefinitionNode(ident, body, relabel, hide, true);
+    var definitions = localDefinitions;
+    definitions.unshift(node);
+    localDefinitions = [];
+    return new Node.ModelNode(definitions);
+ }
+
+/* Attempts to parse and return the body of a process definition. */
+ProcessBody
+ = process:LocalProcess _ ((',' _ definitions:LocalProcessDefinitions { localDefinitions = definitions }) ?) {
+    return process;
+ }
+
+/* Attempts to parse and return locally defined process definitions. */
+LocalProcessDefinitions
+ = definition:LocalProcessDefinition _ definitions:(_LocalProcessDefinitions ?) {
+    return (definitions != null) ? [definition].concat(definitions) : [definition];
+ }
+
+/* Helper function for 'LocalProcessDefinitions' which removes left hand recursion from parsing. */
+_LocalProcessDefinitions
+ = ',' _ definitions:LocalProcessDefinitions {
+   return definitions;
+ }
+
+/* Attempts to parse and return a locally defined process definition. */
+LocalProcessDefinition
+ = ident:Identifier _  ranges:(IndexRanges ?) _  '=' _  process:LocalProcess {
+    if(ranges != null){
+        ident.name += ranges;
+        ident = constructIndexNode(identifierIndices, ident);
+        identifierIndices = [];
+    }
+    return new Node.DefinitionNode(ident, process);
+ }
+
+/* Attempts to parse and return a local process. */
+LocalProcess
+ = prefix:(PrefixLabel ?) _ process:_LocalProcess _ relabel:(Relabel ?) {
+    if(prefix == null && relabel == null){
+        return process;
     }
     
-  return constructExpressionActionNode(action, exp);
-}
-ExpressionAction = a:BracketedExpression _ b:(ExpressionAction ?) {if(b === null){ return [a]; } return [a].concat(b); }
-BracketedExpression = '[' _ exp:Expression _ ']' { return exp; }
+    return new Node.CompositeNode(prefix, process, relabel);
+ }
 
-ActionLabels = a:ActionLabel _ b:JoinedActionLabel { return constructJoinedActionNode(a, b); }
-             / a:ActionLabel _ b:JoinedSet { return constructJoinedActionNode(a, b); }
-             / a:ActionLabel _ b:BracketedActionRange { return constructIndexActionNode(a, b); }
-             / ActionLabel
-             / Set
-             / BracketedActionRange
+/* Helper function for 'LocalProcess' which removes left hand recursion from parsing. */
+_LocalProcess
+ = BaseLocalProcess
+ / 'if' _ exp:Expression _ 'then' _ thenProcess:LocalProcess _ 'else' _ elseProcess:LocalProcess {
+    return new Node.IfNode(exp, thenProcess, elseProcess);
+ }
+ / 'if' _ exp:Expression _ 'then' _ thenProcess:LocalProcess {
+    return new Node.IfNode(exp, thenProcess);
+ }
+ / 'forall' _ ranges:Ranges _ composite:LocalProcess {
+    var indices = forallIndices;
+    forallIndices = [];
+    return constructIndexNode(indices, composite);
+ }
+ / process:(Function / Composite / Choice) {
+    return process;
+ }
+ / '(' _ process:(Function / Composite / Choice) _ ')' {
+    return process;
+ }
 
-JoinedActionLabel = '.' _ action:ActionLabel { return action; }
-JoinedSet = '.' _ set:Set { return set; }
-BracketedActionRange = '[' _ range:ActionRange _ ']' { return range; }
-
-
-_ActionLabels = '.' _ action:ActionLabel { return action; }
-              / '.' _ set:Set { return set; }
-              / '[' _ range:ActionRange _ ']' { return range; }
-              / '[' _ exp:Expression _ ']' { return exp; }
-
-ActionRange = Range
-            / Set
-            / variable:Variable _ ':' _ range:Range { return new Node.IndexNode(variable, range); }
-            / variable:Variable _ ':' _ set:Set { return new Node.IndexNode(variable, range); }
-
-Range = start:SimpleExpression _ '..' _ end:SimpleExpression { return new Node.RangeNode(undefined, start, end); }
-      / Name
-      
-Set = '{' _ a:SetElements _ '}' { return new Node.SetNode(undefined, a); }
-    / Name
-    
-
-SetElements = a:ActionLabels _ b:_SetElements { return [a].concat(b); }
-            / ActionLabels
-
-_SetElements = ',' _ a:ActionLabels _ b:(_SetElements ?) {
-  if(b === null){ return [a]; }
-    return [a].concat(b);
-}
-
-/**
- * CONSTANT, RANGE AND SET
- */
-
-ConstantDefinition = 'const' _ name:Name _ '=' _ exp:SimpleExpression { return new Node.ConstantNode(name, exp); }
-
-RangeDefinition = 'range' _ name:Name _ '=' _ start:SimpleExpression _ '..' _ end:SimpleExpression { return new Node.RangeNode(name, start, end); }
-
-SetDefinition = 'set' _ name:Name _ '=' _ '{' _ set:SetElements _ '}' { return new Node.SetNode(name, set); }
-
-/**
- * PROCESS DEFINITIONS
- */
-
-ProcessDefinition = _ name:Name _ isVisible:('*' ?) _ '=' _ process:ProcessBody _ relabel:(Relabel ?) _ hiding:(Hiding ?) _ '.' _ { return new Node.DefinitionNode(name, process, relabel, hiding, isVisible); }
-
-ProcessBody = a:LocalProcess _ ',' _ b:LocalProcessDefinitions { a.local = b; return a; }
-            / LocalProcess
-
-LocalProcessDefinitions = a:LocalProcessDefinition _ b:(_LocalProcessDefinitions ?) {
-  if(b === null){
-      return a;
+/* Attempts to parse and return a base local process. A base local process
+   symbolises the end point of a local process.*/
+BaseLocalProcess
+ = 'STOP' {
+    return new Node.TerminalNode('stop');
+ }
+ / 'ERROR' {
+    return new Node.TerminalNode('error');
+ }
+ / ident:Identifier _ indices:(Indices ?) {
+    if(indices != null){
+        ident.name += indices;
     }
-    a.process.local = b;
-    return a;
-}
+    return ident;
+ }
 
-_LocalProcessDefinitions = _ ',' _ a:LocalProcessDefinition _ b:(_LocalProcessDefinitions ?) {
-  if(b === null){
-      return a;
+/* Attempts to parse and return a function process. */
+Function
+ = type:FunctionType _ '(' _ process:LocalProcess _ relabel:(Relabel ?) _ hide:(Hiding ?)  _ ')' {
+    return new Node.FunctionNode(type, process, relabel, hide);
+ }
+
+/* Attempts to parse and return a function type. */
+FunctionType
+ = 'abs' {
+    return 'abstraction';
+ }
+ / 'simp' {
+    return 'simplification';
+ }
+ // add more function types here
+
+/* Attempts to parse and return a composite process. */
+Composite
+ = prefix:(PrefixLabel ?) _ parallel:ParallelComposition _ relabel:(Relabel ?) {
+    if(prefix == null && relabel == null){
+        return parallel;
     }
-    a.process.local = b;
-    return a;
-}
+    return constructCompositeNode(prefix, parallel, relabel);
+ }
 
-LocalProcessDefinition = name:Name _ '=' _ process:LocalProcess { return new Node.DefinitionNode(name, process); }
+/* Attempts to parse and return a prefix label. */
+PrefixLabel
+ = label:ActionLabels _ ':' {
+    return label;
+ }
 
-LocalProcess = '(' _ choice:Choice _ ')' { return choice; }
-             / Choice
-             / BaseLocalProcess
+/* Attempts to parse and return a parallel composition process. */
+ParallelComposition
+ = '(' _ process:LocalProcess _ parallel:(_ParallelComposition ?) _ ')' {
+    return (parallel != null) ? new Node.ParallelNode(process, parallel) : process;
+ }
 
-BaseLocalProcess = Name
+/* Helper function for 'ParallelComposition' which removes left hand recursion from parsing. */
+_ParallelComposition
+ = '||' _ process:LocalProcess _ parallel:(_ParallelComposition ?) {
+    return (parallel != null) ? new Node.ParallelNode(process, parallel) : process;
+ }
 
-Choice = a:ActionPrefix _ b:_Choice { return new Node.ChoiceNode(a, b); }
-       / ActionPrefix
-       
-/* Used to remove left recursion from 'Choice' */       
-_Choice = _ '|' _ a:ActionPrefix _ b:(_Choice ?) { if(b === null){ return a; } return new Node.ChoiceNode(a, b); }
+/* Attempts to parse and return a choice process. */
+Choice
+ = prefix:ActionPrefix _  choice:(_Choice ?) {
+    return (choice != null) ? new Node.ChoiceNode(prefix, choice) : prefix;
+ }
 
-ActionPrefix = a:PrefixActions _ b:(LocalProcess ?) {
-  if(a.constructor !== Array){ a = [a]; }
-  if(b !== null){ a = a.concat(b); }
-  return constructSequence(a);
-}
+/* Helper function for 'Choice' which removes left hand recursion from parsing. */
+_Choice
+ = '|' _ prefix:ActionPrefix _  choice:(_Choice ?) {
+    return (choice != null) ? new Node.ChoiceNode(prefix, choice) : prefix;
+ }
 
-PrefixActions = a:ActionLabels _ b:_PrefixActions _ { return [a].concat(b); }
-              / ActionLabels
+/* Attempts to parse an return an action prefix. */
+ActionPrefix
+ = guard:(Guard ?) _ prefix:PrefixActions {
+    return (guard != null) ? new Node.IfNode(guard, prefix) : prefix;
+ }
 
-/* Used to remove left recursion from 'PrefixActions' */
-_PrefixActions = _ '->' _ a:(ActionLabels / LocalProcess) _ b:(_PrefixActions ?) {
-  // return the action label if parser failed to parse another prefix action
-    if(b === null){ return [a]; }
-    // otherwise return new sequence node
-  return [a].concat(b);
-}
+/* Attempts to parse and return a prefix action. This is a sequence of action events. */
+PrefixActions
+ = label:ActionLabels _ '->' _ process:(PrefixActions / LocalProcess) {
+    var indices = label.indices;
+    delete label.indices;
+    var node = new Node.SequenceNode(label, process);
+    return constructIndexNode(indices, node);
+ }
 
-/**
- * REFERENCE DEFINITIONS
- */
+/* Attempts to parse and return a guard. */
+Guard
+ = 'when' _ exp:Expression {
+    return exp;
+ }
 
-ReferenceDefinition = name:Name _ isVisible:('*' ?) _ '=' _ label:(PrefixLabel ?) _ ref:Name _ relabel:(Relabel ?) _ hide:(Hiding ?) _ '.' {
-  return new Node.DefinitionNode(name, new Node.CompositeNode(label, ref), relabel, hide, isVisible);
-}
+/* Attempts to parse and return indices until there are no more to parse. */
+Indices
+ = '[' _ exp:Expression _ ']' _  indices:(Indices ?) {
+    exp = '[' + exp + ']';
+    return (indices != null) ? exp + indices : exp;
+ }
 
-ReferenceBody = label:(PrefixLabel ?) _ ref:Name { return new Node.CompositeNode(label, ref); }
+/* Attempts to parse and return index ranges until there are no more to parse. */
+IndexRanges
+ = '[' _ exp:Expression _ ']' _ ranges:(IndexRanges ?) {
+    exp = '[' + exp + ']';
+    return (ranges != null) ? exp + ranges : exp;
+ }
+ / '[' _ range:ActionRange _ ']' _ ranges:(IndexRanges ?) {
+    range = processIndex(range, 'identifier');
+    range = '[' + range + ']';
+    return (ranges != null) ? range + ranges : range;
+ }
 
-/**
- * PARALLEL COMPOSITION DEFINITONS
- */
- 
-CompositeDefinition = ('||' ?) _ name:Name _ isVisible:('*' ?) _ '=' _ body:CompositeBody _ hide:(Hiding ?) _ '.' {
-  return new Node.DefinitionNode(name, body, undefined, hide, isVisible);
-}
-
-CompositeBody = label:(PrefixLabel ?) _ name:Name _ relabel:(Relabel ?) { return new Node.CompositeNode(label, name, relabel); }
-              / label:(PrefixLabel ?) _ '(' _ comp:ParallelComposition _ ')' _ relabel:(Relabel ?) { return new Node.CompositeNode(label, comp, relabel); }
-              
-PrefixLabel = label:ActionLabels _ '::' { return label; }
-            / label:ActionLabels _ ':' { return label; }
-            /// a:ActionLabels _ '::' _ b:ActionLabel _ ':' // TODO
-
-ParallelComposition = body:CompositeBody _ comp:_ParallelComposition { return new Node.ParallelNode(body, comp); }
-                    / CompositeBody
-
-_ParallelComposition = '||' _ body:CompositeBody _ comp:(_ParallelComposition ?) {
-  if(comp === null){
-      return body;
-    }
-    return new Node.ParallelNode(body, comp);
-}
-
-/**
- * FUNCTION DEFINITONS
- */
-
-FunctionDefinition = name:Name _ isVisible:('*' ?) _ '=' _ type:FunctionType _ '(' _ body:FunctionBody _ ')' _ relabel:(Relabel ?) _ hide:(Hiding ?) _ '.' {
-  var process = new Node.FunctionNode(type, body);
-  return new Node.DefinitionNode(name, process, relabel, hide, isVisible);
-}
-
-FunctionType = 'abs' { return 'abstraction'; }
-             / 'simp' { return 'simplification'; }
-
-FunctionBody = type:FunctionType _ '(' body:FunctionBody ')' _ relabel:(Relabel ?) _ hide:(Hiding ?) _ { return new Node.DefinitionNode(undefined, new Node.FunctionNode(type, body), relabel, hide); }
-             / _ body:ProcessBody _ relabel:(Relabel ?) _ hide:(Hiding ?) _ { return new Node.DefinitionNode(undefined, body, relabel, hide); }
-             / _ body:CompositeBody _ relabel:(Relabel ?) { return new Node.DefinitionNode(undefined, body, relabel, undefined); }
-/**
- * RELABELLING AND HIDING
- */
-
-Relabel = '/' _ '{' a:RelabelDefinitions _ '}' { return a }
-
-RelabelDefinitions = a:RelabelDefinition _ b:_RelabelDefinitions { return a.concat(b); }
-                   / RelabelDefinition
-
-_RelabelDefinitions = ',' _ a:RelabelDefinition _ b:(_RelabelDefinitions ?) {
-  if(b === null){ return a; }
-    return a.concat(b);
-}
-
-RelabelDefinition = a:ActionLabels _ '/' _ b:ActionLabels { return [{new: a, old: b}]; }
-
-Hiding = '\\' _ a:Set { return {type: 'includes', set:a.set}; }
-       / '@' _ a:Set { return {type: 'excludes', set:a.set}; }
+/* Attempts to parse and return ranges until there are no more to parse. */
+Ranges
+ = '[' _ range:ActionRange _ ']' _ ranges:(Ranges ?) {
+    range = processIndex(range, 'forall');
+    range = '[' + range + ']';
+    return (ranges != null) ? range + ranges : range;
+ }
 
 /**
  * OPERATIONS
  */
+
+/* Attempts to parse and return an operation. */
+Operation
+ = process1:LocalProcess _ negated:('!' ?) operator:OperationOperator _ process2:LocalProcess _ '.' {
+    negated = (negated != null) ? true : false;
+    return new Node.OperationNode(operator, process1, process2, negated);
+ }
+
+/* Attempts to parse and return an operation operator. */
+OperationOperator
+ = '~' {
+    return 'bisimulation';
+ }
+ // add more operation operators here
+
+/**
+ * RELABELLING AND HIDING
+ */
+
+/* Attempts to parse and return a relabelling process. */
+Relabel
+ = '/' _ '{' _ relabel:RelabelDefinitions _ '}' {
+    return relabel;
+ }
+
+/* Attempts to parse and return a series of relabelling definitions */
+RelabelDefinitions
+ = definition:RelabelDefinition _ definitions:(_RelabelDefinitions ?) {
+    return (definitions != null) ? [definition].concat(definitions) : [definition];   
+ }
+
+/* Helper function for 'RelabelDefinitions' which removes left hand recursion from parsing. */
+_RelabelDefinitions
+ = ',' _ relabel:RelabelDefinitions {
+    return relabel   
+ }
  
-OperationDefinition = _ a:OperationProcess _ negate:('!' ?) _ op:Operation _ b:OperationProcess _ '.' _ {
-    var isNegated = (negate === null) ? false : true;
-    return new Node.OperationNode(op, text(), a, b, isNegated);
-}
+/* Attempts to parse and return a relabelling definition. */
+RelabelDefinition
+ = newLabel:ActionLabels _ '/' _ oldLabel:ActionLabels {
+    return { newLabel: newLabel.action, oldLabel: oldLabel.action };
+ }
+ / 'forall' _ ranges:IndexRanges _ '{' _  relabel:RelabelDefinitions _ '}' {
+    return 'forall ' + ranges + '{' + relabel + '}';
+ }
 
-OperationProcess = FunctionBody / CompositeBody / ReferenceBody / BaseLocalProcess / ProcessBody
-
-Operation = '~' { return 'bisimulation'; }
-
-/**
- * EXPRESSIONS
- */
-
-SimpleExpression = expr:AdditiveExpression { return new Node.SimpleExpressionNode(expr); }
-
-<<<<<<< HEAD
-AdditiveExpression = base:BaseExpression _ add:(_AdditiveExpression) { return base + ' ' + add; }
-                   / MultiplicativeExpression
-
-=======
-Expression = OrExpression
-
-OrExpression = base:BaseExpression _ or:(_OrExpression) { return new Node.ExpressionNode('||', base, or); }
-             / AndExpression
-
-_OrExpression = '||' _ and:AndExpression _ or:(_OrExpression ?) {
-  if(or === null){
-    return and;
-  }
-
-  return new Node.ExpressionNode('||', and, or);
-}
-
-AndExpression = base:BaseExpression _ and:(_AndExpression) { return new Node.ExpressionNode('&&', base, and); }
-              / BitOrExpression
-
-_AndExpression = '&&' _ or:BitOrExpression _ and:(_AndExpression ?) {
-  if(and === null){
-      return or;
-    }
-    
-    return new Node.ExpressionNode('&&', or, and);
-}
-
-BitOrExpression = base:BaseExpression _ or:(_BitOrExpression) {return new Node.ExpressionNode('|', base, or); }
-                / BitExclOrExpression
-
-_BitOrExpression = '|' _ excl:BitExclOrExpression _ or:(_BitOrExpression ?) {
-  if(or === null){
-      return excl;
-    }
-    
-    return new Node.ExpressionNode('|', excl, or);
-} 
-
-BitExclOrExpression = base:BaseExpression _ excl:(_BitExclOrExpression) { return new Node.ExpressionNode('^', base, excl); }
-                    / BitAndExpression
-                    
-_BitExclOrExpression = '^' _ and:BitAndExpression _ excl:(_BitExclOrExpression ?) {
-  if(excl === null){
-      return and;
-    }
-    
-    return new Node.ExpressionNode('^', and, excl);
-}
-
-BitAndExpression = base:BaseExpression _ and:(_BitAndExpression) { return new Node.ExpressionNode('&', base, and); }
-                 / EqualityExpression
-
-_BitAndExpression = '&' _ equal:EqualityExpression _ and:(_BitAndExpression ?) {
-  if(and === null){
-      return equal;
-    }
-    
-    return new Node.ExpressionNode('&', equal, and);
-}
-
-EqualityExpression = EqualExpression / NotEqualExpression
-                   / RelationalExpression
-
-EqualExpression = base:BaseExpression  _ equal:_EqualExpression { return new Node.ExpressionNode('==', base, equal); }
-                   
-_EqualExpression = op:'==' _ rel:RelationalExpression _ equal:(_EqualExpression ?) {
-  if(equal === null){
-      return rel;
-    }
-    
-    return new Node.ExpressionNode('==', rel, equal);
-}
-
-NotEqualExpression = base:BaseExpression  _ not:_NotEqualExpression { return new Node.ExpressionNode('!=', base, not); }
-                   
-_NotEqualExpression = op:'!=' _ rel:RelationalExpression _ not:(_NotEqualExpression ?) {
-  if(not === null){
-      return rel;
-    }
-    
-    return new Node.ExpressionNode('!=', rel, not);
-}
-
-RelationalExpression = LessThanExpression / LessThanEqualExpression / GreatThanExpression / GreatThanEqualExpression
-                     / ShiftExpression
-
-LessThanExpression = base:BaseExpression _ less:(_LessThanExpression) { return new Node.ExpressionNode('<', base, less); }
-
-_LessThanExpression = '<' _ shift:ShiftExpression _ less:(_LessThanExpression ?) {
-  if(less === null){
-      return shift;
-    }
-    
-    return new Node.ExpressionNode('<', shift, less);
-}
-
-LessThanEqualExpression = base:BaseExpression _ less:(_LessThanEqualExpression) { return new Node.ExpressionNode('<=', base, less); }
-
-_LessThanEqualExpression = '<=' _ shift:ShiftExpression _ less:(_LessThanEqualExpression ?) {
-  if(less === null){
-      return shift
-    }
-    
-    return new Node.ExpressionNode('<=', shift, less);
-}
-
-GreatThanExpression = base:BaseExpression _ great:(_GreatThanExpression) { return new Node.ExpressionNode('>', base, great); }
-
-_GreatThanExpression = '>' _ shift:ShiftExpression _ great:(_GreatThanExpression ?) {
-  if(great === null){
-      return shift;
-    }
-    
-    return new Node.ExpressionNode('>', shift, great);
-}
-
-GreatThanEqualExpression = base:BaseExpression _ great:(_GreatThanEqualExpression) { return new Node.ExpressionNode('>=', base, great); }
-
-_GreatThanEqualExpression = '>=' _ shift:ShiftExpression _ great:(_GreatThanEqualExpression ?) {
-  if(great === null){
-      return shift;
-    }
-    
-    return new Node.ExpressionNode('>=', shift, great);
-}
-
-ShiftExpression = RightShiftExpression / LeftShiftExpression
-                / AdditiveExpression
-
-RightShiftExpression = base:BaseExpression _ shift:_RightShiftExpression { return new Node.ExpressionNode('>>', base, shift); }
-
-_RightShiftExpression = '>>' _ add:AdditiveExpression _ shift:(_RightShiftExpression ?) {
-  if(shift === null){
-      return add;
-    }
-    
-    return new Node.ExpressionNode('>>', add, shift);
-}
-
-LeftShiftExpression = base:BaseExpression _ shift:_LeftShiftExpression { return new Node.ExpressionNode('<<', base, shift); }
-
-_LeftShiftExpression = '<<' _ add:AdditiveExpression _ shift:(_LeftShiftExpression ?) {
-  if(shift === null){
-      return add;
-    }
-    
-    return new Node.ExpressionNode('<<', add, shift);
-}
-
-AdditiveExpression = base:BaseExpression _ add:(_AdditiveExpression) { return new Node.SimpleExpressionNode(base + ' ' + add); }
-                   / exp:MultiplicativeExpression { return new Node.SimpleExpressionNode(exp); }
-
->>>>>>> parser
-_AdditiveExpression = operator:('+' / '-')  _ multi:MultiplicativeExpression _ add:(_AdditiveExpression ?) {
-  if(add !== null){
-      return multi + ' ' + add + ' ' + operator;
-    }
-<<<<<<< HEAD
-      return multi + ' ' + operator;
-=======
-    return multi + ' ' + operator;
->>>>>>> parser
-}
-
-MultiplicativeExpression = base:BaseExpression _ multi:_MultiplicativeExpression { return base + ' ' + multi; }
-                         / UnaryExpression
-
-_MultiplicativeExpression = operator:('*' / '/' / '%') _ unary:UnaryExpression _ multi:(_MultiplicativeExpression ?) {
-  if(multi !== null){
-<<<<<<< HEAD
-      return multi;
-=======
-      return multi + ' ' + unary + ' ' + operator;
->>>>>>> parser
-    }
-    return unary + ' ' + operator;
-}
-
-UnaryExpression = operator:('+' / '-')  _ base:BaseExpression { return base + ' 0 ' + operator; }
-                / BaseExpression
-
-BaseExpression = IntegerLiteral / LowerCaseIdentifier / UpperCaseIdentifier / '(' _ exp:Expression _ ')' { return exp; }
+/* Attempts to parse a hiding process. */
+Hiding
+ = '\\' set:Set { // inclusive hiding: hides every action label within the set
+    return { type: 'includes', set: set.set };
+ }
+ / '@' set:Set { // exclusive hiding: hides every action label not within the set
+    return { type: 'excludes', set: set.set };
+ }
 
 /**
- * COMMENTS
+ * EXPRESIONS AND SIMPLE EXPRESSIONS
  */
 
-/* Parses and returns a comment */
-Comment = _ comment:(Single_Lined_Comment / Multi_Lined_Comment) _ {
-    return new Node.CommentNode(comment);
-}
+/* Attempts to parse and return an expression. This includes expressions with boolean operators
+   as well as arithmetic operations. */
+Expression
+ = exp:_Expression {
+    return constructExpression(exp);
+ }
 
-/* Helper function for 'Comment' which parses and returns a single lined comment. */
-Single_Lined_Comment = '//' (!LineTerminator SourceCharacter)* {
-    return text();
-}
+/* Helper function for 'Expression' which removes left hand recursion from parsing. */
+_Expression
+ = base:BaseExpression _  op:Operator _ exp:Expression {
+    return base + ' ' + op + ' ' + exp;
+ }
+ / BaseExpression
 
-/* Helper function for 'Comment' which parses and returns a multi lined comment. */
-Multi_Lined_Comment = '/*' (!'*/' SourceCharacter)* '*/' {
-    return text();
-}
+/* Attempts to parse and return the base of an expresion. This can be either an integer,
+   a variable reference or another expression. */
+BaseExpression
+ = IntegerLiteral
+ / Variable
+ / '(' _ exp:_Expression _ ')' {
+    return '( ' + exp + ' )';
+ }
 
-/* Parses the termination of a line. */
-LineTerminator 'line terminator' = [\n\r\u2028\u2029]
+/* Attempts to parse and return a simple expression. This includes only arithmetic operations. */
+SimpleExpression
+ = exp:_SimpleExpression {
+    return contructExpression(exp);
+ }
 
-/* Parses a source character for a comment. */
-SourceCharacter 'source character' = .
+/* Helper function for 'SimpleExpression' which removes left hand recursion from parsing. */
+_SimpleExpression
+ = base:SimpleBaseExpression op:ArithmeticOperator exp:SimpleExpression {
+    return base + ' ' + op + ' ' + exp; 
+ }
+ / SimpleBaseExpression
 
+/* Attempts to parse and return the base of an expresion. This can be either an integer,
+   a variable reference or another simple expression. */
+SimpleBaseExpression
+ = IntegerLiteral
+ / Variable
+ / '(' _ exp:_SimpleExpression _ ')' {
+    return '( ' + exp + ' )';
+ }
+
+/* Attempts to parse and return an operator. */
+Operator
+ = '||'
+ / '&&'
+ / '|'
+ / '^'
+ / '&'
+ / '=='
+ / '!='
+ / '<<'
+ / '>>'
+ / '<='
+ / '<'
+ / '>='
+ / '>'
+ / ArithmeticOperator
+
+/* Attempts to parse and return an arithmetic operator. */
+ArithmeticOperator
+ = '+'
+ / '-'
+ / '*'
+ / '/'
+ / '%'
+ 
 /* Parses whitespace */
 _ 'whitespace' = [ \t\n\r]*

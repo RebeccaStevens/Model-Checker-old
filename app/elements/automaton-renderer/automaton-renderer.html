@@ -403,12 +403,16 @@ Custom property | Description | Default
           //  - the to node's label
           //  - the edge's extra data (could be label, width, height, etc.)
           this.graph.edges.forEach(function(edge) {
-            var label = edge.label || EPSILON;
+            var label = edge.label;
 
-            if (edge.isHidden) {
-              label = TAU;
-            } else if (edge.isDeadlock) {
-              label = DELTA;
+            if (label === undefined) {
+              label = EPSILON;
+            }
+
+            if (edge.isBroadcasting) {
+              label = '!' + label;
+            } else if (edge.isListening) {
+              label = '?' + label;
             }
 
             // add the edge to the graph

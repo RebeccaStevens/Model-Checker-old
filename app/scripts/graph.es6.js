@@ -2,10 +2,10 @@
 // jshint esnext:true
 'use strict';
 
-var _NODE_UID = 0; // used to return unique node id for NodeUid class
-var _EDGE_UID = 0; // used to return unique edge id for EdgeUid class
-var TAU = '𝜏';
-var DELTA = '𝛿';
+let _NODE_UID = 0; // used to return unique node id for NodeUid class
+let _EDGE_UID = 0; // used to return unique edge id for EdgeUid class
+let TAU = '\u03C4';
+let DELTA = '\u03B4';
 
 /**
  * Helper class for Graph which generates unique node identifiers.
@@ -29,7 +29,7 @@ class NodeUid {
    *
    * @static
    */
-  static reset(){
+  static reset() {
     _NODE_UID = 0;
   }
 
@@ -80,6 +80,7 @@ class Graph {
     this._edgeCount = 0;
     this._nodeMap = {};
     this._edgeMap = {};
+    this._alphabet = {};
     this._rootId = undefined;
   }
 
@@ -202,18 +203,20 @@ class Graph {
    * @throws {Graph.Exception} uid must be unquie
    * @returns {!Graph.Edge} The edge added to the graph
    */
-  addEdge(uid, from, to, label='', isHidden = false, isDeadlock = false) {
+  addEdge(uid, from, to, label='') {
     if (this._edgeMap[uid] !== undefined) {
       throw new Graph.Exception(
         'This graph already contains a edge with id "' + uid + '".');
     }
 
-    let edge = new Graph.Edge(this, uid, from, to, label, isHidden, isDeadlock);
+    let edge = new Graph.Edge(this, uid, from, to, label);
     this._edgeMap[uid] = edge;
     this._edgeCount += 1;
 
     from._addEdgeFromMe(edge);
     to._addEdgeToMe(edge);
+
+    this._alphabet[label] = true;
 
     return edge;
   }
@@ -234,21 +237,21 @@ class Graph {
    * @returns {!Set} Set of node ids
    */
   get reachableNodes() {
-    var nodes = [];
-    var stack = [this.rootId];
-    var visited = [];
+    let nodes = [];
+    let stack = [this.rootId];
+    let visited = [];
     // perfrom depth first search of graph
-    while(stack.length !== 0){
-      var id = stack.pop();
-      if(!_.contains(visited, id)){
+    while (stack.length !== 0) {
+      let id = stack.pop();
+      if (!_.contains(visited, id)) {
         visited.push(id);
         // add current node id to the set
         nodes[id] = true;
-        var node = this.getNode(id);
+        let node = this.getNode(id);
 
         // add neighbours of current node to stack
-        var neighbors = node.neighbors;
-        for(var i = 0; i < neighbors.length; i++){
+        let neighbors = node.neighbors;
+        for (let i = 0; i < neighbors.length; i++) {
           stack.push(neighbors[i].id);
         }
       }
@@ -276,10 +279,10 @@ class Graph {
    * @param {!string} label - the type of action
    * @returns {boolean} Whether that edge exists or not
    */
-  containsEdge(from, to, label){
-    for(let i in this._edgeMap){
-      var edge = this._edgeMap[i];
-      if(edge.from === from && edge.to === to && edge.label === label){
+  containsEdge(from, to, label) {
+    for (let i in this._edgeMap) {
+      let edge = this._edgeMap[i];
+      if (edge.from === from && edge.to === to && edge.label === label) {
         return true;
       }
     }
@@ -294,11 +297,7 @@ class Graph {
    * @returns {boolean} Whether the edge is contained in the graph's alphabet or not
    */
   containsEdgeInAlphabet(edge) {
-    var result = this.constructAlphabet()[edge];
-    if(result === true){
-      return true;
-    }
-    return false;
+    return (this._alphabet[edge]) ? true : false;
   }
 
   /**
@@ -309,8 +308,8 @@ class Graph {
    * @returns {!boolean} Whether the specified edge is hidden or not
    */
   isHiddenEdge(edge) {
-    for(let i in this._edgeMap){
-      if(this._edgeMap[i].label === edge && this._edgeMap[i].isHidden){
+    for (let i in this._edgeMap) {
+      if (this._edgeMap[i].label === edge && this._edgeMap[i].isHidden) {
         return true;
       }
     }
@@ -367,20 +366,20 @@ class Graph {
    */
   removeDuplicateEdges() {
     // search all nodes for duplicate edges
-    var nodes = this._nodeMap;
-    for(var i in nodes){
-      var node = nodes[i];
+    let nodes = this._nodeMap;
+    for (let i in nodes) {
+      let node = nodes[i];
 
       // compare each edge from this node with all other edges from this node
-      var edges = node.edgesFromMe;
-      for(let j in edges){
-        var edge1 = edges[j];
+      let edges = node.edgesFromMe;
+      for (let j in edges) {
+        let edge1 = edges[j];
 
-        for(let k in edges){
-          var edge2 = edges[k];
+        for (let k in edges) {
+          let edge2 = edges[k];
 
           // remove edge if it is deemed to be a duplicate
-          if(j != k && edge1.to.id === edge2.to.id && edge1.label === edge2.label){
+          if (j !== k && edge1.to.id === edge2.to.id && edge1.label === edge2.label) {
             this.removeEdge(edge2);
             delete edges[k];
           }
@@ -395,10 +394,10 @@ class Graph {
    * @returns {!Array} - the hidden edges in this graph
    */
   get hiddenEdges() {
-    var hiddenEdges = [];
-    for(let i in this._edgeMap){
-      var edge = this._edgeMap[i];
-      if(edge.isHidden){
+    let hiddenEdges = [];
+    for (let i in this._edgeMap) {
+      let edge = this._edgeMap[i];
+      if (edge.isHidden) {
         hiddenEdges.push(edge);
       }
     }
@@ -411,10 +410,10 @@ class Graph {
    * @returns {!Array} - the deadlock edges in this graph
    */
   get deadlockEdges() {
-    var deadlockEdges = [];
-    for(let i in this._edgeMap){
-      var edge = this._edgeMap[i];
-      if(edge.isDeadlock){
+    let deadlockEdges = [];
+    for (let i in this._edgeMap) {
+      let edge = this._edgeMap[i];
+      if (edge.isDeadlock) {
         deadlockEdges.push(edge);
       }
     }
@@ -425,52 +424,24 @@ class Graph {
    * Removes the hidden edges from this graph.
    */
   removeHiddenEdges() {
-    for(var i in this._edgeMap){
-      var edge = this._edgeMap[i];
+    for (let i in this._edgeMap) {
+      let edge = this._edgeMap[i];
       // remove edge if it is hidden
-      if(edge.isHidden){
+      if (edge.isHidden) {
         this.removeEdge(edge);
       }
     }
 
-    for(var i in this._nodeMap){
-      var node = this._nodeMap[i];
-      if(node.edgesToMe.length === 0){
+    for (let i in this._nodeMap) {
+      let node = this._nodeMap[i];
+      if (node.edgesToMe.length === 0) {
         node.addMetaData('startNode', true);
       }
     }
   }
 
-  /**
-   * Constructs and returns a set containing the alphabet for this graph.
-   * The alphabet is a collection of the actions that transition nodes from
-   * one state to another.
-   */
-  constructAlphabet() {
-    var alphabet = {};
-    for(let i in this._edgeMap){
-      var label = this._edgeMap[i].isDeadlock ? DELTA : this._edgeMap[i].label;
-      alphabet[label] = true;
-    }
-
-    return alphabet;
-  }
-
-  /**
-   *  Constructs and returns a set of the the union of the two alphabets for the specified graphs.
-   *
-   *  @param {!Graph} graph1 - First graph to get alphabet of
-   *  @param {!Graph} graph2 - Second graph to get alphabet of
-   */
-  alphabetUnion(otherGraph) {
-    var alphabet = this.constructAlphabet();
-    var temp = otherGraph.constructAlphabet();
-
-    for(let a in temp){
-      alphabet[a] = true;
-    }
-
-    return alphabet;
+  get alphabet() {
+    return this._alphabet;
   }
 
   /**
@@ -583,7 +554,7 @@ class Graph {
       }
 
       // check if this node is the root of the graph
-      if(node.id === this.rootId){
+      if (node.id === this.rootId) {
         isRoot = true;
       }
 
@@ -615,7 +586,7 @@ class Graph {
 
     mergedNode._meta = mergedMetaData;    // set the merged node's meta data
 
-    if(isRoot){
+    if (isRoot) {
       this.root = mergedNode;
     }
 
@@ -627,12 +598,24 @@ class Graph {
    */
   trim() {
     // get the reachable nodes from the root
-    var reachable = this.reachableNodes;
-    var visited = [];
+    let reachable = this.reachableNodes;
     // remove any nodes that are not reachable from the root
-    for(let node in this._nodeMap){
-      if(reachable[node] !== true){
+    for (let node in this._nodeMap) {
+      if (reachable[node] !== true) {
         this.removeNode(this._nodeMap[node]);
+      }
+    }
+  }
+
+  processStopNodes() {
+    for (let i in this._nodeMap) {
+      let node = this.getNode(i);
+      if (node.edgesFromMe.length !== 0) {
+        if (node.getMetaData('isTerminal') === 'stop') {
+          node.deleteMetaData('isTerminal');
+        }
+      } else if (node.getMetaData('isTerminal') !== 'error') {
+        node.addMetaData('isTerminal', 'stop');
       }
     }
   }
@@ -837,16 +820,16 @@ Graph.Node = class {
    * @param {!Edge} edge - The edge to check if there is a valid transition
    * @returns {!Array} array of nodes this edge transitions to
    */
-  coaccessible(edge){
-    var temp = [];
-    var edges = this.edgesFromMe;
-    for(let e in edges) {
-      if(edges[e].label === edge){
+  coaccessible(edge) {
+    let temp = [];
+    let edges = this.edgesFromMe;
+    for (let e in edges) {
+      if (edges[e].label === edge) {
         temp.push(edges[e].to);
       }
     }
 
-    if(temp.length === 0){
+    if (temp.length === 0) {
       temp.push(undefined);
     }
 
@@ -857,7 +840,7 @@ Graph.Node = class {
    * Returns true if this node is accessible within a graph,
    * otherwise returns false.
    */
-  isAccessible(){
+  isAccessible() {
     return this.edgesToMe.length === 0;
   }
 
@@ -877,7 +860,7 @@ Graph.Node = class {
    * @param {!Array} metaDataArray - an array of meta data
    */
   combineMetaData(metaDataArray) {
-    for(let key in metaDataArray){
+    for (let key in metaDataArray) {
       this.addMetaData(key, metaDataArray[key]);
     }
   }
@@ -928,14 +911,12 @@ Graph.Edge = class {
    * @param {!number} to    - The id of the node this edges goes to
    * @param {!string} label - The edge's label
    */
-  constructor(graph, uid, from, to, label, isHidden = false, isDeadlock = false) {
+  constructor(graph, uid, from, to, label) {
     this._graph = graph;
     this._id = uid;
     this._from = from;
     this._to = to;
-    this._label = label;
-    this._isHidden = isHidden;
-    this._isDeadlock = isDeadlock;
+    this.label = label;
   }
 
   /**
@@ -984,12 +965,36 @@ Graph.Edge = class {
   }
 
   /**
-   * Set this edge's label.
+   * Set this edge's label, removing the old label from the graph's
+   * alphabet and replacing it with the specified label.
    *
    * @returns {!string} The new label
    */
   set label(lbl) {
+    // check if this label is broadcasting
+    if (lbl[0] === '!') {
+      this._isBroadcasting = true;
+      lbl = lbl.slice(1, lbl.length);
+    } else {
+      delete this._isBroadcasting;
+    }
+
+    // check if this label is listening
+    if (lbl[0] === '?') {
+      this._isListening = true;
+      lbl = lbl.slice(1, lbl.length);
+    } else {
+      delete this._isListening;
+    }
+
+    delete this._graph.alphabet[this._label];
     this._label = lbl + ''; // convert lbl to a string then set the label
+    this._graph.alphabet[this._label] = true;
+    return this._label;
+  }
+
+  hideEdge() {
+    this._label = TAU;
     return this._label;
   }
 
@@ -997,50 +1002,37 @@ Graph.Edge = class {
    * Get a boolean determining whether this edge is hidden or not.
    */
   get isHidden() {
-    return this._isHidden;
+    return this._label === TAU;
+  }
+
+  deadlockEdge() {
+    this._label = DELTA;
+    return this._label;
   }
 
   /**
-   * Sets the value of isHidden to the specified boolean.
-   *
-   * @param {!boolean} isHidden - whether or not this edge is hidden
-   * @param {!boolean} - the new value of isHidden
-   */
-   set isHidden(isHidden) {
-      this._isHidden = isHidden;
-      return this._isHidden;
-   }
-
-  /**
-   * Get a boolean determining whether this edge leads to a deadlock or not.
+   * Get a boolean determining whether this edge is hidden or not.
    */
   get isDeadlock() {
-    return this._isDeadlock;
+    return this._label === DELTA;
   }
 
   /**
-   * Sets the value of isDeadlock to the specified boolean.
+   * Returns true if this edge is broadcasting, otherwise returns false.
    *
-   * @param {!boolean} isDeadlock - whether or not this edge is a deadlock
-   * @returns {!boolean} - the new value of isDeadlock
+   * @returns {boolean} - whether or not this edge is broadcasting
    */
-  set isDeadlock(isDeadlock) {
-    this._isDeadlock = isDeadlock;
-    return this._isDeadlock;
+  get isBroadcasting() {
+    return (this._isBroadcasting) ? true : false;
   }
 
   /**
-   * Sets isHidden to the specified boolean.
+   * Returns true if this edge is listening, otherwise returns false.
    *
-   * @returns {!boolean} The new isHidden value
+   * @returns {boolean} - whether or not this edge is listening
    */
-  set isHidden(isHidden) {
-    // make sure that parameter is a boolean
-    if(isHidden !== true && isHidden !== false){
-      throw new Graph.Exception("Expecting a boolean value but received " + isHidden + "\n");
-    }
-    this._isHidden = isHidden;
-    return this._isHidden;
+  get isListening() {
+    return (this._isListening) ? true : false;
   }
 };
 
@@ -1064,13 +1056,13 @@ Graph.ColoredNode = class {
    */
   constructor(node, color = '0') {
     this._node = node;
-    this._color = color;;
+    this._color = color;
 
     // check for deadlocks
-    var edges = node.edgesToMe;
-    for(let e in edges){
-      var edge = edges[e];
-      if(edge.isDeadlock){
+    let edges = node.edgesToMe;
+    for (let e in edges) {
+      let edge = edges[e];
+      if (edge.isDeadlock) {
         this._color = '-1';
         break;
       }
@@ -1115,34 +1107,34 @@ Graph.ColoredNode = class {
    * @returns {!Array} The coloring for the specified colored node
    */
   constructNodeColoring(coloredNodes) {
-    var colors = new Graph.NodeColoring();
+    let colors = new Graph.NodeColoring();
 
     // construct coloring for the specified node
-    var edges = this._node.edgesFromMe;
-    for(let e in edges){
-      var edge = edges[e];
-      var from = this._color;
-      var to = edge.isDeadlock ? '-1' : coloredNodes[edge.to.id].color;
-      var label = edge.isDeadlock ? DELTA : edge.label;
-      var color = Graph.NodeColoring.constructColor(from, to, label);
-      
+    let edges = this._node.edgesFromMe;
+    for (let e in edges) {
+      let edge = edges[e];
+      let from = this._color;
+      let to = edge.isDeadlock ? '-1' : coloredNodes[edge.to.id].color;
+      let label = edge.isDeadlock ? DELTA : edge.label;
+      let color = Graph.NodeColoring.constructColor(from, to, label);
+
       // only add color if it is not a duplicate
-      if(!colors.contains(color)){
+      if (!colors.contains(color)) {
         colors.add(color);
       }
     }
 
     // check if current node has any deadlock transitions to it
     edges = this._node.edgesToMe;
-    for(let e in edges){
-      var edge = edges[e];
-      if(edge.isDeadlock){
+    for (let e in edges) {
+      let edge = edges[e];
+      if (edge.isDeadlock) {
         colors.add(Graph.NodeColoring.constructColor('-1', undefined, undefined));
       }
     }
 
     // if current node is a stop node then give it the empty coloring
-    if(colors.length === 0){
+    if (colors.length === 0) {
       colors.add(Graph.NodeColoring.constructColor('0', undefined, undefined));
     }
 
@@ -1168,7 +1160,7 @@ Graph.NodeColoring = class {
    * @protected
    * @param coloring - array of colors
    */
-  constructor(coloring = []){
+  constructor(coloring = []) {
     this._coloring = coloring;
   }
 
@@ -1178,7 +1170,7 @@ Graph.NodeColoring = class {
    * @public
    * @returns {!Object[]} - array of colors
    */
-  get coloring(){
+  get coloring() {
     return this._coloring;
   }
 
@@ -1200,7 +1192,7 @@ Graph.NodeColoring = class {
    * @param color - the color to be added
    */
   add(color) {
-    if(!this.contains(color)){
+    if (!this.contains(color)) {
       this._coloring.push(color);
     }
   }
@@ -1214,9 +1206,9 @@ Graph.NodeColoring = class {
    * @returns {boolean} - true if color present, otherwise false
    */
   contains(color) {
-    for(let i in this._coloring){
-      var current = this._coloring[i];
-      if(_.isEqual(current, color)){
+    for (let i in this._coloring) {
+      let current = this._coloring[i];
+      if (_.isEqual(current, color)) {
         return true;
       }
     }
@@ -1231,31 +1223,31 @@ Graph.NodeColoring = class {
    */
   equals(coloring) {
     // check that coloring is defined
-    if(coloring === undefined || coloring === null){
+    if (coloring === undefined || coloring === null) {
       return false;
     }
 
     // check that both colors are the same length
-    if(this._coloring.length != coloring.length){
+    if (this._coloring.length !== coloring.length) {
       return false;
     }
 
     // check all the colors in this coloring for a match
-    for(let i in this._coloring){
-      var col1 = this._coloring[i];
-      
+    for (let i in this._coloring) {
+      let col1 = this._coloring[i];
+
       // check that there is a match for col1 in the secondary coloring
-      var match = false;
-      for(let j in coloring){
-        var col2 = coloring[j];
-        if(_.isEqual(col1, col2)){
+      let match = false;
+      for (let j in coloring) {
+        let col2 = coloring[j];
+        if (_.isEqual(col1, col2)) {
           match = true;
           break;
         }
       }
 
       // if there was not a match then return false
-      if(!match){
+      if (!match) {
         return false;
       }
     }
@@ -1273,540 +1265,6 @@ Graph.NodeColoring = class {
    */
   static constructColor(from, to, label) {
     return {from: from, to: to, label: label};
-  }
-};
-
-/**
- * Class containing static functions that can be used to alter graphs.
- */
-Graph.Operations = class {
-
-  /**
-   * Performs the abstraction function on the specified graph, which removes the hidden 
-   * tau actions and adds the observable transitions.
-   */
-  static abstraction(graph, isFair = true) {
-    var clone = graph.deepClone();
-    var edgesToAdd = [];
-    var hiddenEdges = clone.hiddenEdges;
-
-    for(let i in hiddenEdges){
-      var edge = hiddenEdges[i];
-
-      var from = this._getTransitions(edge.from.edgesToMe, false);
-      var to = this._getTransitions(edge.to.edgesFromMe, true);
-
-        edgesToAdd = edgesToAdd.concat(this._addObservableEdges(edge.from, edge.to, from, true));
-        edgesToAdd = edgesToAdd.concat(this._addObservableEdges(edge.to, edge.from, to, false));
-    }
-
-    // add the edges constructed by the abstraction
-    for(let i in edgesToAdd){
-      var edge = edgesToAdd[i];
-      if(!clone.containsEdge(edge.from, edge.to, edge.label)){
-        clone.addEdge(edge.uid, edge.from, edge.to, edge.label, edge.isHidden, edge.isDeadlock);
-      }
-    }
-
-    // if this is a fair abstraction then remove all the hidden edges
-    if(isFair){
-      clone.removeHiddenEdges();
-    }
-    // otherwise only remove the hidden edges from before the abstraction
-    else{
-      for(let i in hiddenEdges){
-        clone.removeEdge(hiddenEdges[i]);
-      }
-      // construct deadlocks
-      clone = this._constructDeadlocks(clone);
-    }
-    //clone = this.hideDeadlocks(clone);
-    clone = this._constructStopNodes(clone);
-    clone.trim();
-    return clone;
-  }
-
-  static _getTransitions(edges, isFrom){
-    var transitions = [];
-    for(let i in edges){
-      var edge = edges[i];
-      if(!edge.isHidden){
-        var node = isFrom ? edge.to : edge.from;
-        transitions.push({node: node, label: edge.label, isDeadlock: edge.isDeadlock});
-      }
-    }
-
-    return transitions;
-  }
-
-  static hideDeadlocks(graph) {
-    var clone = graph.deepClone();
-    var edgesToAdd = [];
-    var deadlockEdges = clone.deadlockEdges;
-
-    for(let i in deadlockEdges){
-      var edge = deadlockEdges[i];
-      var from = this._getTransitions(edge.from.edgesToMe, false);
-      var to = this._getTransitions(edge.to.edgesFromMe, true);
-
-        edgesToAdd = edgesToAdd.concat(this._addObservableEdges(edge.from, edge.to, from, true));
-        edgesToAdd = edgesToAdd.concat(this._addObservableEdges(edge.to, edge.from, to, false));
-    }
-
-    // add the edges constructed by the abstraction
-    for(let i in edgesToAdd){
-      var edge = edgesToAdd[i];
-      if(!clone.containsEdge(edge.from, edge.to, edge.label)){
-        clone.addEdge(edge.uid, edge.from, edge.to, edge.label, edge.isHidden, edge.isDeadlock);
-      }
-    }
-
-    for(let i in deadlockEdges){
-      clone.removeEdge(deadlockEdges[i]);
-    }
-
-    // add the edges constructed by the abstraction
-    for(let i in edgesToAdd){
-      var edge = edgesToAdd[i];
-      if(!clone.containsEdge(edge.from, edge.to, edge.label)){
-        clone.addEdge(edge.uid, edge.from, edge.to, edge.label, edge.isHidden, true);
-      }
-    }
-
-    return clone;
-  }
-
-  /**
-   * Helper function for the abstraction function which adds the observable transitions through
-   * a series of hidden, unobservable transitions.
-   *
-   * @private
-   * @param {!Node} start - the node that the first tau event starts from
-   * @param {!Node} first - the first node visited by the first tau event
-   * @param {!Array} transitions - array of observable events to add
-   * @param {!boolean} isFrom - determines if transitioning forwards or backwards through tau events
-   * @returns {!Array} an array of edges to add to the graph
-   */
-  static _addObservableEdges(start, first, transitions, isFrom){
-    var stack = [first];
-    var visited = [start];
-    var edgesToAdd = [];
-
-    while(stack.length !== 0){
-      var current = stack.pop();
-      visited.push(current);
-
-      // add edges to/from the current node
-      for(let i in transitions){
-        var transition = transitions[i];
-        if(isFrom){
-          edgesToAdd.push(this._constructEdge(EdgeUid.next, transition.node, current, transition.label, false, transition.isDeadlock));
-        }
-        else{
-          edgesToAdd.push(this._constructEdge(EdgeUid.next, current, transition.node, transition.label, false, transition.isDeadlock));
-        }
-      }
-
-      var edges = isFrom ? current.edgesFromMe : current.edgesToMe;
-      for(let i in edges){
-        var edge = edges[i];
-        var node = isFrom ? edge.to : edge.from;
-
-        if(edge.isHidden && !_.contains(visited, node)){
-          stack.push(node);
-        }
-        // if next node has already been visited add a tau loop
-        else if(edge.isHidden && _.contains(visited, node)){
-          edgesToAdd.push(this._constructEdge(EdgeUid.next, node, node, '', true));
-        }
-      }
-    }
-
-    return edgesToAdd;
-  }
-
-  /**
-   * Helper method for the abstraction function which constructs an object containing
-   * data to construct an edge.
-   *
-   * @private
-   * @param {!integer} uid - the unique identifier for that edge
-   * @param {!Node} from - the node the edge will transition from
-   * @param {!Node} to - the node the edge will transition to
-   * @param {!string} label - the action of the edge
-   * @param {!boolean} isHidden - true if the edge is hidden, otherwise false
-   * @returns {!Object} object containing data to construct an edge
-   */
-  static _constructEdge(uid, from, to, label, isHidden, isDeadlock){
-    return {uid: uid, from:from, to:to, label:label, isHidden:isHidden, isDeadlock:isDeadlock};
-  }
-
-  /**
-   * Constructs a deadlock for each hidden edge in the specified graph that transitions
-   * back to the node it started from.
-   *
-   * @private
-   * @param {!Object} graph - the graph to construct deadlocks for
-   * @returns {!object} - the graph with deadlocks included
-   */
-  static _constructDeadlocks(graph){
-    var clone = graph.deepClone();
-    var edges = clone.edges;
-    for(let e in edges){
-      var edge = edges[e];
-
-      // if hidden edge links back to itself add a dead lock
-      if(edge.isHidden && edge.from.id === edge.to.id){
-        var temp = clone.addNode(NodeUid.next);
-        // add a new deadlock edge and remove the tau loop
-        clone.addEdge(EdgeUid.next, edge.from, temp, '', false, true);
-        clone.removeEdge(edge);
-        // set metadata of node to show it is an error node
-        temp.addMetaData('isTerminal', 'error');
-      }
-    }
-
-    return clone;
-  }
-
-  /**
-   * Helper function for the abstraction function which searches the specified graph
-   * for any nodes which have become stop nodes due to hidden actions being removed. These
-   * nodes have their meta data updated to show they are stop nodes.
-   *
-   * @private
-   * @param {!graph} graph - the graph to process
-   * @returns {!graph} the processed graph
-   */
-  static _constructStopNodes(graph){
-    var clone = graph.deepClone();
-    var stack = [clone.root];
-    var visited = [];
-    while(stack.length !== 0){
-      var node = stack.pop();
-      visited.push(node);
-      
-      // add neighbours to stack
-      var neighbors = node.neighbors;
-      for(let i in neighbors){
-        // only add neighbour if it has not been visited
-        if(!_.contains(visited, neighbors[i])){
-          stack.push(neighbors[i]);
-        }
-      }
-
-      // if this is a final node set its meta data to reflect this
-      if(neighbors.length === 0){
-        if(node.getMetaData('isTerminal') === undefined){
-          node.addMetaData('isTerminal', 'stop');
-        }
-      }
-    }
-
-    return clone;
-  }
-
-  /**
-   * Constructs and returns a simplifed version of the specified graph by performing a 
-   * bisimulation colouring of the graph an merging the nodes that are of the same color.
-   *
-   * @param {!object} graph - the graph to be simplified
-   * @returns {!object} - a simplified version of the graph
-   */
-  static simplification(graph) {
-    // perform the bisimulation
-    var result = this._bisimulation([graph]);
-    return result.graphs[0];
-  }
-
-  /**
-   * Determines if the specified graphs are equivalent by performing a bisimulation colouring
-   * for each graph and comparing the colours of the root of each graph. If the roots from each graph
-   * all have the same colour then all the specified graphs are equivalent.
-   *
-   * @param {!array} graphs - an array of graphs to check for equivalency
-   * @returns {!boolean} - true if all graphs are equivalent, otherwise false.
-   */
-  static isEquivalent(...graphs) {
-    // perform the bisimulataion
-    var result = this._bisimulation(graphs);
-
-    // compare the colors of each root node
-    var coloredNodes = result.coloredNodes;
-    for(var i = 0; i < graphs.length - 1; i++){
-      var rootId1 = graphs[i].rootId;
-      var rootId2 = graphs[i + 1].rootId;
-      
-      // if root nodes do not match the graphs are not equivalent
-      if(coloredNodes[rootId1].color !== coloredNodes[rootId2].color){
-        return false;
-      }
-    }
-
-    // if this point is reached then all graphs were equivalent
-    return true;
-  }
-
-  /**
-   * Performs a bisimulation coloring on the specified graphs, which gives the nodes in each graph a colouring
-   * based on transitions it makes to neighbouring nodes. Once the colouring is completed any nodes
-   * within the same graph with the same colour are considered equivalent and are merged together.
-   *
-   * @private
-   * @param {!array} - an array of graphs to perform bisimulation colouring on.
-   * @returns {!object} - the coloured nodes and the simplified graphs
-   */
-  static _bisimulation(graphs) {
-    var clones = [];
-    for(let i in graphs){
-      clones.push(graphs[i].deepClone());
-    }
-
-    // construct map of nodes and give them all the same color
-    var coloredNodes = [];
-    for(let i in clones){
-      var clone = clones[i];
-      var nodes = clone.nodes;
-      for(let n in nodes){
-        var node = nodes[n];
-        coloredNodes[node.id] = new Graph.ColoredNode(node);
-      }
-    }
-
-    // continue process until color map does not increase in size
-    var previousLength = -1;
-    var colorMap = []
-    while(previousLength < colorMap.length){
-      previousLength = colorMap.length;
-      colorMap = this._constructColoring(coloredNodes);
-      coloredNodes = this._applyColoring(coloredNodes, colorMap);
-    }
-
-    // merge nodes together that have the same colors
-    for(let i in clones){
-      var clone = clones[i];
-      var nodes = clone.nodes;
-      
-      for(let i in colorMap){
-        var nodeIds = [];
-        
-        for(let k in nodes){
-          var node = coloredNodes[nodes[k].id];
-          if(node.color === i){
-            nodeIds.push(node.node.id);
-          }
-        }
-        if(nodeIds.length > 1){
-          clone.mergeNodes(nodeIds);
-        }
-      }
-    }
-
-    // remove duplicate edges
-    for(let i in clones){
-      clones[i].removeDuplicateEdges();
-    }
-
-    return {coloredNodes: coloredNodes, graphs: clones};
-  }
-
-  /**
-   * Helper function for the bisimulation function which constructs and returns
-   * a color map for the specified colored nodes.
-   *
-   * @param {!Array} coloredNodes - The nodes to construct a color map for
-   * @returns {!Array} A color map to color the specified nodes with
-   */
-  static _constructColoring(coloredNodes){
-    var colorMap = [];
-    // get coloring for each node in the graph
-    for(let n in coloredNodes){
-      var node = coloredNodes[n];
-      var coloring = node.constructNodeColoring(coloredNodes);
-
-      // only add coloring if it is not a duplicate
-      var equals = false;
-      for(let c in colorMap){
-        equals = colorMap[c].equals(coloring.coloring);
-        if(equals){
-          break;
-        }
-      }
-      if(!equals){
-        colorMap.push(coloring);
-      }
-    }
-
-    return colorMap;
-  }
-
-  /**
-   * Helper function for the bisimulation function which applies a coloring to
-   * the specified colored nodes based on the specified color map.
-   *
-   * @param {!Array} coloredNodes - Array of colored nodes
-   * @param {!Array} colorMap - map of colors
-   * @returns {!Array} The new coloring of the colored nodes
-   */
-  static _applyColoring(coloredNodes, colorMap) {
-    var newColors = []
-    // get new color for each node in the graph
-    for(let n in coloredNodes){
-      var node = coloredNodes[n];
-
-      // work out new color for the current node
-      var coloring = node.constructNodeColoring(coloredNodes);
-      for(let c in colorMap){
-        if(colorMap[c].equals(coloring.coloring)){
-          newColors[n] = c;
-          break;
-        }
-      }
-    }
-
-    // apply new color to each node
-    for(let i in newColors){
-      coloredNodes[i].color = newColors[i];
-    }
-
-    return coloredNodes;
-  }
-
-  /**
-   * Constructs and returns a parallel composition of the two specified graphs.
-   *
-   * @class
-   * @param {!Object} graph1 - the first graph
-   * @param {!Object} graph2 - the second graph
-   * @returns - parallel composition of the two graphs
-   */
-  static parallelComposition(graph1, graph2) {
-    var nodes1 = graph1.nodes;
-    var nodes2 = graph2.nodes;
-    var graph = this._combineStates(nodes1, nodes2);
-    var alphabet = graph1.alphabetUnion(graph2);
-
-    // add edges
-    for(var i = 0; i < nodes1.length; i++){
-      var node1 = nodes1[i];
-          
-      for(var j = 0; j < nodes2.length; j++){
-        var node2 = nodes2[j];
-        var fromId = this._getId(graph, node1, node2);
-
-        for(let action in alphabet){
-
-          var c1 = node1.coaccessible(action);
-          var c2 = node2.coaccessible(action);
-
-          for(let x in c1){
-            var coaccessible1 = c1[x];
-            for(let y in c2){
-              var coaccessible2 = c2[y];
-
-              // check if an edge is needed from the current combined states
-
-              // check if the current action is performed by both the current nodes
-              if(coaccessible1 !== undefined && coaccessible2 !== undefined) {
-                // calculate the id of the node the new edge is transitioning to
-                var toId = this._getId(graph, coaccessible1, coaccessible2);
-                var isHidden = graph1.isHiddenEdge(action);
-                graph.addEdge(EdgeUid.next, graph.getNode(fromId), graph.getNode(toId), action, isHidden);
-              }
-
-              // check if the current action is done by the outer node and is never performed in the second graph
-              else if(coaccessible1 !== undefined && !graph2.containsEdgeInAlphabet(action)) {
-                // calculate the id of the node the new edge is transitioning to
-                var toId = this._getId(graph, coaccessible1, node2);
-                var isHidden = graph1.isHiddenEdge(action);
-                graph.addEdge(EdgeUid.next, graph.getNode(fromId), graph.getNode(toId), action, isHidden);
-              }
-
-              // check if the current action is done by the inner node and is never performed in the first graph
-              else if(coaccessible2 !== undefined && !graph1.containsEdgeInAlphabet(action)) {
-                // calculate the id of the node the new edge is transitioning to
-                var toId = this._getId(graph, node1, coaccessible2);
-                var isHidden = graph2.isHiddenEdge(action);
-                graph.addEdge(EdgeUid.next, graph.getNode(fromId), graph.getNode(toId), action, isHidden);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    graph.trim();
-    return graph;
-  }
-
-  /**
-   * Helper function for the parallel composition function which combines both sets of specified
-   * nodes into a single graph.
-   *
-   * @param {!Object} nodes1 - the first set of nodes
-   * @param {!Object} nodes2 - the second set of nodes
-   * @returns {!Object} - a graph containing the combined states of the two specified node sets
-   */
-  static _combineStates(nodes1, nodes2) {
-    var graph = new Graph();
-    
-    // combine states
-    for(let i in nodes1){
-      var node1 = nodes1[i];
-      // determine if current node is a final node in the first graph
-      var startState1 = node1._meta['startNode'] === true;
-      var terminalState1 = node1._meta['isTerminal'] === 'stop';
-      var label1 = (node1.label !== '') ? node1.label : node1.id;   
-      
-      for(let j in nodes2){
-        var node2 = nodes2[j];
-        // determine if the current node is a final node in the second graph
-        var startState2 = node2._meta['startNode'] === true;
-        var terminalState2 = node2._meta['isTerminal'] === 'stop';
-        var label2 = (node2.label !== '') ? node2.label : node2.id;
-        var node = graph.addNode(NodeUid.next, (label1 + "." + label2));
-
-        // if both states are a starting state make new node start state
-        if(startState1 && startState2){
-          node.addMetaData('startNode', true);
-        }
-
-        // if both states are terminal make new node terminal
-        if(terminalState1 && terminalState2){
-          node.addMetaData('isTerminal', 'stop');
-        }
-      }
-    }
-
-    graph.root.addMetaData('parallel', true);
-    return graph;
-  }
-
-  /**
-   * Helper function for the parallel composition function which returns
-   * the node id for the node matching the combined state of the two
-   * specified labels. If a state cannot be found based on these labels then
-   * undefined is returned.
-   *
-   * @private
-   * @param {!Graph} graph - the graph to search for node in
-   * @param {!string} node1 - the first node in the combined state
-   * @param {!string} node2 - the second node in the combined state
-   * @returns {!integer | undefined} the node id or undefined
-   */
-  static _getId(graph, node1, node2) {
-    var label1 = (node1.label === '') ? node1.id : node1.label;
-    var label2 = (node2.label === '') ? node2.id : node2.label;
-    var label = label1 + '.' + label2;
-    var nodes = graph.nodes;
-    for(let i in nodes){
-      var node = nodes[i];
-      if(node.label === label){
-        return node.id;
-      }
-    }
-
-    return undefined;
   }
 };
 
