@@ -1,5 +1,7 @@
 # Automata Concocter (Model-Checker)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/RebeccaStevens/Model-Checker-old.svg)](https://greenkeeper.io/)
+
 [Automata Concocter is hosted here](https://modelchecker-swen302.herokuapp.com/).
 
 ## Streader's Raiders - SWEN302 Group Project
